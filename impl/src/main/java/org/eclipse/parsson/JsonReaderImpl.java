@@ -38,7 +38,6 @@ import jakarta.json.stream.JsonParsingException;
 class JsonReaderImpl implements JsonReader {
     private final JsonParserImpl parser;
     private boolean readDone;
-    private final BufferPool bufferPool;
     
     JsonReaderImpl(Reader reader, BufferPool bufferPool) {
         this(reader, bufferPool, false);
@@ -46,7 +45,6 @@ class JsonReaderImpl implements JsonReader {
 
     JsonReaderImpl(Reader reader, BufferPool bufferPool, boolean rejectDuplicateKeys) {
         parser = new JsonParserImpl(reader, bufferPool, rejectDuplicateKeys);
-        this.bufferPool = bufferPool;
     }
 
     JsonReaderImpl(InputStream in, BufferPool bufferPool) {
@@ -55,7 +53,6 @@ class JsonReaderImpl implements JsonReader {
 
     JsonReaderImpl(InputStream in, BufferPool bufferPool, boolean rejectDuplicateKeys) {
         parser = new JsonParserImpl(in, bufferPool, rejectDuplicateKeys);
-        this.bufferPool = bufferPool;
     }
 
     JsonReaderImpl(InputStream in, Charset charset, BufferPool bufferPool) {
@@ -64,7 +61,6 @@ class JsonReaderImpl implements JsonReader {
 
     JsonReaderImpl(InputStream in, Charset charset, BufferPool bufferPool, boolean rejectDuplicateKeys) {
         parser = new JsonParserImpl(in, charset, bufferPool, rejectDuplicateKeys);
-        this.bufferPool = bufferPool;
     }
 
     @Override
