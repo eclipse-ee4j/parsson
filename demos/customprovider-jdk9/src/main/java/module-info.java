@@ -8,8 +8,8 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
-module org.eclipse.jsonp.demos.customprovider {
+module org.eclipse.parsson.demos.customprovider {
     requires transitive jakarta.json;
-    exports org.eclipse.jsonp.demos.customprovider;
-    provides jakarta.json.spi.JsonProvider with org.eclipse.jsonp.demos.customprovider.TestProvider;
+    exports org.eclipse.parsson.demos.customprovider;
+    provides jakarta.json.spi.JsonProvider with org.eclipse.parsson.demos.customprovider.TestProvider;
 }

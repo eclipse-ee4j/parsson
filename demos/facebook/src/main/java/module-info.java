@@ -8,6 +8,6 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
-module org.eclipse.jsonp.demos.facebook {
+module org.eclipse.parsson.demos.facebook {
     requires jakarta.json;
 }

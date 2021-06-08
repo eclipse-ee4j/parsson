@@ -12,7 +12,7 @@ package customprovider.test;
 
 import jakarta.json.Json;
 import jakarta.json.stream.JsonGenerator;
-import org.eclipse.jsonp.demos.customprovider.TestGenerator;
+import org.eclipse.parsson.demos.customprovider.TestGenerator;
 import org.junit.Assert;
 import org.junit.Test;
 

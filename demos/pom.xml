@@ -14,15 +14,14 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.eclipse.jsonp</groupId>
-        <artifactId>json</artifactId>
-        <version>2.0.2-SNAPSHOT</version>
+        <groupId>org.eclipse.parsson</groupId>
+        <artifactId>project</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <packaging>pom</packaging>
-    <url>http://maven.apache.org</url>
-    <groupId>org.eclipse.jsonp</groupId>
+    <groupId>org.eclipse.parsson</groupId>
     <artifactId>demos</artifactId>
 
     <properties>
@@ -30,7 +29,7 @@
     </properties>
 
     <modules>
-        <module>jaxrs</module>
+        <module>rest</module>
         <module>twitter</module>
         <module>facebook</module>
         <module>jsonpointer</module>
