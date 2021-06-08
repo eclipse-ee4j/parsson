@@ -24,20 +24,21 @@
         <groupId>org.eclipse.ee4j</groupId>
         <artifactId>project</artifactId>
         <version>1.0.6</version>
+        <relativePath/>
     </parent>
 
-    <groupId>org.eclipse.jsonp</groupId>
-    <artifactId>json</artifactId>
+    <groupId>org.eclipse.parsson</groupId>
+    <artifactId>project</artifactId>
     <packaging>pom</packaging>
-    <version>2.0.2-SNAPSHOT</version>
-    <name>Jakarta JSON Processing</name>
+    <version>1.0.0-SNAPSHOT</version>
+    <name>Eclipse Parsson Project</name>
     <description>Jakarta JSON Processing defines a Java(R) based framework for parsing, generating, transforming, and querying JSON documents.</description>
-    <url>https://github.com/eclipse-ee4j/jsonp</url>
+    <url>https://github.com/eclipse-ee4j/parsson</url>
 
     <scm>
-        <connection>scm:git:git://github.com/eclipse-ee4j/jsonp.git</connection>
-        <developerConnection>scm:git:git@github.com:eclipse-ee4j/jsonp.git</developerConnection>
-        <url>https://github.com/eclipse-ee4j/jsonp</url>
+        <connection>scm:git:git://github.com/eclipse-ee4j/parsson.git</connection>
+        <developerConnection>scm:git:git@github.com:eclipse-ee4j/parsson.git</developerConnection>
+        <url>https://github.com/eclipse-ee4j/parsson</url>
         <tag>HEAD</tag>
     </scm>
 
@@ -75,12 +76,12 @@
 
     <properties>
         <api_package>jakarta.json</api_package>
-        <impl_namespace>org.eclipse.jsonp</impl_namespace>
+        <impl_namespace>org.eclipse.parsson</impl_namespace>
         <spec_version>2.0</spec_version>
         <new_spec_version>2.1</new_spec_version>
         <new_spec_impl_version>2.1.0</new_spec_impl_version>
         <impl_version>${project.version}</impl_version>
-        <new_impl_version>2.1.0</new_impl_version>
+        <new_impl_version>1.1.0</new_impl_version>
         <non.final>false</non.final>
         <legal.doc.source>${maven.multiModuleProjectDirectory}</legal.doc.source>
         <config.dir>${project.root.location}/etc/config</config.dir>
@@ -255,15 +256,6 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-release-plugin</artifactId>
-                <configuration>
-                    <mavenExecutorId>forked-path</mavenExecutorId>
-                    <useReleaseProfile>false</useReleaseProfile>
-                    <arguments>${release.arguments}</arguments>
-                </configuration>
-            </plugin>
         </plugins>
 
         <pluginManagement>
@@ -391,18 +383,18 @@
                 <version>${jakarta.json-api.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.jsonp</groupId>
-                <artifactId>jsonp</artifactId>
+                <groupId>org.eclipse.parsson</groupId>
+                <artifactId>parsson</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.jsonp</groupId>
+                <groupId>org.eclipse.parsson</groupId>
                 <artifactId>jakarta.json</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.jsonp</groupId>
-                <artifactId>jsonp-jaxrs</artifactId>
+                <groupId>org.eclipse.parsson</groupId>
+                <artifactId>parsson-media</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -426,13 +418,16 @@
 
     <modules>
         <module>impl</module>
-        <module>jaxrs</module>
+        <module>rest</module>
         <module>bundles</module>
     </modules>
 
     <profiles>
         <profile>
             <id>all</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
             <dependencyManagement>
                 <!-- dependencies used by demo projects only -->
                 <dependencies>
@@ -444,7 +439,7 @@
                     <dependency>
                         <groupId>com.sun.xml.bind</groupId>
                         <artifactId>jaxb-impl</artifactId>
-                        <version>3.0.0</version>
+                        <version>3.0.1</version>
                     </dependency>
                 </dependencies>
             </dependencyManagement>

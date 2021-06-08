@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
-module org.eclipse.jsonp.demos.twitter {
+module org.eclipse.parsson.demos.twitter {
     requires jakarta.xml.bind;
     requires jakarta.json;
 }

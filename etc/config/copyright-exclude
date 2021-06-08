@@ -5,4 +5,4 @@ MANIFEST.MF
 /META-INF/services/
 /etc/config/copyright-exclude
 /etc/config/copyright.txt
-/bundles/ri/src/main/resources/README.txt
+/bundles/dist/src/main/resources/README.txt

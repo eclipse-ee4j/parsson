@@ -8,6 +8,6 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
-module org.eclipse.jsonp.demos.jsonpointer {
+module org.eclipse.parsson.demos.jsonpointer {
     requires jakarta.json;
 }

@@ -14,8 +14,8 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  */
 
-module org.eclipse.jsonp {
+module org.eclipse.parsson {
     requires transitive jakarta.json;
-    exports org.eclipse.jsonp.api;
-    provides jakarta.json.spi.JsonProvider with org.eclipse.jsonp.JsonProviderImpl;
+    exports org.eclipse.parsson.api;
+    provides jakarta.json.spi.JsonProvider with org.eclipse.parsson.JsonProviderImpl;
 }

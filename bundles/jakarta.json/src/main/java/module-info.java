@@ -19,7 +19,7 @@ module jakarta.json {
     exports jakarta.json;
     exports jakarta.json.spi;
     exports jakarta.json.stream;
-    exports org.eclipse.jsonp.api;
+    exports org.eclipse.parsson.api;
 
     uses jakarta.json.spi.JsonProvider;
 }

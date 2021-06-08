@@ -12,12 +12,9 @@
 [//]: # "  "
 [//]: # " SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0 "
 
-[![Build Status](https://travis-ci.org/eclipse-ee4j/jsonp.svg?branch=master)](https://travis-ci.org/eclipse-ee4j/jsonp)
+# Eclipse Parsson
 
-# Jakarta JSON Processing
-
-Jakarta JSON Processing provides portable APIs to parse, generate, transform, and query JSON documents.
-This project contains Jakarta JSON Processing specification, API and a compatible implementation.
+Eclipse Parsson is an implementation of Jakarta JSON Processing specification.
 
 ## Build
 
@@ -28,7 +25,7 @@ mvn -U -C clean install
 
 ## License
 
-* Most of the Jakarta JSON Processing project source code is licensed
+* Most of the Eclipse Parsson project source code is licensed
 under the [Eclipse Public License (EPL) v2.0](https://projects.eclipse.org/license/epl-2.0)
 and [GNU General Public License (GPL) v2 with Classpath Exception](https://www.gnu.org/software/classpath/license.html);
 see the license information at the top of each source file.
@@ -49,7 +46,7 @@ the license text included in every source file.
 
 - [Jakarta JSON Processing official web site](https://eclipse-ee4j.github.io/jsonp)
 - [Jakarta JSON Processing @ Eclipse](https://projects.eclipse.org/projects/ee4j.jsonp)
-- [README.txt](https://github.com/eclipse-ee4j/jsonp/blob/master/bundles/ri/src/main/resources/README.txt)
+- [README.txt](https://github.com/eclipse-ee4j/parsson/blob/master/bundles/ri/src/main/resources/README.txt)
 
 ## Contributing
 
