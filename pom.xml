@@ -474,6 +474,10 @@
                 </pluginManagement>
             </build>
         </profile>
+        <profile>
+            <!-- to make sure that release profile deactivates building samples -->
+            <id>oss-release</id>
+        </profile>
     </profiles>
 
     <reporting>
