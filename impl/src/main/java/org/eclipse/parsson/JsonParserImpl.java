@@ -403,10 +403,6 @@ public class JsonParserImpl implements JsonParser {
             return temp;
         }
 
-        private Context peek() {
-            return head;
-        }
-
         private boolean isEmpty() {
             return head == null;
         }
