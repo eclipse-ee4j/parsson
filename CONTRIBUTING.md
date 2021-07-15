@@ -12,57 +12,51 @@
 [//]: # "  "
 [//]: # " SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0 "
 
-# Contributing to Jakarta JSON Processing
+# Contributing to Eclipse Parsson
 
 Thanks for your interest in this project.
 
 ## Project description
 
-Jakarta JSON Processing is a Java API to process (e.g. parse, generate,
-transform and query) JSON documents. It produces and consumes JSON in a
-streaming fashion (similar to StAX API for XML) and allows to build a Java
-object model for JSON using API classes (similar to DOM API for XML).
+Eclipse Parsson provides an implementation of Jakarta JSON Processing
+Specification. It allows processing (e.g. parse, generate, transform and query)
+JSON documents. It produces and consumes JSON in a streaming fashion (similar to
+StAX API for XML) and allows to build a Java object model for JSON using API
+classes (similar to DOM API for XML).
 
-* https://projects.eclipse.org/projects/ee4j.jsonp
+* https://projects.eclipse.org/projects/ee4j.parsson
 
 ## Developer resources
 
 Information regarding source code management, builds, coding standards, and
 more.
 
-* https://projects.eclipse.org/projects/ee4j.jsonp/developer
+* https://projects.eclipse.org/projects/ee4j.parsson/developer
 
 The project maintains the following source code repositories
 
-* https://github.com/eclipse-ee4j/jsonp
+* https://github.com/eclipse-ee4j/parsson
 
 ## Eclipse Development Process
 
 This Eclipse Foundation open project is governed by the Eclipse Foundation
 Development Process and operates under the terms of the Eclipse IP Policy.
 
-The Jakarta EE Specification Committee has adopted the Jakarta EE Specification
-Process (JESP) in accordance with the Eclipse Foundation Specification Process
-v1.2 (EFSP) to ensure that the specification process is complied with by all
-Jakarta EE specification projects.
-
 * https://eclipse.org/projects/dev_process
 * https://www.eclipse.org/org/documents/Eclipse_IP_Policy.pdf
-* https://jakarta.ee/about/jesp/
-* https://www.eclipse.org/legal/efsp_non_assert.php
 
 ## Eclipse Contributor Agreement
 
-Before your contribution can be accepted by the project team contributors must
+In order to be able to contribute to Eclipse Foundation projects you must
 electronically sign the Eclipse Contributor Agreement (ECA).
 
 * http://www.eclipse.org/legal/ECA.php
 
-Commits that are provided by non-committers must have a Signed-off-by field in
-the footer indicating that the author is aware of the terms by which the
-contribution has been provided to the project. The non-committer must
-additionally have an Eclipse Foundation account and must have a signed Eclipse
-Contributor Agreement (ECA) on file.
+The ECA provides the Eclipse Foundation with a permanent record that you agree
+that each of your contributions will comply with the commitments documented in
+the Developer Certificate of Origin (DCO). Having an ECA on file associated with
+the email address matching the "Author" field of your contribution's Git commits
+fulfills the DCO's requirement that you sign-off on your contributions.
 
 For more information, please see the Eclipse Committer Handbook:
 https://www.eclipse.org/projects/handbook/#resources-commit
@@ -71,4 +65,4 @@ https://www.eclipse.org/projects/handbook/#resources-commit
 
 Contact the project developers via the project's "dev" list.
 
-* https://dev.eclipse.org/mailman/listinfo/jsonp-dev
+* https://accounts.eclipse.org/mailing-list/parsson-dev
