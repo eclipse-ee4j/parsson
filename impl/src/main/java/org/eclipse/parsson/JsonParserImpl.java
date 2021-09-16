@@ -60,6 +60,7 @@ public class JsonParserImpl implements JsonParser {
 
     private final Stack stack = new Stack();
     private final JsonTokenizer tokenizer;
+    private boolean closed = false;
 
     public JsonParserImpl(Reader reader, BufferPool bufferPool) {
         this(reader, bufferPool, false);
@@ -377,10 +378,13 @@ public class JsonParserImpl implements JsonParser {
 
     @Override
     public void close() {
-        try {
-            tokenizer.close();
-        } catch (IOException e) {
-            throw new JsonException(JsonMessages.PARSER_TOKENIZER_CLOSE_IO(), e);
+        if (!closed) {
+            try {
+                tokenizer.close();
+                closed = true;
+            } catch (IOException e) {
+                throw new JsonException(JsonMessages.PARSER_TOKENIZER_CLOSE_IO(), e);
+            }
         }
     }
 
