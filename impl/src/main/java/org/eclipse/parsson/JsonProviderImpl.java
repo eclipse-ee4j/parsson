@@ -280,6 +280,11 @@ public class JsonProviderImpl extends JsonProvider {
         return new JsonBuilderFactoryImpl(pool, rejectDuplicateKeys);
     }
 
+    @Override
+    public JsonNumber createValue(Number value) {
+        return JsonNumberImpl.getJsonNumber(value);
+    }
+
     static boolean isPrettyPrintingEnabled(Map<String, ?> config) {
         return config.containsKey(JsonGenerator.PRETTY_PRINTING);
     }
