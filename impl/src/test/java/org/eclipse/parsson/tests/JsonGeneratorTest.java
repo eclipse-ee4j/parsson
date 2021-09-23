@@ -369,21 +369,18 @@ public class JsonGeneratorTest extends TestCase {
         generator.writeStartArray();
         try {
             generator.write(Double.NaN);
-            fail("JsonGenerator.write(Double.NaN) should produce NumberFormatException");
         } catch (NumberFormatException ne) {
-            // expected
+            fail("JsonGenerator.write(Double.NaN) should NOT produce NumberFormatException");
         }
         try {
             generator.write(Double.POSITIVE_INFINITY);
-            fail("JsonGenerator.write(Double.POSITIVE_INIFINITY) should produce NumberFormatException");
         } catch (NumberFormatException ne) {
-            // expected
+            fail("JsonGenerator.write(Double.POSITIVE_INIFINITY) should NOT produce NumberFormatException");
         }
         try {
             generator.write(Double.NEGATIVE_INFINITY);
-            fail("JsonGenerator.write(Double.NEGATIVE_INIFINITY) should produce NumberFormatException");
         } catch (NumberFormatException ne) {
-            // expected
+            fail("JsonGenerator.write(Double.NEGATIVE_INIFINITY) should NOT produce NumberFormatException");
         }
         generator.writeEnd();
         generator.close();
@@ -395,21 +392,18 @@ public class JsonGeneratorTest extends TestCase {
         generator.writeStartObject();
         try {
             generator.write("foo", Double.NaN);
-            fail("JsonGenerator.write(String, Double.NaN) should produce NumberFormatException");
         } catch (NumberFormatException ne) {
-            // expected
+            fail("JsonGenerator.write(String, Double.NaN) should NOT produce NumberFormatException");
         }
         try {
             generator.write("foo", Double.POSITIVE_INFINITY);
-            fail("JsonGenerator.write(String, Double.POSITIVE_INIFINITY) should produce NumberFormatException");
         } catch (NumberFormatException ne) {
-            // expected
+            fail("JsonGenerator.write(String, Double.POSITIVE_INIFINITY) should NOT produce NumberFormatException");
         }
         try {
             generator.write("foo", Double.NEGATIVE_INFINITY);
-            fail("JsonGenerator.write(String, Double.NEGATIVE_INIFINITY) should produce NumberFormatException");
         } catch (NumberFormatException ne) {
-            // expected
+            fail("JsonGenerator.write(String, Double.NEGATIVE_INIFINITY) should NOT produce NumberFormatException");
         }
         generator.writeEnd();
         generator.close();
@@ -542,4 +536,68 @@ public class JsonGeneratorTest extends TestCase {
         assertEquals("{}", baos.toString("UTF-8"));
     }
 
+    private String nameValueNanInfinity(Map<String, Object> config) {
+        JsonGeneratorFactory generatorFactory = Json.createGeneratorFactory(config);
+        StringWriter writer = new StringWriter();
+        JsonGenerator generator = generatorFactory.createGenerator(writer);
+        generator
+        .writeStartObject()
+        .write("val1", Double.NaN)
+        .write("val2", 1.0)
+        .write("val3", 0.0)
+        .write("val4", Double.POSITIVE_INFINITY)
+        .write("val5", Double.NEGATIVE_INFINITY)
+        .writeEnd().close();
+        return writer.toString();
+    }
+
+    private String valueNanInfinity(Map<String, Object> config) {
+        JsonGeneratorFactory generatorFactory = Json.createGeneratorFactory(config);
+        StringWriter writer = new StringWriter();
+        JsonGenerator generator = generatorFactory.createGenerator(writer);
+        generator.write(Double.NaN).close();
+        return writer.toString();
+    }
+    
+    public void testNanInfinityDefault() {
+        Map<String, Object> config = new HashMap<>();
+        assertEquals("{\"val1\":null,\"val2\":1.0,\"val3\":0.0,\"val4\":null,\"val5\":null}", nameValueNanInfinity(config));
+        assertEquals("null", valueNanInfinity(config));
+    }
+
+    public void testNanInfinityWriteNanAsNull() {
+        Map<String, Object> config = new HashMap<>();
+        config.put(JsonGenerator.WRITE_NAN_AS_NULLS, true);
+        assertEquals("{\"val1\":null,\"val2\":1.0,\"val3\":0.0,\"val4\":null,\"val5\":null}", nameValueNanInfinity(config));
+        assertEquals("null", valueNanInfinity(config));
+    }
+
+    public void testNanInfinityWriteNanAsString() {
+        Map<String, Object> config = new HashMap<>();
+        config.put(JsonGenerator.WRITE_NAN_AS_STRINGS, true);
+        assertEquals("{\"val1\":\"NaN\",\"val2\":1.0,\"val3\":0.0,\"val4\":\"+Infinity\",\"val5\":\"-Infinity\"}", nameValueNanInfinity(config));
+        assertEquals("\"NaN\"", valueNanInfinity(config));
+    }
+
+    public void testNanInfinityBothFalse() {
+        Map<String, Object> config = new HashMap<>();
+        config.put(JsonGenerator.WRITE_NAN_AS_STRINGS, false);
+        config.put(JsonGenerator.WRITE_NAN_AS_NULLS, false);
+        try {
+            nameValueNanInfinity(config);
+            fail("Expected a failure");
+        } catch (NumberFormatException e) {}
+        try {
+            valueNanInfinity(config);
+            fail("Expected a failure");
+        } catch (NumberFormatException e) {}
+    }
+
+    public void testNanInfinityBothTrue() {
+        Map<String, Object> config = new HashMap<>();
+        config.put(JsonGenerator.WRITE_NAN_AS_STRINGS, true);
+        config.put(JsonGenerator.WRITE_NAN_AS_NULLS, true);
+        assertEquals("{\"val1\":null,\"val2\":1.0,\"val3\":0.0,\"val4\":null,\"val5\":null}", nameValueNanInfinity(config));
+        assertEquals("null", valueNanInfinity(config));
+    }
 }

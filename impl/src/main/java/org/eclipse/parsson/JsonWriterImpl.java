@@ -16,16 +16,22 @@
 
 package org.eclipse.parsson;
 
-import org.eclipse.parsson.api.BufferPool;
-
-import jakarta.json.*;
 import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.Map;
+
+import org.eclipse.parsson.api.BufferPool;
+
+import jakarta.json.JsonArray;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonStructure;
+import jakarta.json.JsonValue;
+import jakarta.json.JsonWriter;
 
 /**
  * JsonWriter impl using generator.
@@ -44,8 +50,8 @@ class JsonWriterImpl implements JsonWriter {
 
     JsonWriterImpl(Writer writer, boolean prettyPrinting, BufferPool bufferPool) {
         generator = prettyPrinting
-                ? new JsonPrettyGeneratorImpl(writer, bufferPool)
-                : new JsonGeneratorImpl(writer, bufferPool);
+                ? new JsonPrettyGeneratorImpl(writer, bufferPool, Collections.emptyMap())
+                : new JsonGeneratorImpl(writer, bufferPool, Collections.emptyMap());
         os = null;
     }
 
@@ -63,8 +69,8 @@ class JsonWriterImpl implements JsonWriter {
         // written without actually flushing the stream.
         this.os = new NoFlushOutputStream(out);
         generator = prettyPrinting
-                ? new JsonPrettyGeneratorImpl(os, charset, bufferPool)
-                : new JsonGeneratorImpl(os, charset, bufferPool);
+                ? new JsonPrettyGeneratorImpl(os, charset, bufferPool, Collections.emptyMap())
+                : new JsonGeneratorImpl(os, charset, bufferPool, Collections.emptyMap());
     }
 
     @Override

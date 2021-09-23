@@ -16,6 +16,7 @@
 
 package org.eclipse.parsson;
 
+import org.eclipse.parsson.JsonUtil.NormalNaNInfinite;
 import org.eclipse.parsson.api.BufferPool;
 
 import jakarta.json.*;
@@ -80,6 +81,8 @@ class JsonGeneratorImpl implements JsonGenerator {
         IN_ARRAY
     }
 
+    private final boolean writeNanAsNulls;
+    private final boolean writeNanAsStrings;
     private final BufferPool bufferPool;
     private final Writer writer;
     private Context currentContext = new Context(Scope.IN_NONE);
@@ -91,18 +94,22 @@ class JsonGeneratorImpl implements JsonGenerator {
     private final char buf[];     // capacity >= INT_MIN_VALUE_CHARS.length
     private int len = 0;
 
-    JsonGeneratorImpl(Writer writer, BufferPool bufferPool) {
+    JsonGeneratorImpl(Writer writer, BufferPool bufferPool, Map<String, ?> config) {
         this.writer = writer;
         this.bufferPool = bufferPool;
         this.buf = bufferPool.take();
+        Boolean nulls = (Boolean) config.get(JsonGenerator.WRITE_NAN_AS_NULLS);
+        this.writeNanAsStrings = JsonUtil.getConfigValue(JsonGenerator.WRITE_NAN_AS_STRINGS, false, config);
+        // The value of writeNanAsNulls is the opposite of writeNanAsStrings when writeNanAsNulls is not set
+        this.writeNanAsNulls = nulls == null ? !writeNanAsStrings : nulls;
     }
 
-    JsonGeneratorImpl(OutputStream out, BufferPool bufferPool) {
-        this(out, StandardCharsets.UTF_8, bufferPool);
+    JsonGeneratorImpl(OutputStream out, BufferPool bufferPool, Map<String, ?> config) {
+        this(out, StandardCharsets.UTF_8, bufferPool, config);
     }
 
-    JsonGeneratorImpl(OutputStream out, Charset encoding, BufferPool bufferPool) {
-        this(new OutputStreamWriter(out, encoding), bufferPool);
+    JsonGeneratorImpl(OutputStream out, Charset encoding, BufferPool bufferPool, Map<String, ?> config) {
+        this(new OutputStreamWriter(out, encoding), bufferPool, config);
     }
 
     @Override
@@ -184,11 +191,10 @@ class JsonGeneratorImpl implements JsonGenerator {
             throw new JsonGenerationException(
                     JsonMessages.GENERATOR_ILLEGAL_METHOD(currentContext.scope));
         }
-        if (Double.isInfinite(value) || Double.isNaN(value)) {
-            throw new NumberFormatException(JsonMessages.GENERATOR_DOUBLE_INFINITE_NAN());
-        }
+        NormalNaNInfinite normalNaNInfinite = NormalNaNInfinite.get(value);
+        Object result = normalNaNInfinite.processValue(writeNanAsNulls, writeNanAsStrings, value);
         writeName(name);
-        writeString(String.valueOf(value));
+        writeString(String.valueOf(result));
         return this;
     }
 
@@ -382,10 +388,9 @@ class JsonGeneratorImpl implements JsonGenerator {
     @Override
     public JsonGenerator write(double value) {
         checkContextForValue();
-        if (Double.isInfinite(value) || Double.isNaN(value)) {
-            throw new NumberFormatException(JsonMessages.GENERATOR_DOUBLE_INFINITE_NAN());
-        }
-        writeValue(String.valueOf(value));
+        NormalNaNInfinite normalNaNInfinite = NormalNaNInfinite.get(value);
+        Object result = normalNaNInfinite.processValue(writeNanAsNulls, writeNanAsStrings, value);
+        writeValue(String.valueOf(result));
         popFieldContext();
         return this;
     }

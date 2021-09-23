@@ -46,12 +46,12 @@ public class JsonProviderImpl extends JsonProvider {
 
     @Override
     public JsonGenerator createGenerator(Writer writer) {
-        return new JsonGeneratorImpl(writer, bufferPool);
+        return new JsonGeneratorImpl(writer, bufferPool, Collections.emptyMap());
     }
 
     @Override
     public JsonGenerator createGenerator(OutputStream out) {
-        return new JsonGeneratorImpl(out, bufferPool);
+        return new JsonGeneratorImpl(out, bufferPool, Collections.emptyMap());
     }
 
     @Override
@@ -87,15 +87,14 @@ public class JsonProviderImpl extends JsonProvider {
             pool = bufferPool;
         } else {
             providerConfig = new HashMap<>();
-            if (prettyPrinting=JsonProviderImpl.isPrettyPrintingEnabled(config)) {
-                providerConfig.put(JsonGenerator.PRETTY_PRINTING, true);
-            }
+            prettyPrinting = JsonProviderImpl.isPrettyPrintingEnabled(config);
             pool = (BufferPool)config.get(BufferPool.class.getName());
             if (pool != null) {
                 providerConfig.put(BufferPool.class.getName(), pool);
             } else {
                 pool = bufferPool;
             }
+            providerConfig.putAll(config);
             providerConfig = Collections.unmodifiableMap(providerConfig);
         }
 

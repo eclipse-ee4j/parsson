@@ -17,6 +17,8 @@
 package org.eclipse.parsson;
 
 import java.io.StringReader;
+import java.util.Map;
+
 import jakarta.json.JsonReader;
 import jakarta.json.JsonValue;
 import jakarta.json.stream.JsonParsingException;
@@ -80,6 +82,51 @@ public final class JsonUtil {
         JsonValue value = reader.readValue();
         reader.close();
         return value;
+    }
+
+    static boolean getConfigValue(String key, boolean defaultValue, Map<String, ?> config) {
+        Object value = config.get(key);
+        if (value instanceof Boolean) {
+            return (boolean) value;
+        }
+        return defaultValue;
+    }
+
+    static enum NormalNaNInfinite {
+        NORMAL(null), NAN("\"NaN\""), ININITE_PLUS("\"+Infinity\""), INFINITE_MINUS("\"-Infinity\"");
+        
+        private final String strVal;
+
+        private NormalNaNInfinite(String strVal) {
+            this.strVal = strVal;
+        }
+
+        Object processValue(boolean writeNanAsNulls, boolean writeNanAsStrings, double value) {
+            if (this == NormalNaNInfinite.NORMAL) {
+                return value;
+            } else {
+                if (writeNanAsNulls) {
+                    return null;
+                } else if (writeNanAsStrings) {
+                    return strVal;
+                } else {
+                    throw new NumberFormatException(JsonMessages.GENERATOR_DOUBLE_INFINITE_NAN());
+                }
+            }
+        }
+        
+        static NormalNaNInfinite get(double value) {
+            if (Double.isNaN(value)) {
+                return NAN;
+            } else if (Double.isInfinite(value)) {
+                if (Double.compare(value, 0.0) < 0) {
+                    return INFINITE_MINUS;
+                } else {
+                    return ININITE_PLUS;
+                }
+            }
+            return NORMAL;
+        }
     }
 }
 
