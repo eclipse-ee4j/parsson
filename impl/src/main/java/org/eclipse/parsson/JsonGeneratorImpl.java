@@ -16,7 +16,8 @@
 
 package org.eclipse.parsson;
 
-import org.eclipse.parsson.JsonUtil.NormalNaNInfinite;
+import org.eclipse.parsson.JsonNumberImpl.JsonNaNInfiniteNumber;
+import org.eclipse.parsson.JsonUtil.NaNInfinite;
 import org.eclipse.parsson.api.BufferPool;
 
 import jakarta.json.*;
@@ -191,8 +192,8 @@ class JsonGeneratorImpl implements JsonGenerator {
             throw new JsonGenerationException(
                     JsonMessages.GENERATOR_ILLEGAL_METHOD(currentContext.scope));
         }
-        NormalNaNInfinite normalNaNInfinite = NormalNaNInfinite.get(value);
-        Object result = normalNaNInfinite.processValue(writeNanAsNulls, writeNanAsStrings, value);
+        NaNInfinite normalNaNInfinite = NaNInfinite.get(value);
+        Object result = normalNaNInfinite == null ? value : normalNaNInfinite.processValue(writeNanAsNulls, writeNanAsStrings, value);
         writeName(name);
         writeString(String.valueOf(result));
         return this;
@@ -269,7 +270,17 @@ class JsonGeneratorImpl implements JsonGenerator {
                 break;
             case NUMBER:
                 JsonNumber number = (JsonNumber)value;
-                writeValue(number.toString());
+                if (number instanceof JsonNaNInfiniteNumber) {
+                    JsonNaNInfiniteNumber nanInfinite = (JsonNaNInfiniteNumber) number;
+                    String val = nanInfinite.naNInfinite().processValue(writeNanAsNulls, writeNanAsStrings, nanInfinite.doubleValue());
+                    if (val == null) {
+                        writeNull();
+                    } else {
+                        writeValue(val);
+                    }
+                } else {
+                    writeValue(number.toString());
+                }
                 popFieldContext();
                 break;
             case TRUE:
@@ -343,7 +354,17 @@ class JsonGeneratorImpl implements JsonGenerator {
                 break;
             case NUMBER:
                 JsonNumber number = (JsonNumber)value;
-                writeValue(name, number.toString());
+                if (number instanceof JsonNaNInfiniteNumber) {
+                    JsonNaNInfiniteNumber nanInfinite = (JsonNaNInfiniteNumber) number;
+                    String val = nanInfinite.naNInfinite().processValue(writeNanAsNulls, writeNanAsStrings, nanInfinite.doubleValue());
+                    if (val == null) {
+                        writeNull(name);
+                    } else {
+                        writeValue(name, val);
+                    }
+                } else {
+                    writeValue(name, number.toString());
+                }
                 break;
             case TRUE:
                 write(name, true);
@@ -388,9 +409,13 @@ class JsonGeneratorImpl implements JsonGenerator {
     @Override
     public JsonGenerator write(double value) {
         checkContextForValue();
-        NormalNaNInfinite normalNaNInfinite = NormalNaNInfinite.get(value);
-        Object result = normalNaNInfinite.processValue(writeNanAsNulls, writeNanAsStrings, value);
-        writeValue(String.valueOf(result));
+        NaNInfinite normalNaNInfinite = NaNInfinite.get(value);
+        if (normalNaNInfinite == null) {
+            writeValue(String.valueOf(value));
+        } else {
+            Object result = normalNaNInfinite.processValue(writeNanAsNulls, writeNanAsStrings, value);
+            writeValue(String.valueOf(result));
+        }
         popFieldContext();
         return this;
     }

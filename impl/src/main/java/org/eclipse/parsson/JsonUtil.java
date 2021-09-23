@@ -92,40 +92,35 @@ public final class JsonUtil {
         return defaultValue;
     }
 
-    static enum NormalNaNInfinite {
-        NORMAL(null), NAN("\"NaN\""), ININITE_PLUS("\"+Infinity\""), INFINITE_MINUS("\"-Infinity\"");
+    static enum NaNInfinite {
+        NAN("\"NaN\""), POSITIVE_INFINITY("\"+Infinity\""), NEGATIVE_INFINITY("\"-Infinity\"");
         
         private final String strVal;
 
-        private NormalNaNInfinite(String strVal) {
+        private NaNInfinite(String strVal) {
             this.strVal = strVal;
         }
 
-        Object processValue(boolean writeNanAsNulls, boolean writeNanAsStrings, double value) {
-            if (this == NormalNaNInfinite.NORMAL) {
-                return value;
+        String processValue(boolean writeNanAsNulls, boolean writeNanAsStrings, double value) {
+            if (writeNanAsNulls) {
+                return null;
+            } else if (writeNanAsStrings) {
+                return strVal;
             } else {
-                if (writeNanAsNulls) {
-                    return null;
-                } else if (writeNanAsStrings) {
-                    return strVal;
-                } else {
-                    throw new NumberFormatException(JsonMessages.GENERATOR_DOUBLE_INFINITE_NAN());
-                }
+                throw new NumberFormatException(JsonMessages.GENERATOR_DOUBLE_INFINITE_NAN());
             }
         }
         
-        static NormalNaNInfinite get(double value) {
+        static NaNInfinite get(double value) {
             if (Double.isNaN(value)) {
                 return NAN;
-            } else if (Double.isInfinite(value)) {
-                if (Double.compare(value, 0.0) < 0) {
-                    return INFINITE_MINUS;
-                } else {
-                    return ININITE_PLUS;
-                }
+            } else if (Double.NEGATIVE_INFINITY == value) {
+                return NEGATIVE_INFINITY;
+            } else if (Double.POSITIVE_INFINITY == value) {
+                return POSITIVE_INFINITY;
+            } else {
+                return null;
             }
-            return NORMAL;
         }
     }
 }

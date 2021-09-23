@@ -20,6 +20,8 @@ import jakarta.json.JsonNumber;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
+import org.eclipse.parsson.JsonUtil.NaNInfinite;
+
 /**
  * JsonNumber impl. Subclasses provide optimized implementations
  * when backed by int, long, BigDecimal
@@ -43,9 +45,14 @@ abstract class JsonNumberImpl implements JsonNumber {
     }
 
     static JsonNumber getJsonNumber(double value) {
-        //bigDecimal = new BigDecimal(value);
-        // This is the preferred way to convert double to BigDecimal
-        return new JsonBigDecimalNumber(BigDecimal.valueOf(value));
+        NaNInfinite normalNaNInfinite = NaNInfinite.get(value);
+        if (normalNaNInfinite == null) {
+            //bigDecimal = new BigDecimal(value);
+            // This is the preferred way to convert double to BigDecimal
+            return new JsonBigDecimalNumber(BigDecimal.valueOf(value));
+        } else {
+            return new JsonNaNInfiniteNumber(value, normalNaNInfinite);
+        }
     }
 
     static JsonNumber getJsonNumber(BigDecimal value) {
@@ -173,6 +180,32 @@ abstract class JsonNumberImpl implements JsonNumber {
             return Long.toString(num);
         }
 
+    }
+
+    static final class JsonNaNInfiniteNumber extends JsonNumberImpl {
+
+        private final double num;
+        private final NaNInfinite naNInfinite;
+
+        private JsonNaNInfiniteNumber(double num, NaNInfinite naNInfinite) {
+            this.num = num;
+            this.naNInfinite = naNInfinite;
+        }
+
+        NaNInfinite naNInfinite() {
+            return naNInfinite;
+        }
+
+        @Override
+        public double doubleValue() {
+            return num;
+        }
+
+        @Override
+        public BigDecimal bigDecimalValue() {
+            // Every other method in this class that is not overridden will fail because of this exception
+            throw new UnsupportedOperationException("Value is " + num);
+        }
     }
 
     // JsonNumber impl using BigDecimal numbers.
