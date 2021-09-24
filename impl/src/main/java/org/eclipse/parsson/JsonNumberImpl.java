@@ -45,18 +45,40 @@ abstract class JsonNumberImpl implements JsonNumber {
     }
 
     static JsonNumber getJsonNumber(double value) {
-        NaNInfinite normalNaNInfinite = NaNInfinite.get(value);
-        if (normalNaNInfinite == null) {
+        NaNInfinite nanInfinite = NaNInfinite.get(value);
+        if (nanInfinite == null) {
             //bigDecimal = new BigDecimal(value);
             // This is the preferred way to convert double to BigDecimal
             return new JsonBigDecimalNumber(BigDecimal.valueOf(value));
         } else {
-            return new JsonNaNInfiniteNumber(value, normalNaNInfinite);
+            return JsonNaNInfiniteNumber.get(nanInfinite);
         }
     }
 
     static JsonNumber getJsonNumber(BigDecimal value) {
         return new JsonBigDecimalNumber(value);
+    }
+
+    static final class JsonNullNumber extends JsonNumberImpl {
+
+        static final JsonNullNumber NULL = new JsonNullNumber();
+
+        private JsonNullNumber() {}
+
+        @Override
+        public Number numberValue() {
+            return null;
+        }
+
+        @Override
+        public boolean isIntegral() {
+            return false;
+        }
+
+        @Override
+        public BigDecimal bigDecimalValue() {
+            throw new NullPointerException("Value is null");
+        }
     }
 
     // Optimized JsonNumber impl for int numbers.
@@ -184,6 +206,9 @@ abstract class JsonNumberImpl implements JsonNumber {
 
     static final class JsonNaNInfiniteNumber extends JsonNumberImpl {
 
+        private static final JsonNaNInfiniteNumber NAN = new JsonNaNInfiniteNumber(Double.NaN, NaNInfinite.NAN);
+        private static final JsonNaNInfiniteNumber POSITIVE_INFINITY = new JsonNaNInfiniteNumber(Double.POSITIVE_INFINITY, NaNInfinite.POSITIVE_INFINITY);
+        private static final JsonNaNInfiniteNumber NEGATIVE_INFINITY = new JsonNaNInfiniteNumber(Double.NEGATIVE_INFINITY, NaNInfinite.NEGATIVE_INFINITY);
         private final double num;
         private final NaNInfinite naNInfinite;
 
@@ -197,7 +222,17 @@ abstract class JsonNumberImpl implements JsonNumber {
         }
 
         @Override
+        public boolean isIntegral() {
+            return false;
+        }
+
+        @Override
         public double doubleValue() {
+            return num;
+        }
+
+        @Override
+        public Number numberValue() {
             return num;
         }
 
@@ -205,6 +240,18 @@ abstract class JsonNumberImpl implements JsonNumber {
         public BigDecimal bigDecimalValue() {
             // Every other method in this class that is not overridden will fail because of this exception
             throw new UnsupportedOperationException("Value is " + num);
+        }
+
+        static JsonNaNInfiniteNumber get(NaNInfinite nanInfinite) {
+            if (nanInfinite == NaNInfinite.NAN) {
+                return NAN;
+            } else if (nanInfinite == NaNInfinite.NEGATIVE_INFINITY) {
+                return NEGATIVE_INFINITY;
+            } else if (nanInfinite == NaNInfinite.POSITIVE_INFINITY) {
+                return POSITIVE_INFINITY;
+            } else {
+                throw new IllegalArgumentException(nanInfinite + " is not known");
+            }
         }
     }
 

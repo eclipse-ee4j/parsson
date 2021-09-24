@@ -16,13 +16,29 @@
 
 package org.eclipse.parsson;
 
-import org.eclipse.parsson.api.BufferPool;
-
-import jakarta.json.*;
 import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.*;
+import java.util.AbstractMap;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+
+import org.eclipse.parsson.JsonNumberImpl.JsonNaNInfiniteNumber;
+import org.eclipse.parsson.JsonNumberImpl.JsonNullNumber;
+import org.eclipse.parsson.JsonUtil.NaNInfinite;
+import org.eclipse.parsson.api.BufferPool;
+
+import jakarta.json.JsonArray;
+import jakarta.json.JsonArrayBuilder;
+import jakarta.json.JsonNumber;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonObjectBuilder;
+import jakarta.json.JsonString;
+import jakarta.json.JsonValue;
+import jakarta.json.JsonWriter;
 
 /**
  * JsonObjectBuilder implementation
@@ -246,7 +262,17 @@ class JsonObjectBuilderImpl implements JsonObjectBuilder {
 
         @Override
         public JsonNumber getJsonNumber(String name) {
-            return (JsonNumber)get(name);
+            JsonValue value = get(name);
+            if (value.getValueType() == ValueType.NULL) {
+                return JsonNullNumber.NULL;
+            } else {
+                NaNInfinite nanInfinite = null;
+                if (value.getValueType() == ValueType.STRING && (nanInfinite = NaNInfinite.get(value.toString())) != null) {
+                    return JsonNaNInfiniteNumber.get(nanInfinite);
+                } else {
+                    return (JsonNumber)get(name);
+                }
+            }
         }
 
         @Override

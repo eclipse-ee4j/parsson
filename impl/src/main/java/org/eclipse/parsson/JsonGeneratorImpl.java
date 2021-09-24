@@ -192,8 +192,8 @@ class JsonGeneratorImpl implements JsonGenerator {
             throw new JsonGenerationException(
                     JsonMessages.GENERATOR_ILLEGAL_METHOD(currentContext.scope));
         }
-        NaNInfinite normalNaNInfinite = NaNInfinite.get(value);
-        Object result = normalNaNInfinite == null ? value : normalNaNInfinite.processValue(writeNanAsNulls, writeNanAsStrings, value);
+        NaNInfinite nanInfinite = NaNInfinite.get(value);
+        Object result = nanInfinite == null ? value : nanInfinite.processValue(writeNanAsNulls, writeNanAsStrings, value);
         writeName(name);
         writeString(String.valueOf(result));
         return this;
@@ -409,11 +409,11 @@ class JsonGeneratorImpl implements JsonGenerator {
     @Override
     public JsonGenerator write(double value) {
         checkContextForValue();
-        NaNInfinite normalNaNInfinite = NaNInfinite.get(value);
-        if (normalNaNInfinite == null) {
+        NaNInfinite nanInfinite = NaNInfinite.get(value);
+        if (nanInfinite == null) {
             writeValue(String.valueOf(value));
         } else {
-            Object result = normalNaNInfinite.processValue(writeNanAsNulls, writeNanAsStrings, value);
+            Object result = nanInfinite.processValue(writeNanAsNulls, writeNanAsStrings, value);
             writeValue(String.valueOf(result));
         }
         popFieldContext();

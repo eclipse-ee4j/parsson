@@ -122,6 +122,15 @@ public final class JsonUtil {
                 return null;
             }
         }
+
+        static NaNInfinite get(String value) {
+            for (NaNInfinite item : NaNInfinite.values()) {
+                if (item.strVal.equals(value)) {
+                    return item;
+                }
+            }
+            return null;
+        }
     }
 }
 
