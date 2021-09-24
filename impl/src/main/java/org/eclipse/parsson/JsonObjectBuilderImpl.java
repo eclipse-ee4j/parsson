@@ -60,14 +60,14 @@ class JsonObjectBuilderImpl implements JsonObjectBuilder {
         this.rejectDuplicateKeys = rejectDuplicateKeys;
     }
 
-    JsonObjectBuilderImpl(Map<String, Object> map, BufferPool bufferPool) {
+    JsonObjectBuilderImpl(Map<String, ?> map, BufferPool bufferPool) {
         this.bufferPool = bufferPool;
         valueMap = new LinkedHashMap<>();
         populate(map);
         rejectDuplicateKeys = false;
     }
     
-    JsonObjectBuilderImpl(Map<String, Object> map, BufferPool bufferPool, boolean rejectDuplicateKeys) {
+    JsonObjectBuilderImpl(Map<String, ?> map, BufferPool bufferPool, boolean rejectDuplicateKeys) {
     	this.bufferPool = bufferPool;
     	valueMap = new LinkedHashMap<>();
     	populate(map);
@@ -189,7 +189,7 @@ class JsonObjectBuilderImpl implements JsonObjectBuilder {
         return new JsonObjectImpl(snapshot, bufferPool);
     }
 
-    private void populate(Map<String, Object> map) {
+    private void populate(Map<String, ?> map) {
         final Set<String> fields = map.keySet();
         for (String field : fields) {
             Object value = map.get(field);

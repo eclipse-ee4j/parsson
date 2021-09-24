@@ -183,7 +183,7 @@ public class JsonProviderImpl extends JsonProvider {
     }
 
     @Override
-    public JsonObjectBuilder createObjectBuilder(Map<String, Object> map) {
+    public JsonObjectBuilder createObjectBuilder(Map<String, ?> map) {
         return new JsonObjectBuilderImpl(map, bufferPool);
     }
 
