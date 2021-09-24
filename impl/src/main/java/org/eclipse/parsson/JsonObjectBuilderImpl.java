@@ -336,7 +336,7 @@ class JsonObjectBuilderImpl implements JsonObjectBuilder {
         @Override
         public String toString() {
             StringWriter sw = new StringWriter();
-            try (JsonWriter jw = new JsonWriterImpl(sw, bufferPool)) {
+            try (JsonWriter jw = new JsonWriterImpl(sw, bufferPool, Collections.emptyMap())) {
                 jw.write(this);
             }
             return sw.toString();

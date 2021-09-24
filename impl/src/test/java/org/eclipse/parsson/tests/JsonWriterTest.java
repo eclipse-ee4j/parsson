@@ -16,11 +16,20 @@
 
 package org.eclipse.parsson.tests;
 
-import jakarta.json.*;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.HashMap;
+import java.util.Map;
 
+import jakarta.json.Json;
+import jakarta.json.JsonArray;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonValue;
+import jakarta.json.JsonWriter;
+import jakarta.json.JsonWriterFactory;
+import jakarta.json.stream.JsonGenerator;
+import jakarta.json.stream.JsonGeneratorFactory;
 import junit.framework.TestCase;
 
 /**
@@ -214,6 +223,97 @@ public class JsonWriterTest extends TestCase {
         assertTrue(baos.isClosed());
     }
 
+    private String nameValueNanInfinity(JsonWriterFactory writerFactory) {
+        StringWriter writer = new StringWriter();
+        JsonWriter jsonWriter = writerFactory.createWriter(writer);
+        JsonObject jsonObject = Json.createObjectBuilder()
+        .add("val1", Double.NaN)
+        .add("val2", 1.0)
+        .add("val3", 0.0)
+        .add("val4", Double.POSITIVE_INFINITY)
+        .add("val5", Double.NEGATIVE_INFINITY)
+        .add("val6", Json.createValue(Double.NaN))
+        .add("val7", Json.createValue(1.0))
+        .add("val8", Json.createValue(0.0))
+        .add("val9", Json.createValue(Double.POSITIVE_INFINITY))
+        .add("val10", Json.createValue(Double.NEGATIVE_INFINITY)).build();
+        jsonWriter.writeObject(jsonObject);
+        jsonWriter.close();
+        return writer.toString();
+    }
+
+    private String jsonNumberNanInfinity(JsonWriterFactory writerFactory, double value) {
+        StringWriter writer = new StringWriter();
+        JsonWriter jsonWriter = writerFactory.createWriter(writer);
+        jsonWriter.write(Json.createValue(value));
+        jsonWriter.close();
+        return writer.toString();
+    }
+
+    public void testNanInfinityDefault() {
+        Map<String, Object> config = new HashMap<>();
+        JsonWriterFactory writerFactory = Json.createWriterFactory(config);
+        assertEquals("{\"val1\":null,\"val2\":1.0,\"val3\":0.0,\"val4\":null,\"val5\":null,\"val6\":null,\"val7\":1.0,\"val8\":0.0,\"val9\":null,\"val10\":null}", nameValueNanInfinity(writerFactory));
+        assertEquals("0.0", jsonNumberNanInfinity(writerFactory, 0.0));
+        assertEquals("1.0", jsonNumberNanInfinity(writerFactory, 1.0));
+        assertEquals("null", jsonNumberNanInfinity(writerFactory, Double.NaN));
+        assertEquals("null", jsonNumberNanInfinity(writerFactory, Double.POSITIVE_INFINITY));
+        assertEquals("null", jsonNumberNanInfinity(writerFactory, Double.NEGATIVE_INFINITY));
+    }
+
+    public void testNanInfinityWriteNanAsNull() {
+        Map<String, Object> config = new HashMap<>();
+        config.put(JsonGenerator.WRITE_NAN_AS_NULLS, true);
+        JsonWriterFactory writerFactory = Json.createWriterFactory(config);
+        assertEquals("{\"val1\":null,\"val2\":1.0,\"val3\":0.0,\"val4\":null,\"val5\":null,\"val6\":null,\"val7\":1.0,\"val8\":0.0,\"val9\":null,\"val10\":null}", nameValueNanInfinity(writerFactory));
+        assertEquals("0.0", jsonNumberNanInfinity(writerFactory, 0.0));
+        assertEquals("1.0", jsonNumberNanInfinity(writerFactory, 1.0));
+        assertEquals("null", jsonNumberNanInfinity(writerFactory, Double.NaN));
+        assertEquals("null", jsonNumberNanInfinity(writerFactory, Double.POSITIVE_INFINITY));
+        assertEquals("null", jsonNumberNanInfinity(writerFactory, Double.NEGATIVE_INFINITY));
+    }
+
+    public void testNanInfinityWriteNanAsString() {
+        Map<String, Object> config = new HashMap<>();
+        config.put(JsonGenerator.WRITE_NAN_AS_STRINGS, true);
+        JsonWriterFactory writerFactory = Json.createWriterFactory(config);
+        assertEquals("{\"val1\":\"NaN\",\"val2\":1.0,\"val3\":0.0,\"val4\":\"+Infinity\",\"val5\":\"-Infinity\",\"val6\":\"NaN\",\"val7\":1.0,\"val8\":0.0,\"val9\":\"+Infinity\",\"val10\":\"-Infinity\"}", nameValueNanInfinity(writerFactory));
+        assertEquals("0.0", jsonNumberNanInfinity(writerFactory, 0.0));
+        assertEquals("1.0", jsonNumberNanInfinity(writerFactory, 1.0));
+        assertEquals("\"NaN\"", jsonNumberNanInfinity(writerFactory, Double.NaN));
+        assertEquals("\"+Infinity\"", jsonNumberNanInfinity(writerFactory, Double.POSITIVE_INFINITY));
+        assertEquals("\"-Infinity\"", jsonNumberNanInfinity(writerFactory, Double.NEGATIVE_INFINITY));
+    }
+
+    public void testNanInfinityBothFalse() {
+        Map<String, Object> config = new HashMap<>();
+        config.put(JsonGenerator.WRITE_NAN_AS_STRINGS, false);
+        config.put(JsonGenerator.WRITE_NAN_AS_NULLS, false);
+        JsonWriterFactory writerFactory = Json.createWriterFactory(config);
+        try {
+            nameValueNanInfinity(writerFactory);
+            fail("Expected a failure");
+        } catch (NumberFormatException e) {}
+        try {
+            jsonNumberNanInfinity(writerFactory, Double.NaN);
+            fail("Expected a failure");
+        } catch (NumberFormatException e) {}
+        assertEquals("0.0", jsonNumberNanInfinity(writerFactory, 0.0));
+        assertEquals("1.0", jsonNumberNanInfinity(writerFactory, 1.0));
+    }
+
+    public void testNanInfinityBothTrue() {
+        Map<String, Object> config = new HashMap<>();
+        config.put(JsonGenerator.WRITE_NAN_AS_STRINGS, true);
+        config.put(JsonGenerator.WRITE_NAN_AS_NULLS, true);
+        JsonWriterFactory writerFactory = Json.createWriterFactory(config);
+        assertEquals("{\"val1\":null,\"val2\":1.0,\"val3\":0.0,\"val4\":null,\"val5\":null,\"val6\":null,\"val7\":1.0,\"val8\":0.0,\"val9\":null,\"val10\":null}", nameValueNanInfinity(writerFactory));
+        assertEquals("0.0", jsonNumberNanInfinity(writerFactory, 0.0));
+        assertEquals("1.0", jsonNumberNanInfinity(writerFactory, 1.0));
+        assertEquals("null", jsonNumberNanInfinity(writerFactory, Double.NaN));
+        assertEquals("null", jsonNumberNanInfinity(writerFactory, Double.POSITIVE_INFINITY));
+        assertEquals("null", jsonNumberNanInfinity(writerFactory, Double.NEGATIVE_INFINITY));
+    }
     private static final class MyByteStream extends ByteArrayOutputStream {
         boolean closed;
 
