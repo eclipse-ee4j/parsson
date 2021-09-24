@@ -22,24 +22,25 @@ import jakarta.json.stream.JsonGenerator;
 import java.io.OutputStream;
 import java.io.Writer;
 import java.nio.charset.Charset;
+import java.util.Map;
 
 /**
  * @author Jitendra Kotamraju
  */
-public class JsonPrettyGeneratorImpl extends JsonGeneratorImpl {
+class JsonPrettyGeneratorImpl extends JsonGeneratorImpl {
     private int indentLevel;
     private static final String INDENT = "    ";
 
-    public JsonPrettyGeneratorImpl(Writer writer, BufferPool bufferPool) {
-        super(writer, bufferPool);
+    JsonPrettyGeneratorImpl(Writer writer, BufferPool bufferPool, Map<String, ?> config) {
+        super(writer, bufferPool, config);
     }
 
-    public JsonPrettyGeneratorImpl(OutputStream out, BufferPool bufferPool) {
-        super(out, bufferPool);
+    JsonPrettyGeneratorImpl(OutputStream out, BufferPool bufferPool, Map<String, ?> config) {
+        super(out, bufferPool, config);
     }
 
-    public JsonPrettyGeneratorImpl(OutputStream out, Charset encoding, BufferPool bufferPool) {
-        super(out, encoding, bufferPool);
+    JsonPrettyGeneratorImpl(OutputStream out, Charset encoding, BufferPool bufferPool, Map<String, ?> config) {
+        super(out, encoding, bufferPool, config);
     }
 
     @Override

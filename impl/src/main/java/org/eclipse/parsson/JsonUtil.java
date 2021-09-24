@@ -17,6 +17,8 @@
 package org.eclipse.parsson;
 
 import java.io.StringReader;
+import java.util.Map;
+
 import jakarta.json.JsonReader;
 import jakarta.json.JsonValue;
 import jakarta.json.stream.JsonParsingException;
@@ -80,6 +82,55 @@ public final class JsonUtil {
         JsonValue value = reader.readValue();
         reader.close();
         return value;
+    }
+
+    static boolean getConfigValue(String key, boolean defaultValue, Map<String, ?> config) {
+        Object value = config.get(key);
+        if (value instanceof Boolean) {
+            return (boolean) value;
+        }
+        return defaultValue;
+    }
+
+    static enum NaNInfinite {
+        NAN("\"NaN\""), POSITIVE_INFINITY("\"+Infinity\""), NEGATIVE_INFINITY("\"-Infinity\"");
+        
+        private final String strVal;
+
+        private NaNInfinite(String strVal) {
+            this.strVal = strVal;
+        }
+
+        String processValue(boolean writeNanAsNulls, boolean writeNanAsStrings, double value) {
+            if (writeNanAsNulls) {
+                return null;
+            } else if (writeNanAsStrings) {
+                return strVal;
+            } else {
+                throw new NumberFormatException(JsonMessages.GENERATOR_DOUBLE_INFINITE_NAN());
+            }
+        }
+        
+        static NaNInfinite get(double value) {
+            if (Double.isNaN(value)) {
+                return NAN;
+            } else if (Double.NEGATIVE_INFINITY == value) {
+                return NEGATIVE_INFINITY;
+            } else if (Double.POSITIVE_INFINITY == value) {
+                return POSITIVE_INFINITY;
+            } else {
+                return null;
+            }
+        }
+
+        static NaNInfinite get(String value) {
+            for (NaNInfinite item : NaNInfinite.values()) {
+                if (item.strVal.equals(value)) {
+                    return item;
+                }
+            }
+            return null;
+        }
     }
 }
 

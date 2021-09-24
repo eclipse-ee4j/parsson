@@ -16,9 +16,6 @@
 
 package org.eclipse.parsson;
 
-import org.eclipse.parsson.api.BufferPool;
-
-import jakarta.json.*;
 import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -26,6 +23,14 @@ import java.io.Writer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
+
+import org.eclipse.parsson.api.BufferPool;
+
+import jakarta.json.JsonArray;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonStructure;
+import jakarta.json.JsonValue;
+import jakarta.json.JsonWriter;
 
 /**
  * JsonWriter impl using generator.
@@ -38,33 +43,33 @@ class JsonWriterImpl implements JsonWriter {
     private boolean writeDone;
     private final NoFlushOutputStream os;
 
-    JsonWriterImpl(Writer writer, BufferPool bufferPool) {
-        this(writer, false, bufferPool);
+    JsonWriterImpl(Writer writer, BufferPool bufferPool, Map<String, ?> config) {
+        this(writer, false, bufferPool, config);
     }
 
-    JsonWriterImpl(Writer writer, boolean prettyPrinting, BufferPool bufferPool) {
+    JsonWriterImpl(Writer writer, boolean prettyPrinting, BufferPool bufferPool, Map<String, ?> config) {
         generator = prettyPrinting
-                ? new JsonPrettyGeneratorImpl(writer, bufferPool)
-                : new JsonGeneratorImpl(writer, bufferPool);
+                ? new JsonPrettyGeneratorImpl(writer, bufferPool, config)
+                : new JsonGeneratorImpl(writer, bufferPool, config);
         os = null;
     }
 
-    JsonWriterImpl(OutputStream out, BufferPool bufferPool) {
-        this(out, StandardCharsets.UTF_8, false, bufferPool);
+    JsonWriterImpl(OutputStream out, BufferPool bufferPool, Map<String, ?> config) {
+        this(out, StandardCharsets.UTF_8, false, bufferPool, config);
     }
 
-    JsonWriterImpl(OutputStream out, boolean prettyPrinting, BufferPool bufferPool) {
-        this(out, StandardCharsets.UTF_8, prettyPrinting, bufferPool);
+    JsonWriterImpl(OutputStream out, boolean prettyPrinting, BufferPool bufferPool, Map<String, ?> config) {
+        this(out, StandardCharsets.UTF_8, prettyPrinting, bufferPool, config);
     }
 
     JsonWriterImpl(OutputStream out, Charset charset,
-                   boolean prettyPrinting, BufferPool bufferPool) {
+                   boolean prettyPrinting, BufferPool bufferPool, Map<String, ?> config) {
         // Decorating the given stream, so that buffered contents can be
         // written without actually flushing the stream.
         this.os = new NoFlushOutputStream(out);
         generator = prettyPrinting
-                ? new JsonPrettyGeneratorImpl(os, charset, bufferPool)
-                : new JsonGeneratorImpl(os, charset, bufferPool);
+                ? new JsonPrettyGeneratorImpl(os, charset, bufferPool, config)
+                : new JsonGeneratorImpl(os, charset, bufferPool, config);
     }
 
     @Override

@@ -44,22 +44,22 @@ class JsonGeneratorFactoryImpl implements JsonGeneratorFactory {
     @Override
     public JsonGenerator createGenerator(Writer writer) {
         return prettyPrinting
-                ? new JsonPrettyGeneratorImpl(writer, bufferPool)
-                : new JsonGeneratorImpl(writer, bufferPool);
+                ? new JsonPrettyGeneratorImpl(writer, bufferPool, config)
+                : new JsonGeneratorImpl(writer, bufferPool, config);
     }
 
     @Override
     public JsonGenerator createGenerator(OutputStream out) {
         return prettyPrinting
-                ? new JsonPrettyGeneratorImpl(out, bufferPool)
-                : new JsonGeneratorImpl(out, bufferPool);
+                ? new JsonPrettyGeneratorImpl(out, bufferPool, config)
+                : new JsonGeneratorImpl(out, bufferPool, config);
     }
 
     @Override
     public JsonGenerator createGenerator(OutputStream out, Charset charset) {
         return prettyPrinting
-                ? new JsonPrettyGeneratorImpl(out, charset, bufferPool)
-                : new JsonGeneratorImpl(out, charset, bufferPool);
+                ? new JsonPrettyGeneratorImpl(out, charset, bufferPool, config)
+                : new JsonGeneratorImpl(out, charset, bufferPool, config);
     }
 
     @Override

@@ -46,12 +46,12 @@ public class JsonProviderImpl extends JsonProvider {
 
     @Override
     public JsonGenerator createGenerator(Writer writer) {
-        return new JsonGeneratorImpl(writer, bufferPool);
+        return new JsonGeneratorImpl(writer, bufferPool, Collections.emptyMap());
     }
 
     @Override
     public JsonGenerator createGenerator(OutputStream out) {
-        return new JsonGeneratorImpl(out, bufferPool);
+        return new JsonGeneratorImpl(out, bufferPool, Collections.emptyMap());
     }
 
     @Override
@@ -87,7 +87,10 @@ public class JsonProviderImpl extends JsonProvider {
             pool = bufferPool;
         } else {
             providerConfig = new HashMap<>();
+            addKnowProperty(providerConfig, config, JsonGenerator.WRITE_NAN_AS_NULLS);
+            addKnowProperty(providerConfig, config, JsonGenerator.WRITE_NAN_AS_STRINGS);
             if (prettyPrinting=JsonProviderImpl.isPrettyPrintingEnabled(config)) {
+                // ?? It is set to true even if the property was false
                 providerConfig.put(JsonGenerator.PRETTY_PRINTING, true);
             }
             pool = (BufferPool)config.get(BufferPool.class.getName());
@@ -114,12 +117,12 @@ public class JsonProviderImpl extends JsonProvider {
 
     @Override
     public JsonWriter createWriter(Writer writer) {
-        return new JsonWriterImpl(writer, bufferPool);
+        return new JsonWriterImpl(writer, bufferPool, Collections.emptyMap());
     }
 
     @Override
     public JsonWriter createWriter(OutputStream out) {
-        return new JsonWriterImpl(out, bufferPool);
+        return new JsonWriterImpl(out, bufferPool, Collections.emptyMap());
     }
 
     @Override
@@ -133,7 +136,10 @@ public class JsonProviderImpl extends JsonProvider {
             pool = bufferPool;
         } else {
             providerConfig = new HashMap<>();
+            addKnowProperty(providerConfig, config, JsonGenerator.WRITE_NAN_AS_NULLS);
+            addKnowProperty(providerConfig, config, JsonGenerator.WRITE_NAN_AS_STRINGS);
             if (prettyPrinting=JsonProviderImpl.isPrettyPrintingEnabled(config)) {
+                // ?? It is set to true even if the property was false
                 providerConfig.put(JsonGenerator.PRETTY_PRINTING, true);
             }
             pool = (BufferPool)config.get(BufferPool.class.getName());
@@ -278,6 +284,12 @@ public class JsonProviderImpl extends JsonProvider {
     		rejectDuplicateKeys = JsonProviderImpl.isRejectDuplicateKeysEnabled(config);
     	}
         return new JsonBuilderFactoryImpl(pool, rejectDuplicateKeys);
+    }
+
+    private void addKnowProperty(Map<String, Object> providerConfig, Map<String, ?> config, String property) {
+        if (config.containsKey(property)) {
+            providerConfig.put(property, config.get(property));
+        }
     }
 
     static boolean isPrettyPrintingEnabled(Map<String, ?> config) {

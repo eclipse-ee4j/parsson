@@ -23,6 +23,8 @@ import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.parsson.api.BufferPool;
+
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonNumber;
@@ -30,9 +32,6 @@ import jakarta.json.JsonObject;
 import jakarta.json.JsonReader;
 import jakarta.json.JsonReaderFactory;
 import jakarta.json.JsonValue;
-
-import org.eclipse.parsson.api.BufferPool;
-
 import junit.framework.TestCase;
 
 /**
@@ -204,4 +203,19 @@ public class JsonReaderTest extends TestCase {
         }
     }
 
+    public void testNanInfinity() {
+        // Configuration is irrelevant for reading, it just understands how to parse it.
+        Map<String, Object> config = new HashMap<>();
+        JsonReaderFactory factory = Json.createReaderFactory(config);
+        String json = "{\"val1\":null,\"val2\":1.0,\"val3\":0.0,\"val4\":\"NaN\",\"val5\":\"+Infinity\",\"val6\":\"-Infinity\"}";
+        JsonReader reader = factory.createReader(new StringReader(json));
+        JsonObject object = reader.readObject();
+        reader.close();
+        assertEquals(null, object.getJsonNumber("val1").numberValue());
+        assertEquals(1.0, object.getJsonNumber("val2").doubleValue());
+        assertEquals(0.0, object.getJsonNumber("val3").doubleValue());
+        assertTrue(Double.isNaN(object.getJsonNumber("val4").doubleValue()));
+        assertEquals(Double.POSITIVE_INFINITY, object.getJsonNumber("val5").doubleValue());
+        assertEquals(Double.NEGATIVE_INFINITY, object.getJsonNumber("val6").doubleValue());
+    }
 }
