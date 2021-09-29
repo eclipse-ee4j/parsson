@@ -20,6 +20,7 @@ public interface JsonConfig {
     /**
      * Configuration property to reject duplicate keys. The value of the property could be
      * be anything.
+     * jakarta.json.JsonConfig#NONE is preferred over {@link #REJECT_DUPLICATE_KEYS} for reading.
      */
     String REJECT_DUPLICATE_KEYS = "org.eclipse.parsson.rejectDuplicateKeys";
 }

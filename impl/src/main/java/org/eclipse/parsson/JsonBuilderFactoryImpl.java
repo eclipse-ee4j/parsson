@@ -43,17 +43,17 @@ class JsonBuilderFactoryImpl implements JsonBuilderFactory {
 
     @Override
     public JsonObjectBuilder createObjectBuilder() {
-        return new JsonObjectBuilderImpl(bufferPool, rejectDuplicateKeys);
+        return new JsonObjectBuilderImpl(bufferPool, rejectDuplicateKeys, Collections.emptyMap());
     }
  
     @Override
     public JsonObjectBuilder createObjectBuilder(JsonObject object) {
-        return new JsonObjectBuilderImpl(object, bufferPool, rejectDuplicateKeys);
+        return new JsonObjectBuilderImpl(object, bufferPool, rejectDuplicateKeys, Collections.emptyMap());
     }
 
     @Override
     public JsonObjectBuilder createObjectBuilder(Map<String, Object> object) {
-        return new JsonObjectBuilderImpl(object, bufferPool, rejectDuplicateKeys);
+        return new JsonObjectBuilderImpl(object, bufferPool, rejectDuplicateKeys, Collections.emptyMap());
     }
 
     @Override

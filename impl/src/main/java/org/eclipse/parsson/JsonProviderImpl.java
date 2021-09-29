@@ -158,6 +158,7 @@ public class JsonProviderImpl extends JsonProvider {
             pool = bufferPool;
         } else {
             providerConfig = new HashMap<>();
+            addKnowProperty(providerConfig, config, jakarta.json.JsonConfig.KEY_STRATEGY);
             if (rejectDuplicateKeys = JsonProviderImpl.isRejectDuplicateKeysEnabled(config)) {
                 providerConfig.put(JsonConfig.REJECT_DUPLICATE_KEYS, true);
             }
@@ -278,6 +279,12 @@ public class JsonProviderImpl extends JsonProvider {
     		rejectDuplicateKeys = JsonProviderImpl.isRejectDuplicateKeysEnabled(config);
     	}
         return new JsonBuilderFactoryImpl(pool, rejectDuplicateKeys);
+    }
+
+    private void addKnowProperty(Map<String, Object> providerConfig, Map<String, ?> config, String property) {
+        if (config.containsKey(property)) {
+            providerConfig.put(property, config.get(property));
+        }
     }
 
     static boolean isPrettyPrintingEnabled(Map<String, ?> config) {
