@@ -533,6 +533,43 @@ public class JsonGeneratorTest extends TestCase {
         assertEquals(expected, got);
     }
 
+    public void testIgnoreIfNullDefault() {
+        Map<String, Object> config = new HashMap<>();
+        JsonGeneratorFactory generatorFactory = Json.createGeneratorFactory(config);
+        StringWriter writer = new StringWriter();
+        JsonGenerator generator = generatorFactory.createGenerator(writer);
+        try {
+            generator.writeStartObject().write("val1", (String) null).writeEnd().close();
+            fail("Expects a NullPointerException");
+        } catch (NullPointerException e) {
+            // expected
+        }
+    }
+
+    public void testIgnoreIfNullDisabled() {
+        Map<String, Object> config = new HashMap<>();
+        config.put(JsonBuilderFactory.IGNORE_ADDING_IF_NULL, false);
+        JsonGeneratorFactory generatorFactory = Json.createGeneratorFactory(config);
+        StringWriter writer = new StringWriter();
+        JsonGenerator generator = generatorFactory.createGenerator(writer);
+        try {
+            generator.writeStartObject().write("val1", (String) null).writeEnd().close();
+            fail("Expects a NullPointerException");
+        } catch (NullPointerException e) {
+            // expected
+        }
+    }
+
+    public void testIgnoreIfNullEnabled() {
+        Map<String, Object> config = new HashMap<>();
+        config.put(JsonBuilderFactory.IGNORE_ADDING_IF_NULL, true);
+        JsonGeneratorFactory generatorFactory = Json.createGeneratorFactory(config);
+        StringWriter writer = new StringWriter();
+        JsonGenerator generator = generatorFactory.createGenerator(writer);
+        generator.writeStartObject().write("val1", (String) null).writeEnd().close();
+        assertEquals("{}", writer.toString());
+    }
+
     public void testFlush() throws Exception {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         JsonGenerator gen = Json.createGenerator(baos);

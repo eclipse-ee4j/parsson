@@ -84,6 +84,7 @@ class JsonGeneratorImpl implements JsonGenerator {
     private final Writer writer;
     private Context currentContext = new Context(Scope.IN_NONE);
     private final Deque<Context> stack = new ArrayDeque<>();
+    private final boolean ignoreNull;
 
     // Using own buffering mechanism as JDK's BufferedWriter uses synchronized
     // methods. Also, flushBuffer() is useful when you don't want to actually
@@ -91,18 +92,19 @@ class JsonGeneratorImpl implements JsonGenerator {
     private final char buf[];     // capacity >= INT_MIN_VALUE_CHARS.length
     private int len = 0;
 
-    JsonGeneratorImpl(Writer writer, BufferPool bufferPool) {
+    JsonGeneratorImpl(Writer writer, BufferPool bufferPool, Map<String, ?> config) {
         this.writer = writer;
+        this.ignoreNull = JsonUtil.getConfigValue(JsonBuilderFactory.IGNORE_ADDING_IF_NULL, false, config);
         this.bufferPool = bufferPool;
         this.buf = bufferPool.take();
     }
 
-    JsonGeneratorImpl(OutputStream out, BufferPool bufferPool) {
-        this(out, StandardCharsets.UTF_8, bufferPool);
+    JsonGeneratorImpl(OutputStream out, BufferPool bufferPool, Map<String, ?> config) {
+        this(out, StandardCharsets.UTF_8, bufferPool, config);
     }
 
-    JsonGeneratorImpl(OutputStream out, Charset encoding, BufferPool bufferPool) {
-        this(new OutputStreamWriter(out, encoding), bufferPool);
+    JsonGeneratorImpl(OutputStream out, Charset encoding, BufferPool bufferPool, Map<String, ?> config) {
+        this(new OutputStreamWriter(out, encoding), bufferPool, config);
     }
 
     @Override
@@ -152,7 +154,9 @@ class JsonGeneratorImpl implements JsonGenerator {
 
     @Override
     public JsonGenerator write(String name, String fieldValue) {
-        write(name, (CharSequence) fieldValue);
+        if (validateNull(fieldValue)) {
+            write(name, (CharSequence) fieldValue);
+        }
         return this;
     }
 
@@ -194,23 +198,27 @@ class JsonGeneratorImpl implements JsonGenerator {
 
     @Override
     public JsonGenerator write(String name, BigInteger value) {
-        if (currentContext.scope != Scope.IN_OBJECT) {
-            throw new JsonGenerationException(
-                    JsonMessages.GENERATOR_ILLEGAL_METHOD(currentContext.scope));
+        if (validateNull(value)) {
+            if (currentContext.scope != Scope.IN_OBJECT) {
+                throw new JsonGenerationException(
+                        JsonMessages.GENERATOR_ILLEGAL_METHOD(currentContext.scope));
+            }
+            writeName(name);
+            writeString(String.valueOf(value));
         }
-        writeName(name);
-        writeString(String.valueOf(value));
         return this;
     }
 
     @Override
     public JsonGenerator write(String name, BigDecimal value) {
-        if (currentContext.scope != Scope.IN_OBJECT) {
-            throw new JsonGenerationException(
-                    JsonMessages.GENERATOR_ILLEGAL_METHOD(currentContext.scope));
+        if (validateNull(value)) {
+            if (currentContext.scope != Scope.IN_OBJECT) {
+                throw new JsonGenerationException(
+                        JsonMessages.GENERATOR_ILLEGAL_METHOD(currentContext.scope));
+            }
+            writeName(name);
+            writeString(String.valueOf(value));
         }
-        writeName(name);
-        writeString(String.valueOf(value));
         return this;
     }
 
@@ -238,45 +246,46 @@ class JsonGeneratorImpl implements JsonGenerator {
 
     @Override
     public JsonGenerator write(JsonValue value) {
-        checkContextForValue();
-
-        switch (value.getValueType()) {
-            case ARRAY:
-                JsonArray array = (JsonArray)value;
-                writeStartArray();
-                for(JsonValue child: array) {
-                    write(child);
-                }
-                writeEnd();
-                break;
-            case OBJECT:
-                JsonObject object = (JsonObject)value;
-                writeStartObject();
-                for(Map.Entry<String, JsonValue> member: object.entrySet()) {
-                    write(member.getKey(), member.getValue());
-                }
-                writeEnd();
-                break;
-            case STRING:
-                JsonString str = (JsonString)value;
-                write(str.getString());
-                break;
-            case NUMBER:
-                JsonNumber number = (JsonNumber)value;
-                writeValue(number.toString());
-                popFieldContext();
-                break;
-            case TRUE:
-                write(true);
-                break;
-            case FALSE:
-                write(false);
-                break;
-            case NULL:
-                writeNull();
-                break;
+        if (validateNull(value)) {
+            checkContextForValue();
+    
+            switch (value.getValueType()) {
+                case ARRAY:
+                    JsonArray array = (JsonArray)value;
+                    writeStartArray();
+                    for(JsonValue child: array) {
+                        write(child);
+                    }
+                    writeEnd();
+                    break;
+                case OBJECT:
+                    JsonObject object = (JsonObject)value;
+                    writeStartObject();
+                    for(Map.Entry<String, JsonValue> member: object.entrySet()) {
+                        write(member.getKey(), member.getValue());
+                    }
+                    writeEnd();
+                    break;
+                case STRING:
+                    JsonString str = (JsonString)value;
+                    write(str.getString());
+                    break;
+                case NUMBER:
+                    JsonNumber number = (JsonNumber)value;
+                    writeValue(number.toString());
+                    popFieldContext();
+                    break;
+                case TRUE:
+                    write(true);
+                    break;
+                case FALSE:
+                    write(false);
+                    break;
+                case NULL:
+                    writeNull();
+                    break;
+            }
         }
-
         return this;
     }
 
@@ -310,54 +319,58 @@ class JsonGeneratorImpl implements JsonGenerator {
 
     @Override
     public JsonGenerator write(String name, JsonValue value) {
-        if (currentContext.scope != Scope.IN_OBJECT) {
-            throw new JsonGenerationException(
-                    JsonMessages.GENERATOR_ILLEGAL_METHOD(currentContext.scope));
-        }
-        switch (value.getValueType()) {
-            case ARRAY:
-                JsonArray array = (JsonArray)value;
-                writeStartArray(name);
-                for(JsonValue child: array) {
-                    write(child);
-                }
-                writeEnd();
-                break;
-            case OBJECT:
-                JsonObject object = (JsonObject)value;
-                writeStartObject(name);
-                for(Map.Entry<String, JsonValue> member: object.entrySet()) {
-                    write(member.getKey(), member.getValue());
-                }
-                writeEnd();
-                break;
-            case STRING:
-                JsonString str = (JsonString)value;
-                write(name, str.getChars());
-                break;
-            case NUMBER:
-                JsonNumber number = (JsonNumber)value;
-                writeValue(name, number.toString());
-                break;
-            case TRUE:
-                write(name, true);
-                break;
-            case FALSE:
-                write(name, false);
-                break;
-            case NULL:
-                writeNull(name);
-                break;
+        if (validateNull(value)) {
+            if (currentContext.scope != Scope.IN_OBJECT) {
+                throw new JsonGenerationException(
+                        JsonMessages.GENERATOR_ILLEGAL_METHOD(currentContext.scope));
+            }
+            switch (value.getValueType()) {
+                case ARRAY:
+                    JsonArray array = (JsonArray)value;
+                    writeStartArray(name);
+                    for(JsonValue child: array) {
+                        write(child);
+                    }
+                    writeEnd();
+                    break;
+                case OBJECT:
+                    JsonObject object = (JsonObject)value;
+                    writeStartObject(name);
+                    for(Map.Entry<String, JsonValue> member: object.entrySet()) {
+                        write(member.getKey(), member.getValue());
+                    }
+                    writeEnd();
+                    break;
+                case STRING:
+                    JsonString str = (JsonString)value;
+                    write(name, str.getChars());
+                    break;
+                case NUMBER:
+                    JsonNumber number = (JsonNumber)value;
+                    writeValue(name, number.toString());
+                    break;
+                case TRUE:
+                    write(name, true);
+                    break;
+                case FALSE:
+                    write(name, false);
+                    break;
+                case NULL:
+                    writeNull(name);
+                    break;
+            }
         }
         return this;
     }
 
     @Override
     public JsonGenerator write(String value) {
-        checkContextForValue();
-        writeComma();
-        writeEscapedString(value);
-        popFieldContext();
+        if (validateNull(value)) {
+            checkContextForValue();
+            writeComma();
+            writeEscapedString(value);
+            popFieldContext();
+        }
         return this;
     }
 
@@ -392,9 +405,11 @@ class JsonGeneratorImpl implements JsonGenerator {
 
     @Override
     public JsonGenerator write(BigInteger value) {
-        checkContextForValue();
-        writeValue(value.toString());
-        popFieldContext();
+        if (validateNull(value)) {
+            checkContextForValue();
+            writeValue(value.toString());
+            popFieldContext();
+        }
         return this;
     }
 
@@ -408,10 +423,11 @@ class JsonGeneratorImpl implements JsonGenerator {
 
     @Override
     public JsonGenerator write(BigDecimal value) {
-        checkContextForValue();
-        writeValue(value.toString());
-        popFieldContext();
-
+        if (validateNull(value)) {
+            checkContextForValue();
+            writeValue(value.toString());
+            popFieldContext();
+        }
         return this;
     }
 
@@ -440,15 +456,19 @@ class JsonGeneratorImpl implements JsonGenerator {
     }
 
     private void writeValue(String value) {
-        writeComma();
-        writeString(value);
+        if (validateNull(value)) {
+            writeComma();
+            writeString(value);
+        }
     }
 
     private void writeValue(String name, String value) {
-        writeComma();
-        writeEscapedString(name);
-        writeColon();
-        writeString(value);
+        if (validateNull(value)) {
+            writeComma();
+            writeEscapedString(name);
+            writeColon();
+            writeString(value);
+        }
     }
 
     @Override
@@ -476,12 +496,14 @@ class JsonGeneratorImpl implements JsonGenerator {
     }
 
     void write(String name, CharSequence fieldValue) {
-      if (currentContext.scope != Scope.IN_OBJECT) {
-          throw new JsonGenerationException(
-                  JsonMessages.GENERATOR_ILLEGAL_METHOD(currentContext.scope));
-      }
-      writeName(name);
-      writeEscapedString(fieldValue);
+        if (validateNull(fieldValue)) {
+          if (currentContext.scope != Scope.IN_OBJECT) {
+              throw new JsonGenerationException(
+                      JsonMessages.GENERATOR_ILLEGAL_METHOD(currentContext.scope));
+          }
+          writeName(name);
+          writeEscapedString(fieldValue);
+        }
     }
 
     protected void writeComma() {
@@ -730,4 +752,7 @@ class JsonGeneratorImpl implements JsonGenerator {
         }
     }
 
+    private boolean validateNull(Object value) {
+        return (!ignoreNull || (ignoreNull && value != null));
+    }
 }

@@ -17,6 +17,8 @@
 package org.eclipse.parsson;
 
 import java.io.StringReader;
+import java.util.Map;
+
 import jakarta.json.JsonReader;
 import jakarta.json.JsonValue;
 import jakarta.json.stream.JsonParsingException;
@@ -81,5 +83,14 @@ public final class JsonUtil {
         reader.close();
         return value;
     }
+
+    static boolean getConfigValue(String key, boolean defaultValue, Map<String, ?> config) {
+        Object value = config.get(key);
+        if (value instanceof Boolean) {
+            return (boolean) value;
+        }
+        return defaultValue;
+    }
+
 }
 

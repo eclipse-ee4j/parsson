@@ -23,6 +23,7 @@ import java.io.Reader;
 import java.math.BigDecimal;
 import java.nio.charset.Charset;
 import java.util.AbstractMap;
+import java.util.Collections;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Spliterator;
@@ -55,6 +56,7 @@ public class JsonParserImpl implements JsonParser {
 
     private final BufferPool bufferPool;
     private final boolean rejectDuplicateKeys;
+    private final Map<String, ?> config;
     private Context currentContext = new NoneContext();
     private Event currentEvent;
 
@@ -63,33 +65,36 @@ public class JsonParserImpl implements JsonParser {
     private boolean closed = false;
 
     public JsonParserImpl(Reader reader, BufferPool bufferPool) {
-        this(reader, bufferPool, false);
+        this(reader, bufferPool, false, Collections.emptyMap());
     }
 
-    public JsonParserImpl(Reader reader, BufferPool bufferPool, boolean rejectDuplicateKeys) {
+    public JsonParserImpl(Reader reader, BufferPool bufferPool, boolean rejectDuplicateKeys, Map<String, ?> config) {
         this.bufferPool = bufferPool;
         this.rejectDuplicateKeys = rejectDuplicateKeys;
+        this.config = config;
         tokenizer = new JsonTokenizer(reader, bufferPool);
     }
 
     public JsonParserImpl(InputStream in, BufferPool bufferPool) {
-        this(in, bufferPool, false);
+        this(in, bufferPool, false, Collections.emptyMap());
     }
 
-    public JsonParserImpl(InputStream in, BufferPool bufferPool, boolean rejectDuplicateKeys) {
+    public JsonParserImpl(InputStream in, BufferPool bufferPool, boolean rejectDuplicateKeys, Map<String, ?> config) {
         this.bufferPool = bufferPool;
         this.rejectDuplicateKeys = rejectDuplicateKeys;
+        this.config = config;
         UnicodeDetectingInputStream uin = new UnicodeDetectingInputStream(in);
         tokenizer = new JsonTokenizer(new InputStreamReader(uin, uin.getCharset()), bufferPool);
     }
 
     public JsonParserImpl(InputStream in, Charset encoding, BufferPool bufferPool) {
-        this(in, encoding, bufferPool, false);
+        this(in, encoding, bufferPool, false, Collections.emptyMap());
     }
 
-    public JsonParserImpl(InputStream in, Charset encoding, BufferPool bufferPool, boolean rejectDuplicateKeys) {
+    public JsonParserImpl(InputStream in, Charset encoding, BufferPool bufferPool, boolean rejectDuplicateKeys, Map<String, ?> config) {
         this.bufferPool = bufferPool;
         this.rejectDuplicateKeys = rejectDuplicateKeys;
+        this.config = config;
         tokenizer = new JsonTokenizer(new InputStreamReader(in, encoding), bufferPool);
     }
 
@@ -162,7 +167,7 @@ public class JsonParserImpl implements JsonParser {
             throw new IllegalStateException(
                 JsonMessages.PARSER_GETOBJECT_ERR(currentEvent));
         }
-        return getObject(new JsonObjectBuilderImpl(bufferPool, rejectDuplicateKeys));
+        return getObject(new JsonObjectBuilderImpl(bufferPool, rejectDuplicateKeys, config));
     }
 
     @Override
@@ -171,7 +176,7 @@ public class JsonParserImpl implements JsonParser {
             case START_ARRAY:
                 return getArray(new JsonArrayBuilderImpl(bufferPool));
             case START_OBJECT:
-                return getObject(new JsonObjectBuilderImpl(bufferPool, rejectDuplicateKeys));
+                return getObject(new JsonObjectBuilderImpl(bufferPool, rejectDuplicateKeys, config));
             case KEY_NAME:
             case VALUE_STRING:
                 return new JsonStringImpl(getCharSequence());

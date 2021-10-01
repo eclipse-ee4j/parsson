@@ -42,17 +42,17 @@ class JsonWriterFactoryImpl implements JsonWriterFactory {
 
     @Override
     public JsonWriter createWriter(Writer writer) {
-        return new JsonWriterImpl(writer, prettyPrinting, bufferPool);
+        return new JsonWriterImpl(writer, prettyPrinting, bufferPool, config);
     }
 
     @Override
     public JsonWriter createWriter(OutputStream out) {
-        return new JsonWriterImpl(out, prettyPrinting, bufferPool);
+        return new JsonWriterImpl(out, prettyPrinting, bufferPool, config);
     }
 
     @Override
     public JsonWriter createWriter(OutputStream out, Charset charset) {
-        return new JsonWriterImpl(out, charset, prettyPrinting, bufferPool);
+        return new JsonWriterImpl(out, charset, prettyPrinting, bufferPool, config);
     }
 
     @Override

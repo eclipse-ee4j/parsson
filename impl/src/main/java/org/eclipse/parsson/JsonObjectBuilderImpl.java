@@ -34,15 +34,18 @@ class JsonObjectBuilderImpl implements JsonObjectBuilder {
 
     protected Map<String, JsonValue> valueMap;
     private final BufferPool bufferPool;
+    private final boolean ignoreNull;
     private final boolean rejectDuplicateKeys;
 
     JsonObjectBuilderImpl(BufferPool bufferPool) {
         this.bufferPool = bufferPool;
+        this.ignoreNull = false;
         rejectDuplicateKeys = false;
     }
     
-    JsonObjectBuilderImpl(BufferPool bufferPool, boolean rejectDuplicateKeys) {
+    JsonObjectBuilderImpl(BufferPool bufferPool, boolean rejectDuplicateKeys, Map<String, ?> config) {
         this.bufferPool = bufferPool;
+        this.ignoreNull = JsonUtil.getConfigValue(JsonBuilderFactory.IGNORE_ADDING_IF_NULL, false, config);
         this.rejectDuplicateKeys = rejectDuplicateKeys;
     }
 
@@ -50,13 +53,15 @@ class JsonObjectBuilderImpl implements JsonObjectBuilder {
         this.bufferPool = bufferPool;
         valueMap = new LinkedHashMap<>();
         valueMap.putAll(object);
+        this.ignoreNull = false;
         rejectDuplicateKeys = false;
     }
     
-    JsonObjectBuilderImpl(JsonObject object, BufferPool bufferPool, boolean rejectDuplicateKeys) {
+    JsonObjectBuilderImpl(JsonObject object, BufferPool bufferPool, boolean rejectDuplicateKeys, Map<String, ?> config) {
         this.bufferPool = bufferPool;
         valueMap = new LinkedHashMap<>();
         valueMap.putAll(object);
+        this.ignoreNull = JsonUtil.getConfigValue(JsonBuilderFactory.IGNORE_ADDING_IF_NULL, false, config);
         this.rejectDuplicateKeys = rejectDuplicateKeys;
     }
 
@@ -64,45 +69,51 @@ class JsonObjectBuilderImpl implements JsonObjectBuilder {
         this.bufferPool = bufferPool;
         valueMap = new LinkedHashMap<>();
         populate(map);
+        this.ignoreNull = false;
         rejectDuplicateKeys = false;
     }
     
-    JsonObjectBuilderImpl(Map<String, Object> map, BufferPool bufferPool, boolean rejectDuplicateKeys) {
+    JsonObjectBuilderImpl(Map<String, Object> map, BufferPool bufferPool, boolean rejectDuplicateKeys, Map<String, ?> config) {
     	this.bufferPool = bufferPool;
     	valueMap = new LinkedHashMap<>();
     	populate(map);
+    	this.ignoreNull = JsonUtil.getConfigValue(JsonBuilderFactory.IGNORE_ADDING_IF_NULL, false, config);
     	this.rejectDuplicateKeys = rejectDuplicateKeys;
     }
 
     @Override
     public JsonObjectBuilder add(String name, JsonValue value) {
         validateName(name);
-        validateValue(value);
-        putValueMap(name, value);
+        if (validateValue(value)) {
+            putValueMap(name, value);
+        }
         return this;
     }
 
     @Override
     public JsonObjectBuilder add(String name, String value) {
         validateName(name);
-        validateValue(value);
-        putValueMap(name, new JsonStringImpl(value));
+        if (validateValue(value)) {
+            putValueMap(name, new JsonStringImpl(value));
+        }
         return this;
     }
 
     @Override
     public JsonObjectBuilder add(String name, BigInteger value) {
         validateName(name);
-        validateValue(value);
-        putValueMap(name, JsonNumberImpl.getJsonNumber(value));
+        if (validateValue(value)) {
+            putValueMap(name, JsonNumberImpl.getJsonNumber(value));
+        }
         return this;
     }
 
     @Override
     public JsonObjectBuilder add(String name, BigDecimal value) {
         validateName(name);
-        validateValue(value);
-        putValueMap(name, JsonNumberImpl.getJsonNumber(value));
+        if (validateValue(value)) {
+            putValueMap(name, JsonNumberImpl.getJsonNumber(value));
+        }
         return this;
     }
 
@@ -218,10 +229,15 @@ class JsonObjectBuilderImpl implements JsonObjectBuilder {
         }
     }
 
-    private void validateValue(Object value) {
+    private boolean validateValue(Object value) {
         if (value == null) {
-            throw new NullPointerException(JsonMessages.OBJBUILDER_VALUE_NULL());
+            if (ignoreNull) {
+                return false;
+            } else {
+                throw new NullPointerException(JsonMessages.OBJBUILDER_VALUE_NULL());
+            }
         }
+        return true;
     }
 
     private static final class JsonObjectImpl extends AbstractMap<String, JsonValue> implements JsonObject {
@@ -336,7 +352,7 @@ class JsonObjectBuilderImpl implements JsonObjectBuilder {
         @Override
         public String toString() {
             StringWriter sw = new StringWriter();
-            try (JsonWriter jw = new JsonWriterImpl(sw, bufferPool)) {
+            try (JsonWriter jw = new JsonWriterImpl(sw, bufferPool, Collections.emptyMap())) {
                 jw.write(this);
             }
             return sw.toString();
