@@ -16,14 +16,15 @@
 
 package org.eclipse.parsson;
 
-import org.eclipse.parsson.api.BufferPool;
-
-import jakarta.json.JsonReader;
-import jakarta.json.JsonReaderFactory;
 import java.io.InputStream;
 import java.io.Reader;
 import java.nio.charset.Charset;
 import java.util.Map;
+
+import org.eclipse.parsson.api.BufferPool;
+
+import jakarta.json.JsonReader;
+import jakarta.json.JsonReaderFactory;
 
 /**
  * @author Jitendra Kotamraju
@@ -41,17 +42,17 @@ class JsonReaderFactoryImpl implements JsonReaderFactory {
 
     @Override
     public JsonReader createReader(Reader reader) {
-        return new JsonReaderImpl(reader, bufferPool, rejectDuplicateKeys);
+        return new JsonReaderImpl(reader, bufferPool, rejectDuplicateKeys, config);
     }
 
     @Override
     public JsonReader createReader(InputStream in) {
-        return new JsonReaderImpl(in, bufferPool, rejectDuplicateKeys);
+        return new JsonReaderImpl(in, bufferPool, rejectDuplicateKeys, config);
     }
 
     @Override
     public JsonReader createReader(InputStream in, Charset charset) {
-        return new JsonReaderImpl(in, charset, bufferPool, rejectDuplicateKeys);
+        return new JsonReaderImpl(in, charset, bufferPool, rejectDuplicateKeys, config);
     }
 
     @Override

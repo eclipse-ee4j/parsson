@@ -21,6 +21,9 @@ import org.eclipse.parsson.api.BufferPool;
 import java.io.InputStream;
 import java.io.Reader;
 import java.nio.charset.Charset;
+import java.util.Collections;
+import java.util.Map;
+
 import jakarta.json.JsonArray;
 import jakarta.json.JsonException;
 import jakarta.json.JsonObject;
@@ -41,29 +44,29 @@ class JsonReaderImpl implements JsonReader {
     private final BufferPool bufferPool;
     
     JsonReaderImpl(Reader reader, BufferPool bufferPool) {
-        this(reader, bufferPool, false);
+        this(reader, bufferPool, false, Collections.emptyMap());
     }
 
-    JsonReaderImpl(Reader reader, BufferPool bufferPool, boolean rejectDuplicateKeys) {
-        parser = new JsonParserImpl(reader, bufferPool, rejectDuplicateKeys);
+    JsonReaderImpl(Reader reader, BufferPool bufferPool, boolean rejectDuplicateKeys, Map<String, ?> config) {
+        parser = new JsonParserImpl(reader, bufferPool, rejectDuplicateKeys, config);
         this.bufferPool = bufferPool;
     }
 
     JsonReaderImpl(InputStream in, BufferPool bufferPool) {
-        this(in, bufferPool, false);
+        this(in, bufferPool, false, Collections.emptyMap());
     }
 
-    JsonReaderImpl(InputStream in, BufferPool bufferPool, boolean rejectDuplicateKeys) {
-        parser = new JsonParserImpl(in, bufferPool, rejectDuplicateKeys);
+    JsonReaderImpl(InputStream in, BufferPool bufferPool, boolean rejectDuplicateKeys, Map<String, ?> config) {
+        parser = new JsonParserImpl(in, bufferPool, rejectDuplicateKeys, config);
         this.bufferPool = bufferPool;
     }
 
     JsonReaderImpl(InputStream in, Charset charset, BufferPool bufferPool) {
-        this(in, charset, bufferPool, false);
+        this(in, charset, bufferPool, false, Collections.emptyMap());
     }
 
-    JsonReaderImpl(InputStream in, Charset charset, BufferPool bufferPool, boolean rejectDuplicateKeys) {
-        parser = new JsonParserImpl(in, charset, bufferPool, rejectDuplicateKeys);
+    JsonReaderImpl(InputStream in, Charset charset, BufferPool bufferPool, boolean rejectDuplicateKeys, Map<String, ?> config) {
+        parser = new JsonParserImpl(in, charset, bufferPool, rejectDuplicateKeys, config);
         this.bufferPool = bufferPool;
     }
 

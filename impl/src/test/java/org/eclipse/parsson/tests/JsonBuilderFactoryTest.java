@@ -16,14 +16,20 @@
 
 package org.eclipse.parsson.tests;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+
+import java.util.HashMap;
 import java.util.Map;
+
+import org.junit.Assert;
+import org.junit.Test;
+
 import jakarta.json.Json;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonBuilderFactory;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
-import org.junit.Assert;
-import org.junit.Test;
 
 /**
  *
@@ -73,5 +79,38 @@ public class JsonBuilderFactoryTest {
         JsonBuilderFactory builderFactory = Json.createBuilderFactory(null);
         JsonObjectBuilder builder = builderFactory.createObjectBuilder(JsonBuilderTest.buildPerson());
         Assert.assertEquals(JsonBuilderTest.buildPerson(), builder.build());
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void testIgnoreIfNullDefault() {
+        Map<String, Object> config = new HashMap<>();
+        JsonBuilderFactory builderFactory = Json.createBuilderFactory(config);
+        builderFactory.createObjectBuilder()
+        .add("name", (String) null)
+        .add("age", 36)
+        .build();
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void testIgnoreIfNullDisabled() {
+        Map<String, Object> config = new HashMap<>();
+        config.put(JsonBuilderFactory.IGNORE_ADDING_IF_NULL, false);
+        JsonBuilderFactory builderFactory = Json.createBuilderFactory(config);
+        builderFactory.createObjectBuilder()
+        .add("name", (String) null)
+        .add("age", 36)
+        .build();
+    }
+
+    @Test
+    public void testIgnoreIfNullEnabled() {
+        Map<String, Object> config = new HashMap<>();
+        config.put(JsonBuilderFactory.IGNORE_ADDING_IF_NULL, true);
+        JsonBuilderFactory builderFactory = Json.createBuilderFactory(config);
+        JsonObject jsonObject = builderFactory.createObjectBuilder()
+        .add("name", (String) null)
+        .add("age", 36)
+        .build();
+        assertEquals(jsonObject.toString(), "{\"age\":36}");
     }
 }

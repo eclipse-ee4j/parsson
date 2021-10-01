@@ -46,12 +46,12 @@ public class JsonProviderImpl extends JsonProvider {
 
     @Override
     public JsonGenerator createGenerator(Writer writer) {
-        return new JsonGeneratorImpl(writer, bufferPool);
+        return new JsonGeneratorImpl(writer, bufferPool, Collections.emptyMap());
     }
 
     @Override
     public JsonGenerator createGenerator(OutputStream out) {
-        return new JsonGeneratorImpl(out, bufferPool);
+        return new JsonGeneratorImpl(out, bufferPool, Collections.emptyMap());
     }
 
     @Override
@@ -96,6 +96,7 @@ public class JsonProviderImpl extends JsonProvider {
             } else {
                 pool = bufferPool;
             }
+            addKnowProperty(providerConfig, config, JsonBuilderFactory.IGNORE_ADDING_IF_NULL);
             providerConfig = Collections.unmodifiableMap(providerConfig);
         }
 
@@ -114,12 +115,12 @@ public class JsonProviderImpl extends JsonProvider {
 
     @Override
     public JsonWriter createWriter(Writer writer) {
-        return new JsonWriterImpl(writer, bufferPool);
+        return new JsonWriterImpl(writer, bufferPool, Collections.emptyMap());
     }
 
     @Override
     public JsonWriter createWriter(OutputStream out) {
-        return new JsonWriterImpl(out, bufferPool);
+        return new JsonWriterImpl(out, bufferPool, Collections.emptyMap());
     }
 
     @Override
@@ -269,15 +270,25 @@ public class JsonProviderImpl extends JsonProvider {
 
     @Override
     public JsonBuilderFactory createBuilderFactory(Map<String, ?> config) {
+        Map<String, Object> providerConfig = Collections.emptyMap();
     	BufferPool pool = bufferPool;
     	boolean rejectDuplicateKeys = false;
     	if (config != null) {
+    	    providerConfig = new HashMap<>();
     		if (config.containsKey(BufferPool.class.getName())) {
     			pool = (BufferPool) config.get(BufferPool.class.getName());
     		}
     		rejectDuplicateKeys = JsonProviderImpl.isRejectDuplicateKeysEnabled(config);
+    		addKnowProperty(providerConfig, config, JsonBuilderFactory.IGNORE_ADDING_IF_NULL);
+    		providerConfig = Collections.unmodifiableMap(providerConfig);
     	}
-        return new JsonBuilderFactoryImpl(pool, rejectDuplicateKeys);
+        return new JsonBuilderFactoryImpl(pool, rejectDuplicateKeys, providerConfig);
+    }
+
+    private void addKnowProperty(Map<String, Object> providerConfig, Map<String, ?> config, String property) {
+        if (config.containsKey(property)) {
+            providerConfig.put(property, config.get(property));
+        }
     }
 
     static boolean isPrettyPrintingEnabled(Map<String, ?> config) {

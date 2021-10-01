@@ -17,15 +17,15 @@
 package org.eclipse.parsson;
 
 import java.util.Collection;
+import java.util.Map;
+
 import org.eclipse.parsson.api.BufferPool;
 
-import jakarta.json.JsonObject;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonBuilderFactory;
+import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
-import java.util.Collections;
-import java.util.Map;
 
 /**
  * @author Jitendra Kotamraju
@@ -35,25 +35,25 @@ class JsonBuilderFactoryImpl implements JsonBuilderFactory {
     private final BufferPool bufferPool;
     private final boolean rejectDuplicateKeys;
 
-    JsonBuilderFactoryImpl(BufferPool bufferPool, boolean rejectDuplicateKeys) {
-        this.config = Collections.emptyMap();
+    JsonBuilderFactoryImpl(BufferPool bufferPool, boolean rejectDuplicateKeys, Map<String, ?> config) {
+        this.config = config;
         this.bufferPool = bufferPool;
         this.rejectDuplicateKeys = rejectDuplicateKeys;
     }
 
     @Override
     public JsonObjectBuilder createObjectBuilder() {
-        return new JsonObjectBuilderImpl(bufferPool, rejectDuplicateKeys);
+        return new JsonObjectBuilderImpl(bufferPool, rejectDuplicateKeys, config);
     }
  
     @Override
     public JsonObjectBuilder createObjectBuilder(JsonObject object) {
-        return new JsonObjectBuilderImpl(object, bufferPool, rejectDuplicateKeys);
+        return new JsonObjectBuilderImpl(object, bufferPool, rejectDuplicateKeys, config);
     }
 
     @Override
     public JsonObjectBuilder createObjectBuilder(Map<String, Object> object) {
-        return new JsonObjectBuilderImpl(object, bufferPool, rejectDuplicateKeys);
+        return new JsonObjectBuilderImpl(object, bufferPool, rejectDuplicateKeys, config);
     }
 
     @Override
