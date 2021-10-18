@@ -48,51 +48,37 @@ class JsonObjectBuilderImpl implements JsonObjectBuilder {
 
     protected Map<String, JsonValue> valueMap;
     private final BufferPool bufferPool;
-    private final boolean rejectDuplicateKeys;
     private final DuplicateStrategy duplicateStrategy;
 
     JsonObjectBuilderImpl(BufferPool bufferPool) {
-        this.bufferPool = bufferPool;
-        rejectDuplicateKeys = false;
-        this.duplicateStrategy = null;
+        this(bufferPool, false, Collections.emptyMap());
     }
     
     JsonObjectBuilderImpl(BufferPool bufferPool, boolean rejectDuplicateKeys, Map<String, ?> config) {
         this.bufferPool = bufferPool;
-        this.rejectDuplicateKeys = rejectDuplicateKeys;
-        this.duplicateStrategy = DuplicateStrategy.strategyFromProperty(config.get(jakarta.json.JsonConfig.KEY_STRATEGY));
+        this.duplicateStrategy = DuplicateStrategy.strategyFromProperty(config.get(jakarta.json.JsonConfig.KEY_STRATEGY), rejectDuplicateKeys);
     }
 
     JsonObjectBuilderImpl(JsonObject object, BufferPool bufferPool) {
-        this.bufferPool = bufferPool;
-        valueMap = new LinkedHashMap<>();
-        valueMap.putAll(object);
-        rejectDuplicateKeys = false;
-        this.duplicateStrategy = null;
+        this(object, bufferPool, false, Collections.emptyMap());
     }
     
     JsonObjectBuilderImpl(JsonObject object, BufferPool bufferPool, boolean rejectDuplicateKeys, Map<String, ?> config) {
         this.bufferPool = bufferPool;
         valueMap = new LinkedHashMap<>();
         valueMap.putAll(object);
-        this.rejectDuplicateKeys = rejectDuplicateKeys;
-        this.duplicateStrategy = DuplicateStrategy.strategyFromProperty(config.get(jakarta.json.JsonConfig.KEY_STRATEGY));
+        this.duplicateStrategy = DuplicateStrategy.strategyFromProperty(config.get(jakarta.json.JsonConfig.KEY_STRATEGY), rejectDuplicateKeys);
     }
 
     JsonObjectBuilderImpl(Map<String, ?> map, BufferPool bufferPool) {
-        this.bufferPool = bufferPool;
-        valueMap = new LinkedHashMap<>();
-        populate(map);
-        rejectDuplicateKeys = false;
-        this.duplicateStrategy = null;
+        this(map, bufferPool, false, Collections.emptyMap());
     }
     
     JsonObjectBuilderImpl(Map<String, ?> map, BufferPool bufferPool, boolean rejectDuplicateKeys, Map<String, ?> config) {
     	this.bufferPool = bufferPool;
     	valueMap = new LinkedHashMap<>();
     	populate(map);
-    	this.rejectDuplicateKeys = rejectDuplicateKeys;
-    	this.duplicateStrategy = DuplicateStrategy.strategyFromProperty(config.get(jakarta.json.JsonConfig.KEY_STRATEGY));
+    	this.duplicateStrategy = DuplicateStrategy.strategyFromProperty(config.get(jakarta.json.JsonConfig.KEY_STRATEGY), rejectDuplicateKeys);
     }
 
     @Override
@@ -227,15 +213,8 @@ class JsonObjectBuilderImpl implements JsonObjectBuilder {
         if (valueMap == null) {
             this.valueMap = new LinkedHashMap<>();
         }
-        if (duplicateStrategy == null) {
-            JsonValue previousValue = valueMap.put(name, value);
-            if (rejectDuplicateKeys && previousValue != null) {
-                throw new IllegalStateException(JsonMessages.DUPLICATE_KEY(name));
-            }
-        } else {
-            JsonValue previousValue = valueMap.get(name);
-            valueMap.put(name, duplicateStrategy.getValue(name, value, previousValue));
-        }
+        JsonValue previousValue = valueMap.get(name);
+        valueMap.put(name, duplicateStrategy.getValue(name, value, previousValue));
     }
 
     private void validateName(String name) {
@@ -424,7 +403,7 @@ class JsonObjectBuilderImpl implements JsonObjectBuilder {
             this.property = property;
         }
         
-        private static DuplicateStrategy strategyFromProperty(Object value) {
+        private static DuplicateStrategy strategyFromProperty(Object value, boolean rejectDuplicateKeys) {
             if (value != null) {
                 for (DuplicateStrategy strategy : DuplicateStrategy.values()) {
                     if (strategy.property.equals(value)) {
@@ -432,7 +411,11 @@ class JsonObjectBuilderImpl implements JsonObjectBuilder {
                     }
                 }
             }
-            return null;
+            if (rejectDuplicateKeys) {
+                return DuplicateStrategy.NONE;
+            } else {
+                return DuplicateStrategy.LAST;
+            }
         }
         
         protected abstract JsonValue getValue(String name, JsonValue value, JsonValue previous);
