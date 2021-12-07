@@ -41,6 +41,7 @@ import jakarta.json.JsonValue;
 import jakarta.json.stream.JsonLocation;
 import jakarta.json.stream.JsonParser;
 import jakarta.json.stream.JsonParsingException;
+import jakarta.json.stream.JsonParser.Event;
 
 import org.eclipse.parsson.JsonTokenizer.JsonToken;
 import org.eclipse.parsson.api.BufferPool;
@@ -379,6 +380,11 @@ public class JsonParserImpl implements JsonParser {
             throw new NoSuchElementException();
         }
         return currentEvent = currentContext.getNextEvent();
+    }
+
+    @Override
+    public Event currentEvent() {
+        return currentEvent;
     }
 
     @Override

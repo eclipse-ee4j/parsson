@@ -39,6 +39,9 @@ abstract class JsonNumberImpl implements JsonNumber {
     }
 
     static JsonNumber getJsonNumber(BigInteger value) {
+        if (value == null) {
+            throw new NullPointerException("Value is null");
+        }
         return new JsonBigDecimalNumber(new BigDecimal(value));
     }
 
@@ -49,7 +52,54 @@ abstract class JsonNumberImpl implements JsonNumber {
     }
 
     static JsonNumber getJsonNumber(BigDecimal value) {
+        if (value == null) {
+            throw new NullPointerException("Value is null");
+        }
         return new JsonBigDecimalNumber(value);
+    }
+
+    static JsonNumber getJsonNumber(Number value) {
+        if (value == null) {
+            throw new NullPointerException("Value is null");
+        }
+        if (value instanceof Integer) {
+            return getJsonNumber(value.intValue());
+        } else if (value instanceof Long) {
+            return getJsonNumber(value.longValue());
+        } else if (value instanceof Double) {
+            return getJsonNumber(value.doubleValue());
+        } else if (value instanceof BigInteger) {
+            return getJsonNumber((BigInteger) value);
+        } else if (value instanceof BigDecimal) {
+            return getJsonNumber((BigDecimal) value);
+        } else {
+            return new JsonNumberNumber(value);
+        }
+    }
+
+    private static final class JsonNumberNumber extends JsonNumberImpl {
+
+        private final Number num;
+        private BigDecimal bigDecimal;
+
+        JsonNumberNumber(Number num) {
+            this.num = num;
+        }
+
+        @Override
+        public Number numberValue() {
+            return num;
+        }
+
+        @Override
+        public BigDecimal bigDecimalValue() {
+            BigDecimal bd = bigDecimal;
+            if (bd == null) {
+                bigDecimal = bd = new BigDecimal(num.toString());
+            }
+            return bd;
+        }
+
     }
 
     // Optimized JsonNumber impl for int numbers.
