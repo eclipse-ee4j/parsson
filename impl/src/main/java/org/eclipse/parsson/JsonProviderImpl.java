@@ -289,6 +289,7 @@ public class JsonProviderImpl extends JsonProvider {
     private void addKnowProperty(Map<String, Object> providerConfig, Map<String, ?> config, String property) {
         if (config.containsKey(property)) {
             providerConfig.put(property, config.get(property));
+        }
     }
 
     static boolean isPrettyPrintingEnabled(Map<String, ?> config) {

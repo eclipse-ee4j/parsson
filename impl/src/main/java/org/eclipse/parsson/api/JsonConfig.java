@@ -21,7 +21,7 @@ public interface JsonConfig {
      * Configuration property to reject duplicate keys. The value of the property could be
      * be anything.
      
-     * @deprecated in favor of {@link jakarta.json.JsonConfig#IGNORE_NULL}
+     * @deprecated in favor of {@link jakarta.json.JsonConfig#KEY_STRATEGY}
      */
     @Deprecated
     String REJECT_DUPLICATE_KEYS = "org.eclipse.parsson.rejectDuplicateKeys";
