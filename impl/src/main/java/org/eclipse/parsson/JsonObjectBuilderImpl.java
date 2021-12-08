@@ -16,13 +16,27 @@
 
 package org.eclipse.parsson;
 
-import org.eclipse.parsson.api.BufferPool;
-
-import jakarta.json.*;
 import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.*;
+import java.util.AbstractMap;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+
+import org.eclipse.parsson.api.BufferPool;
+
+import jakarta.json.JsonArray;
+import jakarta.json.JsonArrayBuilder;
+import jakarta.json.JsonConfig.KeyStrategy;
+import jakarta.json.JsonNumber;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonObjectBuilder;
+import jakarta.json.JsonString;
+import jakarta.json.JsonValue;
+import jakarta.json.JsonWriter;
 
 /**
  * JsonObjectBuilder implementation
@@ -34,44 +48,37 @@ class JsonObjectBuilderImpl implements JsonObjectBuilder {
 
     protected Map<String, JsonValue> valueMap;
     private final BufferPool bufferPool;
-    private final boolean rejectDuplicateKeys;
+    private final DuplicateStrategy duplicateStrategy;
 
     JsonObjectBuilderImpl(BufferPool bufferPool) {
-        this.bufferPool = bufferPool;
-        rejectDuplicateKeys = false;
+        this(bufferPool, false, Collections.emptyMap());
     }
     
-    JsonObjectBuilderImpl(BufferPool bufferPool, boolean rejectDuplicateKeys) {
+    JsonObjectBuilderImpl(BufferPool bufferPool, boolean rejectDuplicateKeys, Map<String, ?> config) {
         this.bufferPool = bufferPool;
-        this.rejectDuplicateKeys = rejectDuplicateKeys;
+        this.duplicateStrategy = DuplicateStrategy.strategyFromProperty(config.get(jakarta.json.JsonConfig.KEY_STRATEGY), rejectDuplicateKeys);
     }
 
     JsonObjectBuilderImpl(JsonObject object, BufferPool bufferPool) {
-        this.bufferPool = bufferPool;
-        valueMap = new LinkedHashMap<>();
-        valueMap.putAll(object);
-        rejectDuplicateKeys = false;
+        this(object, bufferPool, false, Collections.emptyMap());
     }
     
-    JsonObjectBuilderImpl(JsonObject object, BufferPool bufferPool, boolean rejectDuplicateKeys) {
+    JsonObjectBuilderImpl(JsonObject object, BufferPool bufferPool, boolean rejectDuplicateKeys, Map<String, ?> config) {
         this.bufferPool = bufferPool;
         valueMap = new LinkedHashMap<>();
         valueMap.putAll(object);
-        this.rejectDuplicateKeys = rejectDuplicateKeys;
+        this.duplicateStrategy = DuplicateStrategy.strategyFromProperty(config.get(jakarta.json.JsonConfig.KEY_STRATEGY), rejectDuplicateKeys);
     }
 
     JsonObjectBuilderImpl(Map<String, ?> map, BufferPool bufferPool) {
-        this.bufferPool = bufferPool;
-        valueMap = new LinkedHashMap<>();
-        populate(map);
-        rejectDuplicateKeys = false;
+        this(map, bufferPool, false, Collections.emptyMap());
     }
     
-    JsonObjectBuilderImpl(Map<String, ?> map, BufferPool bufferPool, boolean rejectDuplicateKeys) {
+    JsonObjectBuilderImpl(Map<String, ?> map, BufferPool bufferPool, boolean rejectDuplicateKeys, Map<String, ?> config) {
     	this.bufferPool = bufferPool;
     	valueMap = new LinkedHashMap<>();
     	populate(map);
-    	this.rejectDuplicateKeys = rejectDuplicateKeys;
+    	this.duplicateStrategy = DuplicateStrategy.strategyFromProperty(config.get(jakarta.json.JsonConfig.KEY_STRATEGY), rejectDuplicateKeys);
     }
 
     @Override
@@ -206,10 +213,8 @@ class JsonObjectBuilderImpl implements JsonObjectBuilder {
         if (valueMap == null) {
             this.valueMap = new LinkedHashMap<>();
         }
-        JsonValue previousValue = valueMap.put(name, value);
-        if (rejectDuplicateKeys && previousValue != null) {
-            throw new IllegalStateException(JsonMessages.DUPLICATE_KEY(name));
-        }
+        JsonValue previousValue = valueMap.get(name);
+        valueMap.put(name, duplicateStrategy.getValue(name, value, previousValue));
     }
 
     private void validateName(String name) {
@@ -363,4 +368,56 @@ class JsonObjectBuilderImpl implements JsonObjectBuilder {
         }
     }
 
+    private static enum DuplicateStrategy {
+
+        NONE(KeyStrategy.NONE) {
+            @Override
+            protected JsonValue getValue(String name, JsonValue value, JsonValue previous) {
+                if (previous != null) {
+                    throw new IllegalStateException(JsonMessages.DUPLICATE_KEY(name));
+                } else {
+                    return value;
+                }
+            }
+        },
+        FIRST(KeyStrategy.FIRST) {
+            @Override
+            protected JsonValue getValue(String name, JsonValue value, JsonValue previous) {
+                if (previous != null) {
+                    return previous;
+                } else {
+                    return value;
+                }
+            }
+        },
+        LAST(KeyStrategy.LAST) {
+            @Override
+            protected JsonValue getValue(String name, JsonValue value, JsonValue previous) {
+                return value;
+            }
+        };
+
+        private final KeyStrategy property;
+
+        private DuplicateStrategy(KeyStrategy property) {
+            this.property = property;
+        }
+        
+        private static DuplicateStrategy strategyFromProperty(Object value, boolean rejectDuplicateKeys) {
+            if (value != null) {
+                for (DuplicateStrategy strategy : DuplicateStrategy.values()) {
+                    if (strategy.property.equals(value)) {
+                        return strategy;
+                    }
+                }
+            }
+            if (rejectDuplicateKeys) {
+                return DuplicateStrategy.NONE;
+            } else {
+                return DuplicateStrategy.LAST;
+            }
+        }
+        
+        protected abstract JsonValue getValue(String name, JsonValue value, JsonValue previous);
+    }
 }

@@ -23,16 +23,17 @@ import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.parsson.api.BufferPool;
+import org.eclipse.parsson.api.JsonConfig;
+
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
+import jakarta.json.JsonException;
 import jakarta.json.JsonNumber;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonReader;
 import jakarta.json.JsonReaderFactory;
 import jakarta.json.JsonValue;
-
-import org.eclipse.parsson.api.BufferPool;
-
 import junit.framework.TestCase;
 
 /**
@@ -170,6 +171,75 @@ public class JsonReaderTest extends TestCase {
                 throw new Throwable("Failed for name length="+i, t);
             }
         }
+    }
+
+    public void testDuplicateKeysDefault() {
+        Map<String, Object> config = new HashMap<>();
+        JsonReaderFactory factory = Json.createReaderFactory(config);
+        String json = "{\"val1\":\"A\",\"val1\":\"B\"}";
+        JsonReader reader = factory.createReader(new StringReader(json));
+        JsonObject object = reader.readObject();
+        reader.close();
+        assertEquals("B", object.getString("val1"));
+    }
+    
+    public void testDuplicateKeysStrict() {
+        Map<String, Object> config = new HashMap<>();
+        config.put(jakarta.json.JsonConfig.KEY_STRATEGY, jakarta.json.JsonConfig.KeyStrategy.NONE);
+        JsonReaderFactory factory = Json.createReaderFactory(config);
+        String json = "{\"val1\":\"A\",\"val1\":\"B\"}";
+        JsonReader reader = factory.createReader(new StringReader(json));
+        try {
+            reader.readObject();
+            fail("It is expected a JsonException");
+        } catch (JsonException e) {}
+    }
+
+    public void testDuplicateKeysStrictWithParssonConfig() {
+        Map<String, Object> config = new HashMap<>();
+        config.put(JsonConfig.REJECT_DUPLICATE_KEYS, "anything is valid here");
+        JsonReaderFactory factory = Json.createReaderFactory(config);
+        String json = "{\"val1\":\"A\",\"val1\":\"B\"}";
+        JsonReader reader = factory.createReader(new StringReader(json));
+        try {
+            reader.readObject();
+            fail("It is expected a JsonException");
+        } catch (JsonException e) {}
+    }
+
+    public void testDuplicateKeysFirst() {
+        Map<String, Object> config = new HashMap<>();
+        config.put(jakarta.json.JsonConfig.KEY_STRATEGY, jakarta.json.JsonConfig.KeyStrategy.FIRST);
+        JsonReaderFactory factory = Json.createReaderFactory(config);
+        String json = "{\"val1\":\"A\",\"val1\":\"B\"}";
+        JsonReader reader = factory.createReader(new StringReader(json));
+        JsonObject object = reader.readObject();
+        reader.close();
+        assertEquals("A", object.getString("val1"));
+    }
+
+    public void testDuplicateKeysFirstWithParssonConfig() {
+        // JsonReader configuration rules over JsonConfig
+        Map<String, Object> config = new HashMap<>();
+        config.put(jakarta.json.JsonConfig.KEY_STRATEGY, jakarta.json.JsonConfig.KeyStrategy.FIRST);
+        config.put(JsonConfig.REJECT_DUPLICATE_KEYS, "anything is valid here");
+        JsonReaderFactory factory = Json.createReaderFactory(config);
+        String json = "{\"val1\":\"A\",\"val1\":\"B\"}";
+        JsonReader reader = factory.createReader(new StringReader(json));
+        JsonObject object = reader.readObject();
+        reader.close();
+        assertEquals("A", object.getString("val1"));
+    }
+
+    public void testDuplicateKeysLast() {
+        Map<String, Object> config = new HashMap<>();
+        config.put(jakarta.json.JsonConfig.KEY_STRATEGY, jakarta.json.JsonConfig.KeyStrategy.LAST);
+        JsonReaderFactory factory = Json.createReaderFactory(config);
+        String json = "{\"val1\":\"A\",\"val1\":\"B\"}";
+        JsonReader reader = factory.createReader(new StringReader(json));
+        JsonObject object = reader.readObject();
+        reader.close();
+        assertEquals("B", object.getString("val1"));
     }
 
     // JSONP-23 cached empty string is not reset

@@ -41,17 +41,17 @@ class JsonReaderFactoryImpl implements JsonReaderFactory {
 
     @Override
     public JsonReader createReader(Reader reader) {
-        return new JsonReaderImpl(reader, bufferPool, rejectDuplicateKeys);
+        return new JsonReaderImpl(reader, bufferPool, rejectDuplicateKeys, config);
     }
 
     @Override
     public JsonReader createReader(InputStream in) {
-        return new JsonReaderImpl(in, bufferPool, rejectDuplicateKeys);
+        return new JsonReaderImpl(in, bufferPool, rejectDuplicateKeys, config);
     }
 
     @Override
     public JsonReader createReader(InputStream in, Charset charset) {
-        return new JsonReaderImpl(in, charset, bufferPool, rejectDuplicateKeys);
+        return new JsonReaderImpl(in, charset, bufferPool, rejectDuplicateKeys, config);
     }
 
     @Override
