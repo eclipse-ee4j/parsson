@@ -150,6 +150,18 @@ class JsonGeneratorImpl implements JsonGenerator {
         return this;
     }
 
+    private void writeName(Key name) {
+        writeComma();
+        final char[] escaped = name.toCharArray();
+        final int required = escaped.length;
+        if (len + required >= buf.length) {
+            flushBuffer();
+        }
+        System.arraycopy(escaped, 0, buf, len, required);
+        len += required;
+        writeColon();
+    }
+
     @Override
     public JsonGenerator write(String name, String fieldValue) {
         write(name, (CharSequence) fieldValue);
@@ -453,6 +465,19 @@ class JsonGeneratorImpl implements JsonGenerator {
 
     @Override
     public JsonGenerator writeKey(String name) {
+        if (currentContext.scope != Scope.IN_OBJECT) {
+            throw new JsonGenerationException(
+                    JsonMessages.GENERATOR_ILLEGAL_METHOD(currentContext.scope));
+        }
+        writeName(name);
+        stack.push(currentContext);
+        currentContext = new Context(Scope.IN_FIELD);
+        currentContext.first = false;
+        return this;
+    }
+
+    @Override
+    public JsonGenerator writeKey(JsonGenerator.Key name) {
         if (currentContext.scope != Scope.IN_OBJECT) {
             throw new JsonGenerationException(
                     JsonMessages.GENERATOR_ILLEGAL_METHOD(currentContext.scope));
