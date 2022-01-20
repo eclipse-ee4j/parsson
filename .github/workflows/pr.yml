@@ -35,4 +35,5 @@ jobs:
         java-version: ${{ matrix.java_version }}
         cache: 'maven'
     - name: Verify
-      run: mvn -B -V -U -C -Poss-release,staging clean verify org.glassfish.copyright:glassfish-copyright-maven-plugin:check -Dgpg.skip=true
+      # GH action creates a merge commit which modifies files in the current year, to get over it, we have to exclude the check for the year of modification
+      run: mvn -B -V -U -C -Poss-release,staging clean verify org.glassfish.copyright:glassfish-copyright-maven-plugin:check -Dgpg.skip=true -Dcopyright.ignoreyear=true
