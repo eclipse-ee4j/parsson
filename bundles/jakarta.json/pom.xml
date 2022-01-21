@@ -121,7 +121,7 @@
                             <target>
                                 <replace file="${project.build.directory}/generated-sources/dependencies/jakarta/json/spi/JsonProvider.java">
                                     <replacefilter>
-                                        <replacetoken><![CDATA[org.glassfish.json.JsonProviderImpl]]></replacetoken>
+                                        <replacetoken><![CDATA[org.eclipse.jsonp.JsonProviderImpl]]></replacetoken>
                                         <replacevalue><![CDATA[org.eclipse.parsson.JsonProviderImpl]]></replacevalue>
                                     </replacefilter>
                                 </replace>
