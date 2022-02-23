@@ -29,7 +29,7 @@ following is a summary of the TCK results for releases of Eclipse Parsson.
   [Jakarta JSON Processing 2.1](https://jakarta.ee/specifications/jsonp/2.1/)
 - [x] TCK Version, digital SHA-256 fingerprint and download URL<br/>
   [Jakarta JSON Processing TCK 2.1.0](https://download.eclipse.org/jakartaee/jsonp/2.1/jakarta-jsonp-tck-2.1.0.zip), SHA-256: e3b90a49fc94700af45d046109dae8798f0510125a42493f227e3024e4a9ec08
-- [ ] Public URL of TCK Results Summary<br/>
+- [x] Public URL of TCK Results Summary<br/>
   [TCK results summary](https://eclipse-ee4j.github.io/parsson/tck/TCK-Results.html)
 - [x] Any Additional Specification Certification Requirements<br/>
   None
