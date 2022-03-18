@@ -24,10 +24,6 @@
     <groupId>org.eclipse.parsson</groupId>
     <artifactId>demos</artifactId>
 
-    <properties>
-        <legal.doc.source>${basedir}/..</legal.doc.source>
-    </properties>
-
     <modules>
         <module>rest</module>
         <module>twitter</module>
