@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -90,6 +90,7 @@ class JsonGeneratorImpl implements JsonGenerator {
     // flush the underlying output source
     private final char buf[];     // capacity >= INT_MIN_VALUE_CHARS.length
     private int len = 0;
+    private boolean closed = false;
 
     JsonGeneratorImpl(Writer writer, BufferPool bufferPool) {
         this.writer = writer;
@@ -515,16 +516,19 @@ class JsonGeneratorImpl implements JsonGenerator {
 
     @Override
     public void close() {
-        if (currentContext.scope != Scope.IN_NONE || currentContext.first) {
-            throw new JsonGenerationException(JsonMessages.GENERATOR_INCOMPLETE_JSON());
+        if (!closed) {
+            if (currentContext.scope != Scope.IN_NONE || currentContext.first) {
+                throw new JsonGenerationException(JsonMessages.GENERATOR_INCOMPLETE_JSON());
+            }
+            flushBuffer();
+            try {
+                writer.close();
+            } catch (IOException ioe) {
+                throw new JsonException(JsonMessages.GENERATOR_CLOSE_IO_ERR(), ioe);
+            }
+            bufferPool.recycle(buf);
+            closed = true;
         }
-        flushBuffer();
-        try {
-            writer.close();
-        } catch (IOException ioe) {
-            throw new JsonException(JsonMessages.GENERATOR_CLOSE_IO_ERR(), ioe);
-        }
-        bufferPool.recycle(buf);
     }
 
     // begin, end-1 indexes represent characters that need not
