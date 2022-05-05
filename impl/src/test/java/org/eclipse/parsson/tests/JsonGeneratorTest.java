@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -22,6 +22,7 @@ import org.eclipse.parsson.api.BufferPool;
 import jakarta.json.*;
 import jakarta.json.stream.*;
 import java.io.*;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -542,4 +543,34 @@ public class JsonGeneratorTest extends TestCase {
         assertEquals("{}", baos.toString("UTF-8"));
     }
 
+    public void testClose() {
+        StringWriter sw = new StringWriter();
+        JsonGeneratorFactory factory = Json.createGeneratorFactory(Collections.emptyMap());
+        try (JsonGenerator generator = factory.createGenerator(sw)) {
+            generator.writeStartObject();
+            generator.writeEnd();
+            // Unnecessary close()
+            generator.close();
+            assertEquals("{}", sw.toString());
+        } 
+        StringWriter sw1 = new StringWriter();
+        StringWriter sw2 = new StringWriter();
+        try (JsonGenerator generator1 = factory.createGenerator(sw1);
+                JsonGenerator generator2 = factory.createGenerator(sw2)) {
+            generator1.writeStartObject();
+            generator1.write("key", "value");
+            
+            generator2.writeStartArray();
+            generator2.write("item");
+            generator2.write("item2");
+            
+            generator1.write("key2", "value2");
+            
+            generator2.writeEnd();
+            
+            generator1.writeEnd();
+        }
+        assertEquals("{\"key\":\"value\",\"key2\":\"value2\"}", sw1.toString());
+        assertEquals("[\"item\",\"item2\"]", sw2.toString());
+    }
 }
