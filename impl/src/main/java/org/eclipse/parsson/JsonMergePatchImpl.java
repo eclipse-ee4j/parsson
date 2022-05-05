@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -113,5 +113,38 @@ public final class JsonMergePatchImpl implements JsonMergePatch {
         return builder.build();
     }
 
+    /**
+     * Compares this {@code JsonMergePatchImpl} with another object.
+     * @param obj the object to compare this {@code JsonMergePatchImpl} against
+     * @return true if the given object is a {@code JsonMergePatchImpl} with the same
+     * reference tokens as this one, false otherwise.
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null || obj.getClass() != JsonMergePatchImpl.class)
+            return false;
+        return patch.equals(((JsonMergePatchImpl)obj).patch);
+    }
+
+    /**
+     * Returns the hash code value for this {@code JsonMergePatchImpl}.
+     *
+     * @return the hash code value for this {@code JsonMergePatchImpl} object
+     */
+    @Override
+    public int hashCode() {
+        return patch.hashCode();
+    }
+
+    /**
+     * Returns the JSON Patch text
+     * @return the JSON Patch text
+     */
+    @Override
+    public String toString() {
+        return patch.toString();
+    }
 }
 
