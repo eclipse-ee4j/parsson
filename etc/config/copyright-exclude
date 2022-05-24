@@ -6,3 +6,7 @@ MANIFEST.MF
 /etc/config/copyright-exclude
 /etc/config/copyright.txt
 /bundles/dist/src/main/resources/README.txt
+/tck-impl/gradlew
+/tck-impl/gradlew.bat
+/tck-impl/gradle/wrapper/gradle-wrapper.jar
+/tck-impl/gradle/wrapper/gradle-wrapper.properties

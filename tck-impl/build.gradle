@@ -1,0 +1,170 @@
+/*
+ * Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v. 2.0, which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
+ *
+ * This Source Code may also be made available under the following Secondary
+ * Licenses when the conditions for such availability set forth in the
+ * Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+ * version 2 with the GNU Classpath Exception, which is available at
+ * https://www.gnu.org/software/classpath/license.html.
+ *
+ * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+ */
+
+plugins {
+    id 'java'
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        url "https://jakarta.oss.sonatype.org/content/repositories/staging/"
+    }
+}
+
+configurations {
+    tckTests.extendsFrom testImplementation
+    sigTests.extendsFrom tckTests
+    pluggabilityTests.extendsFrom testImplementation
+    testedImplementation
+}
+
+dependencies {
+    tckTests("jakarta.json:jakarta.json-tck-tests:2.1.0")
+    sigTests("org.netbeans.tools:sigtest-maven-plugin:1.6")
+    pluggabilityTests("jakarta.json:jakarta.json-tck-tests-pluggability:2.1.0")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.8.2")
+}
+
+if (hasProperty("parsson.home")) {
+    File home = new File(getProperty("parsson.home"))
+    File impl = new File(home, hasProperty("parsson.impl") ? getProperty("parsson.impl") : "mods")
+    if (!home.exists() || !home.isDirectory()) {
+        throw new InvalidUserDataException("invalid parsson.home, was: " + home.getAbsolutePath())
+    }
+    if (!impl.exists() || !impl.isDirectory()) {
+        throw new InvalidUserDataException("invalid parsson.impl, was: " + impl.getName() + "; can be: mods or standalone")
+    }
+
+    dependencies {
+        testedImplementation fileTree(impl) {
+            include '*.jar'
+        }
+    }
+} else {
+    dependencies {
+        testedImplementation("org.eclipse.parsson:parsson:1.1.0")
+    }
+}
+
+List<TestDescriptor> failures = new ArrayList<>()
+
+tasks.withType(Test) {
+    forkEvery 1
+    systemProperty 'java.awt.headless', 'true'
+    // listen to events in the test execution lifecycle
+    beforeTest { descriptor ->
+        logger.lifecycle("Running test: " + descriptor)
+    }
+    ignoreFailures true
+
+    afterTest { descriptor, result ->
+        if (result.resultType == TestResult.ResultType.FAILURE) {
+            failures.add(descriptor)
+        }
+    }
+}
+
+String apiPath = ""
+configurations.testedImplementation.getFiles().forEach {
+    apiPath += it.getAbsolutePath()
+    apiPath += ":"
+}
+String jimageDir = new File(buildDir, "jimage").getAbsolutePath()
+String sigTestClasspath = "${apiPath}${jimageDir}/java.base:${jimageDir}/java.rmi:${jimageDir}/java.sql:${jimageDir}/java.naming"
+
+testing {
+    suites {
+        test {
+            useJUnitJupiter()
+            targets {
+                all {
+                    testTask.configure {
+                        classpath = configurations.tckTests + configurations.testedImplementation
+                        testClassesDirs += configurations.tckTests.files.findAll {
+                                it.name.contains("tck-tests")
+                            }.collect {
+                                zipTree(it).matching {
+                                    exclude "**/JSONPSigTest*"
+                                }
+                            }.sum()
+                    }
+                }
+            }
+        }
+
+        signatureTest(JvmTestSuite) {
+            targets {
+                all {
+                    testTask.configure {
+                        shouldRunAfter test
+                        systemProperty 'jimage.dir', jimageDir
+                        systemProperty 'signature.sigTestClasspath', sigTestClasspath
+
+                        classpath = configurations.sigTests + configurations.testedImplementation
+                        testClassesDirs += configurations.sigTests.files.findAll {
+                            it.name.contains("tck-tests")
+                        }.collect {
+                            zipTree(it).matching {
+                                include "**/JSONPSigTest*"
+                            }
+                        }.sum()
+                    }
+                }
+            }
+        }
+
+        pluggabilityTest(JvmTestSuite) {
+            targets {
+                all {
+                    testTask.configure {
+                        shouldRunAfter test
+                        classpath = configurations.pluggabilityTests + configurations.testedImplementation
+                        testClassesDirs += configurations.pluggabilityTests.files.findAll { it.name.contains("tck-tests") }.collect { zipTree it }.sum()
+                    }
+                }
+            }
+        }
+    }
+}
+
+tasks.register("packageTestResults", Zip) {
+    archiveFileName = "tck-test-results.zip"
+    from getProperty("testReportDir")
+    configure {
+        mustRunAfter(testing.suites.test)
+        mustRunAfter(testing.suites.pluggabilityTest)
+        mustRunAfter(testing.suites.signatureTest)
+    }
+
+}
+
+tasks.named('check') {
+    dependsOn(testing.suites.test)
+    dependsOn(testing.suites.pluggabilityTest)
+    dependsOn(testing.suites.signatureTest)
+    dependsOn("packageTestResults")
+    doLast {
+        if (!failures.isEmpty()) {
+            logger.error("There are test failures:")
+            failures.each { TestDescriptor td ->
+                logger.error(td.className + "::" + td.name)
+
+            }
+            throw new GradleException(failures.size() + " test(s) failed.")
+        }
+    }
+}
