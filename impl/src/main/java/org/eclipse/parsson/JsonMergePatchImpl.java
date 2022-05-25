@@ -16,6 +16,8 @@
 
 package org.eclipse.parsson;
 
+import java.util.Objects;
+
 import jakarta.json.JsonMergePatch;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
@@ -121,11 +123,16 @@ public final class JsonMergePatchImpl implements JsonMergePatch {
      */
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null || obj.getClass() != JsonMergePatchImpl.class)
+        } else if (obj == null) {
             return false;
-        return patch.equals(((JsonMergePatchImpl)obj).patch);
+        } else if (getClass() != JsonMergePatchImpl.class) {
+            return false;
+        } else {
+            JsonMergePatchImpl other = (JsonMergePatchImpl) obj;
+            return Objects.equals(patch, other.patch);
+        }
     }
 
     /**
@@ -135,7 +142,7 @@ public final class JsonMergePatchImpl implements JsonMergePatch {
      */
     @Override
     public int hashCode() {
-        return patch.hashCode();
+        return Objects.hashCode(patch);
     }
 
     /**
