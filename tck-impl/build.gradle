@@ -40,7 +40,8 @@ dependencies {
 }
 
 if (hasProperty("parsson.home")) {
-    File home = new File(getProperty("parsson.home"))
+    String root = System.getenv("GITHUB_WORKSPACE")
+    File home = root != null ?  new File(root, getProperty("parsson.home")) : new File(getProperty("parsson.home"))
     File impl = new File(home, hasProperty("parsson.impl") ? getProperty("parsson.impl") : "mods")
     if (!home.exists() || !home.isDirectory()) {
         throw new InvalidUserDataException("invalid parsson.home, was: " + home.getAbsolutePath())
@@ -55,9 +56,7 @@ if (hasProperty("parsson.home")) {
         }
     }
 } else {
-    dependencies {
-        testedImplementation("org.eclipse.parsson:parsson:1.1.0")
-    }
+    throw new InvalidUserDataException("parsson.home has to be set")
 }
 
 List<TestDescriptor> failures = new ArrayList<>()
