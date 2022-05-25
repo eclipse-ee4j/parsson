@@ -63,6 +63,7 @@
                             <descriptors>
                                 <descriptor>src/main/assembly/archive.xml</descriptor>
                             </descriptors>
+                            <finalName>parsson-dist</finalName>
                             <appendAssemblyId>false</appendAssemblyId>
                         </configuration>
                     </execution>

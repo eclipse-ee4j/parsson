@@ -24,3 +24,5 @@ nbproject/
 # Java noise
 *.class
 *err_pid*.log
+/tck-impl/.gradle/
+/tck-impl/build/
