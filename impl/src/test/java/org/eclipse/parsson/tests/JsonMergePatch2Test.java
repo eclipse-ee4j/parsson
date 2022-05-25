@@ -17,7 +17,10 @@
 package org.eclipse.parsson.tests;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
+import org.eclipse.parsson.JsonMergePatchImpl;
 import org.junit.Test;
 
 import jakarta.json.Json;
@@ -34,5 +37,29 @@ public class JsonMergePatch2Test {
         assertEquals("[1]", jsonPatch.toString());
         JsonMergePatch jsonMergePatch = Json.createMergePatch(jsonArray);
         assertEquals("[1]", jsonMergePatch.toString());
+    }
+
+    @Test
+    public void testEquals() {
+        JsonMergePatchImpl j1 = new JsonMergePatchImpl(Json.createValue("test"));
+        JsonMergePatchImpl j2 = new JsonMergePatchImpl(Json.createValue("test"));
+        JsonMergePatchImpl j3 = new JsonMergePatchImpl(j1.toJsonValue());
+        JsonMergePatchImpl j4 = new JsonMergePatchImpl(Json.createValue("test2"));
+        JsonMergePatchImpl j5 = new JsonMergePatchImpl(null);
+
+        assertTrue(j1.equals(j1));
+
+        assertTrue(j1.equals(j2));
+        assertTrue(j2.equals(j1));
+
+        assertTrue(j1.equals(j3));
+        assertTrue(j3.equals(j1));
+
+        assertTrue(j2.equals(j3));
+        assertTrue(j3.equals(j2));
+
+        assertFalse(j1.equals(j4));
+        assertFalse(j1.equals(j5));
+        assertFalse(j1.equals(null));
     }
 }
