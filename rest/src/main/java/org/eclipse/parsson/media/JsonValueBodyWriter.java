@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -57,7 +57,7 @@ public class JsonValueBodyWriter implements MessageBodyWriter<JsonValue> {
     private Configuration config;
 
     @PostConstruct
-    private void init() {
+    public void init() {
         Map<String, Object> props = new HashMap<>();
         if (config != null && config.getProperties().containsKey(JsonGenerator.PRETTY_PRINTING)) {
             props.put(JsonGenerator.PRETTY_PRINTING, true);
