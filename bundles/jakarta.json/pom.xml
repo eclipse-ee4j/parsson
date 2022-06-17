@@ -177,6 +177,7 @@
                                 <Specification-Vendor>Eclipse Foundation</Specification-Vendor>
                                 <Specification-Version>${spec.specification.version}</Specification-Version>
                                 <Export-Package>!org.eclipse.parsson,*</Export-Package>
+                                <DynamicImport-Package>*</DynamicImport-Package>
                             </instructions>
                         </configuration>
                     </execution>
