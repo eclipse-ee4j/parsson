@@ -53,8 +53,11 @@ public class JsonValueBodyWriter implements MessageBodyWriter<JsonValue> {
 
     private JsonWriterFactory wf = Json.createWriterFactory(null);
 
-    @Context
-    private Configuration config;
+    private final Configuration config;
+
+    public JsonValueBodyWriter(@Context Configuration config) {
+        this.config = config;
+    }
 
     @PostConstruct
     public void init() {
