@@ -45,6 +45,11 @@ public class JsonProviderImpl extends JsonProvider {
     private final BufferPool bufferPool = new BufferPoolImpl();
 
     @Override
+    public JsonGenerator.Key createGeneratorKey(String name) {
+        return JsonGeneratorKeyImpl.createKey(name);
+    }
+
+    @Override
     public JsonGenerator createGenerator(Writer writer) {
         return new JsonGeneratorImpl(writer, bufferPool);
     }
