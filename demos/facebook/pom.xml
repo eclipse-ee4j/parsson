@@ -28,7 +28,6 @@
         <!--
         <main.class>org.eclipse.parsson.demos.facebook.FacebookStreamSearch</main.class>
         -->
-        <modules.directory>${project.build.directory}/modules</modules.directory>
     </properties>
 
     <dependencies>
@@ -41,46 +40,13 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <configuration>
-                    <stripVersion>true</stripVersion>
-                    <outputDirectory>${modules.directory}</outputDirectory>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>get-dependencies</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>copy-dependencies</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>get-project-artifact</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>copy</goal>
-                        </goals>
-                        <configuration>
-                            <artifactItems>
-                                <artifactItem>
-                                    <groupId>${project.groupId}</groupId>
-                                    <artifactId>${project.artifactId}</artifactId>
-                                    <version>${project.version}</version>
-                                </artifactItem>
-                            </artifactItems>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
                 <configuration>
                     <executable>java</executable>
                     <arguments>
                         <argument>--module-path</argument>
-                        <argument>${modules.directory}</argument>
+                        <modulepath/>
                         <argument>-m</argument>
                         <argument>org.eclipse.parsson.demos.facebook/${main.class}</argument>
                     </arguments>
