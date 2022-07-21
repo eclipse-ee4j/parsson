@@ -33,9 +33,9 @@ configurations {
 }
 
 dependencies {
-    tckTests("jakarta.json:jakarta.json-tck-tests:2.1.0")
+    tckTests("jakarta.json:jakarta.json-tck-tests:2.1.1")
     sigTests("org.netbeans.tools:sigtest-maven-plugin:1.6")
-    pluggabilityTests("jakarta.json:jakarta.json-tck-tests-pluggability:2.1.0")
+    pluggabilityTests("jakarta.json:jakarta.json-tck-tests-pluggability:2.1.1")
     testImplementation("org.junit.jupiter:junit-jupiter:5.8.2")
 }
 
@@ -62,7 +62,6 @@ if (hasProperty("parsson.home")) {
 List<TestDescriptor> failures = new ArrayList<>()
 
 tasks.withType(Test) {
-    forkEvery 1
     systemProperty 'java.awt.headless', 'true'
     // listen to events in the test execution lifecycle
     beforeTest { descriptor ->
