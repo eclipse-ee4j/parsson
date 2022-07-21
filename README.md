@@ -1,4 +1,4 @@
-[//]: # " Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved. "
+[//]: # " Copyright (c) 2018, 2022 Oracle and/or its affiliates. All rights reserved. "
 [//]: # "  "
 [//]: # " This program and the accompanying materials are made available under the "
 [//]: # " terms of the Eclipse Public License v. 2.0, which is available at "
@@ -44,6 +44,7 @@ the license text included in every source file.
 
 ## Links
 
+- [Eclipse Parsson @ Eclipse](https://projects.eclipse.org/projects/ee4j.parsson)
 - [Jakarta JSON Processing official web site](https://eclipse-ee4j.github.io/jsonp)
 - [Jakarta JSON Processing @ Eclipse](https://projects.eclipse.org/projects/ee4j.jsonp)
 - [README.txt](https://github.com/eclipse-ee4j/parsson/blob/master/bundles/ri/src/main/resources/README.txt)
