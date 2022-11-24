@@ -193,6 +193,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
                     <release>9</release>
+		     <!-- Workaround to compile package-info with JDK8 -->
+                    <createMissingPackageInfoClass>false</createMissingPackageInfoClass>
                     <compilerArgs>
                         <arg>-Xlint:all</arg>
                     </compilerArgs>
@@ -205,6 +207,7 @@
                         </goals>
                         <configuration>
                             <release>8</release>
+                            <createMissingPackageInfoClass>true</createMissingPackageInfoClass>
                             <excludes>
                                 <exclude>module-info.java</exclude>
                             </excludes>
