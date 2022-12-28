@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2022 Contributors to the Eclipse Foundation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -41,7 +42,6 @@ import jakarta.json.stream.JsonParsingException;
 class JsonReaderImpl implements JsonReader {
     private final JsonParserImpl parser;
     private boolean readDone;
-    private final BufferPool bufferPool;
     
     JsonReaderImpl(Reader reader, BufferPool bufferPool) {
         this(reader, bufferPool, false, Collections.emptyMap());
@@ -49,7 +49,6 @@ class JsonReaderImpl implements JsonReader {
 
     JsonReaderImpl(Reader reader, BufferPool bufferPool, boolean rejectDuplicateKeys, Map<String, ?> config) {
         parser = new JsonParserImpl(reader, bufferPool, rejectDuplicateKeys, config);
-        this.bufferPool = bufferPool;
     }
 
     JsonReaderImpl(InputStream in, BufferPool bufferPool) {
@@ -58,7 +57,6 @@ class JsonReaderImpl implements JsonReader {
 
     JsonReaderImpl(InputStream in, BufferPool bufferPool, boolean rejectDuplicateKeys, Map<String, ?> config) {
         parser = new JsonParserImpl(in, bufferPool, rejectDuplicateKeys, config);
-        this.bufferPool = bufferPool;
     }
 
     JsonReaderImpl(InputStream in, Charset charset, BufferPool bufferPool) {
@@ -67,7 +65,6 @@ class JsonReaderImpl implements JsonReader {
 
     JsonReaderImpl(InputStream in, Charset charset, BufferPool bufferPool, boolean rejectDuplicateKeys, Map<String, ?> config) {
         parser = new JsonParserImpl(in, charset, bufferPool, rejectDuplicateKeys, config);
-        this.bufferPool = bufferPool;
     }
 
     @Override
