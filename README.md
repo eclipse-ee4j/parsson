@@ -45,7 +45,7 @@ the license text included in every source file.
 ## Links
 
 - [Eclipse Parsson @ Eclipse](https://projects.eclipse.org/projects/ee4j.parsson)
-- [Jakarta JSON Processing official web site](https://eclipse-ee4j.github.io/jsonp)
+- [Jakarta JSON Processing official web site](https://jakartaee.github.io/jsonp-api)
 - [Jakarta JSON Processing @ Eclipse](https://projects.eclipse.org/projects/ee4j.jsonp)
 - [README.txt](https://github.com/eclipse-ee4j/parsson/blob/master/bundles/dist/src/main/resources/README.txt)
 
