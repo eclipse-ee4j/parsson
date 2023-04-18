@@ -52,6 +52,8 @@ public final class JsonPointerImpl implements JsonPointer, Serializable {
     private static final long serialVersionUID = -8123110179640843141L;
     private final String[] tokens;
     private final String jsonPointer;
+    // Configuration property to limit maximum value of BigInteger scale value.
+    private final int bigIntegerScaleLimit;
 
     /**
      * Constructs and initializes a JsonPointerImpl.
@@ -59,8 +61,9 @@ public final class JsonPointerImpl implements JsonPointer, Serializable {
      * @throws NullPointerException if {@code jsonPointer} is {@code null}
      * @throws JsonException if {@code jsonPointer} is not a valid JSON Pointer
      */
-    public JsonPointerImpl(String jsonPointer) {
+    public JsonPointerImpl(String jsonPointer, int bigIntegerScaleLimit) {
         this.jsonPointer = jsonPointer;
+        this.bigIntegerScaleLimit = bigIntegerScaleLimit;
         tokens = jsonPointer.split("/", -1);  // keep the trailing blanks
         if (! "".equals(tokens[0])) {
             throw new JsonException(JsonMessages.POINTER_FORMAT_INVALID());
@@ -243,7 +246,7 @@ public final class JsonPointerImpl implements JsonPointer, Serializable {
             switch (value.getValueType()) {
                 case OBJECT:
                     JsonObject object = (JsonObject) value;
-                    references[s-i-1] = NodeReference.of(object, tokens[i]);
+                    references[s-i-1] = NodeReference.of(object, tokens[i], bigIntegerScaleLimit);
                     if (i < s-1) {
                         value = object.get(tokens[i]);
                         if (value == null) {
@@ -255,7 +258,7 @@ public final class JsonPointerImpl implements JsonPointer, Serializable {
                 case ARRAY:
                     int index = getIndex(tokens[i]);
                     JsonArray array = (JsonArray) value;
-                    references[s-i-1] = NodeReference.of(array, index);
+                    references[s-i-1] = NodeReference.of(array, index, bigIntegerScaleLimit);
                     if (i < s-1 && index != -1) {
                         if (index >= array.size()) {
                             throw new JsonException(JsonMessages.NODEREF_ARRAY_INDEX_ERR(index, array.size()));

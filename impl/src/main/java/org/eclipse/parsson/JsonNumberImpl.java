@@ -16,6 +16,7 @@
 
 package org.eclipse.parsson;
 
+import jakarta.json.JsonException;
 import jakarta.json.JsonNumber;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -28,52 +29,72 @@ import java.math.BigInteger;
  */
 abstract class JsonNumberImpl implements JsonNumber {
 
+    /**
+     * Configuration system property to limit maximum value of BigInteger scale value.
+     * This property limits maximum value of scale value to be allowed
+     * in {@link jakarta.json.JsonNumber#bigIntegerValue()}
+     * and {@link jakarta.json.JsonNumber#bigIntegerValueExact()} implemented methods.
+     * Default value is set to {@code 100000} and higher values may be a security risc
+     * allowing dDoS attacks.
+     */
+    static String PROPERTY_MAX_BIGINT_SCALE = "org.eclipse.parsson.maxBigIntegerScale";
+
+    /** Default maximum value of BigInteger scale value limit. */
+    static final int DEFAULT_MAX_BIGINT_SCALE = 100000;
+
     private int hashCode;
 
-    static JsonNumber getJsonNumber(int num) {
-        return new JsonIntNumber(num);
+    // Configuration property to limit maximum value of BigInteger scale value.
+    private final int bigIntegerScaleLimit;
+
+    private JsonNumberImpl(int bigIntegerScaleLimit) {
+        this.bigIntegerScaleLimit = bigIntegerScaleLimit;
     }
 
-    static JsonNumber getJsonNumber(long num) {
-        return new JsonLongNumber(num);
+    static JsonNumber getJsonNumber(int num, int bigIntegerScaleLimit) {
+        return new JsonIntNumber(num, bigIntegerScaleLimit);
     }
 
-    static JsonNumber getJsonNumber(BigInteger value) {
+    static JsonNumber getJsonNumber(long num, int bigIntegerScaleLimit) {
+        return new JsonLongNumber(num, bigIntegerScaleLimit);
+    }
+
+    static JsonNumber getJsonNumber(BigInteger value, int bigIntegerScaleLimit) {
         if (value == null) {
             throw new NullPointerException("Value is null");
         }
-        return new JsonBigDecimalNumber(new BigDecimal(value));
+        return new JsonBigDecimalNumber(new BigDecimal(value), bigIntegerScaleLimit);
     }
 
-    static JsonNumber getJsonNumber(double value) {
+    static JsonNumber getJsonNumber(double value, int bigIntegerScaleLimit) {
         //bigDecimal = new BigDecimal(value);
         // This is the preferred way to convert double to BigDecimal
-        return new JsonBigDecimalNumber(BigDecimal.valueOf(value));
+        return new JsonBigDecimalNumber(BigDecimal.valueOf(value), bigIntegerScaleLimit);
     }
 
-    static JsonNumber getJsonNumber(BigDecimal value) {
+    static JsonNumber getJsonNumber(BigDecimal value, int bigIntegerScaleLimit) {
         if (value == null) {
             throw new NullPointerException("Value is null");
         }
-        return new JsonBigDecimalNumber(value);
+        return new JsonBigDecimalNumber(value, bigIntegerScaleLimit);
     }
 
-    static JsonNumber getJsonNumber(Number value) {
+    static JsonNumber getJsonNumber(Number value, int bigIntegerScaleLimit) {
         if (value == null) {
             throw new NullPointerException("Value is null");
         }
         if (value instanceof Integer) {
-            return getJsonNumber(value.intValue());
+            return getJsonNumber(value.intValue(), bigIntegerScaleLimit);
         } else if (value instanceof Long) {
-            return getJsonNumber(value.longValue());
+            return getJsonNumber(value.longValue(), bigIntegerScaleLimit);
         } else if (value instanceof Double) {
-            return getJsonNumber(value.doubleValue());
+            return getJsonNumber(value.doubleValue(), bigIntegerScaleLimit);
         } else if (value instanceof BigInteger) {
-            return getJsonNumber((BigInteger) value);
+            return getJsonNumber((BigInteger) value, bigIntegerScaleLimit);
         } else if (value instanceof BigDecimal) {
-            return getJsonNumber((BigDecimal) value);
+            return getJsonNumber((BigDecimal) value, bigIntegerScaleLimit);
         } else {
-            return new JsonNumberNumber(value);
+            return new JsonNumberNumber(value, bigIntegerScaleLimit);
         }
     }
 
@@ -82,7 +103,8 @@ abstract class JsonNumberImpl implements JsonNumber {
         private final Number num;
         private BigDecimal bigDecimal;
 
-        JsonNumberNumber(Number num) {
+        JsonNumberNumber(Number num, int bigIntegerScaleLimit) {
+            super(bigIntegerScaleLimit);
             this.num = num;
         }
 
@@ -107,7 +129,8 @@ abstract class JsonNumberImpl implements JsonNumber {
         private final int num;
         private BigDecimal bigDecimal;  // assigning it lazily on demand
 
-        JsonIntNumber(int num) {
+        JsonIntNumber(int num, int bigIntegerScaleLimit) {
+            super(bigIntegerScaleLimit);
             this.num = num;
         }
 
@@ -168,7 +191,8 @@ abstract class JsonNumberImpl implements JsonNumber {
         private final long num;
         private BigDecimal bigDecimal;  // assigning it lazily on demand
 
-        JsonLongNumber(long num) {
+        JsonLongNumber(long num, int bigIntegerScaleLimit) {
+            super(bigIntegerScaleLimit);
             this.num = num;
         }
 
@@ -229,7 +253,8 @@ abstract class JsonNumberImpl implements JsonNumber {
     private static final class JsonBigDecimalNumber extends JsonNumberImpl {
         private final BigDecimal bigDecimal;
 
-        JsonBigDecimalNumber(BigDecimal value) {
+        JsonBigDecimalNumber(BigDecimal value, int bigIntegerScaleLimit) {
+            super(bigIntegerScaleLimit);
             this.bigDecimal = value;
         }
 
@@ -277,12 +302,22 @@ abstract class JsonNumberImpl implements JsonNumber {
 
     @Override
     public BigInteger bigIntegerValue() {
-        return bigDecimalValue().toBigInteger();
+        BigDecimal bd = bigDecimalValue();
+        if (bd.scale() <= bigIntegerScaleLimit) {
+            return bd.toBigInteger();
+        }
+        throw new UnsupportedOperationException(
+                String.format("Scale of this BigInteger exceeded maximal allowed value of %d", bigIntegerScaleLimit));
     }
 
     @Override
     public BigInteger bigIntegerValueExact() {
-        return bigDecimalValue().toBigIntegerExact();
+        BigDecimal bd = bigDecimalValue();
+        if (bd.scale() <= bigIntegerScaleLimit) {
+            return bd.toBigIntegerExact();
+        }
+        throw new UnsupportedOperationException(
+                String.format("Scale of this BigInteger exceeded maximal allowed value of %d", bigIntegerScaleLimit));
     }
 
     @Override

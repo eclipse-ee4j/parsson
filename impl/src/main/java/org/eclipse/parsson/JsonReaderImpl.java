@@ -43,28 +43,28 @@ class JsonReaderImpl implements JsonReader {
     private final JsonParserImpl parser;
     private boolean readDone;
     
-    JsonReaderImpl(Reader reader, BufferPool bufferPool) {
-        this(reader, bufferPool, false, Collections.emptyMap());
+    JsonReaderImpl(Reader reader, BufferPool bufferPool, int bigIntegerScaleLimit) {
+        this(reader, bufferPool, false, Collections.emptyMap(), bigIntegerScaleLimit);
     }
 
-    JsonReaderImpl(Reader reader, BufferPool bufferPool, boolean rejectDuplicateKeys, Map<String, ?> config) {
-        parser = new JsonParserImpl(reader, bufferPool, rejectDuplicateKeys, config);
+    JsonReaderImpl(Reader reader, BufferPool bufferPool, boolean rejectDuplicateKeys, Map<String, ?> config, int bigIntegerScaleLimit) {
+        parser = new JsonParserImpl(reader, bufferPool, rejectDuplicateKeys, config, bigIntegerScaleLimit);
     }
 
-    JsonReaderImpl(InputStream in, BufferPool bufferPool) {
-        this(in, bufferPool, false, Collections.emptyMap());
+    JsonReaderImpl(InputStream in, BufferPool bufferPool, int bigIntegerScaleLimit) {
+        this(in, bufferPool, false, Collections.emptyMap(), bigIntegerScaleLimit);
     }
 
-    JsonReaderImpl(InputStream in, BufferPool bufferPool, boolean rejectDuplicateKeys, Map<String, ?> config) {
-        parser = new JsonParserImpl(in, bufferPool, rejectDuplicateKeys, config);
+    JsonReaderImpl(InputStream in, BufferPool bufferPool, boolean rejectDuplicateKeys, Map<String, ?> config, int bigIntegerScaleLimit) {
+        parser = new JsonParserImpl(in, bufferPool, rejectDuplicateKeys, config, bigIntegerScaleLimit);
     }
 
-    JsonReaderImpl(InputStream in, Charset charset, BufferPool bufferPool) {
-        this(in, charset, bufferPool, false, Collections.emptyMap());
+    JsonReaderImpl(InputStream in, Charset charset, BufferPool bufferPool, int bigIntegerScaleLimit) {
+        this(in, charset, bufferPool, false, Collections.emptyMap(), bigIntegerScaleLimit);
     }
 
-    JsonReaderImpl(InputStream in, Charset charset, BufferPool bufferPool, boolean rejectDuplicateKeys, Map<String, ?> config) {
-        parser = new JsonParserImpl(in, charset, bufferPool, rejectDuplicateKeys, config);
+    JsonReaderImpl(InputStream in, Charset charset, BufferPool bufferPool, boolean rejectDuplicateKeys, Map<String, ?> config, int bigIntegerScaleLimit) {
+        parser = new JsonParserImpl(in, charset, bufferPool, rejectDuplicateKeys, config, bigIntegerScaleLimit);
     }
 
     @Override

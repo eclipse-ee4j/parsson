@@ -32,26 +32,29 @@ class JsonReaderFactoryImpl implements JsonReaderFactory {
     private final Map<String, ?> config;
     private final BufferPool bufferPool;
     private final boolean rejectDuplicateKeys;
+    // Configuration property to limit maximum value of BigInteger scale value.
+    private final int bigIntegerScaleLimit;
 
-    JsonReaderFactoryImpl(Map<String, ?> config, BufferPool bufferPool, boolean rejectDuplicateKeys) {
+    JsonReaderFactoryImpl(Map<String, ?> config, BufferPool bufferPool, boolean rejectDuplicateKeys, int bigIntegerScaleLimit) {
         this.config = config;
         this.bufferPool = bufferPool;
         this.rejectDuplicateKeys = rejectDuplicateKeys;
+        this.bigIntegerScaleLimit = bigIntegerScaleLimit;
     }
 
     @Override
     public JsonReader createReader(Reader reader) {
-        return new JsonReaderImpl(reader, bufferPool, rejectDuplicateKeys, config);
+        return new JsonReaderImpl(reader, bufferPool, rejectDuplicateKeys, config, bigIntegerScaleLimit);
     }
 
     @Override
     public JsonReader createReader(InputStream in) {
-        return new JsonReaderImpl(in, bufferPool, rejectDuplicateKeys, config);
+        return new JsonReaderImpl(in, bufferPool, rejectDuplicateKeys, config, bigIntegerScaleLimit);
     }
 
     @Override
     public JsonReader createReader(InputStream in, Charset charset) {
-        return new JsonReaderImpl(in, charset, bufferPool, rejectDuplicateKeys, config);
+        return new JsonReaderImpl(in, charset, bufferPool, rejectDuplicateKeys, config, bigIntegerScaleLimit);
     }
 
     @Override

@@ -117,8 +117,8 @@ abstract class NodeReference {
      * @param name the name of the name/pair
      * @return the {@code NodeReference}
      */
-    public static NodeReference of(JsonObject object, String name) {
-        return new ObjectReference(object, name);
+    public static NodeReference of(JsonObject object, String name, int bigIntegerScaleLimit) {
+        return new ObjectReference(object, name, bigIntegerScaleLimit);
     }
 
     /**
@@ -129,8 +129,8 @@ abstract class NodeReference {
      * @param index the index of the member value in the JSON array
      * @return the {@code NodeReference}
      */
-    public static NodeReference of(JsonArray array, int index) {
-        return new ArrayReference(array, index);
+    public static NodeReference of(JsonArray array, int index, int bigIntegerScaleLimit) {
+        return new ArrayReference(array, index, bigIntegerScaleLimit);
     }
 
     static class RootReference extends NodeReference {
@@ -179,10 +179,13 @@ abstract class NodeReference {
 
         private final JsonObject object;
         private final String key;
+        // Configuration property to limit maximum value of BigInteger scale value.
+        private final int bigIntegerScaleLimit;
 
-        ObjectReference(JsonObject object, String key) {
+        ObjectReference(JsonObject object, String key, int bigIntegerScaleLimit) {
             this.object = object;
             this.key = key;
+            this.bigIntegerScaleLimit = bigIntegerScaleLimit;
         }
 
         @Override
@@ -200,7 +203,7 @@ abstract class NodeReference {
 
         @Override
         public JsonObject add(JsonValue value) {
-            return new JsonObjectBuilderImpl(object, JsonUtil.getInternalBufferPool()).add(key, value).build();
+            return new JsonObjectBuilderImpl(object, JsonUtil.getInternalBufferPool(), bigIntegerScaleLimit).add(key, value).build();
         }
 
         @Override
@@ -208,7 +211,7 @@ abstract class NodeReference {
             if (!contains()) {
                 throw new JsonException(JsonMessages.NODEREF_OBJECT_MISSING(key));
             }
-            return new JsonObjectBuilderImpl(object, JsonUtil.getInternalBufferPool()).remove(key).build();
+            return new JsonObjectBuilderImpl(object, JsonUtil.getInternalBufferPool(), bigIntegerScaleLimit).remove(key).build();
         }
 
         @Override
@@ -224,10 +227,13 @@ abstract class NodeReference {
 
         private final JsonArray array;
         private final int index; // -1 means "-" in JSON Pointer
+        // Configuration property to limit maximum value of BigInteger scale value.
+        private final int bigIntegerScaleLimit;
 
-        ArrayReference(JsonArray array, int index) {
+        ArrayReference(JsonArray array, int index, int bigIntegerScaleLimit) {
             this.array = array;
             this.index = index;
+            this.bigIntegerScaleLimit = bigIntegerScaleLimit;
         }
 
         @Override
@@ -247,7 +253,7 @@ abstract class NodeReference {
         public JsonArray add(JsonValue value) {
             //TODO should we check for arrayoutofbounds?
             // The spec seems to say index = array.size() is allowed. This is handled as append
-            JsonArrayBuilder builder = new JsonArrayBuilderImpl(this.array, JsonUtil.getInternalBufferPool());
+            JsonArrayBuilder builder = new JsonArrayBuilderImpl(this.array, JsonUtil.getInternalBufferPool(), bigIntegerScaleLimit);
             if (index == -1 || index == array.size()) {
                 builder.add(value);
             } else {
@@ -265,7 +271,7 @@ abstract class NodeReference {
             if (!contains()) {
                 throw new JsonException(JsonMessages.NODEREF_ARRAY_INDEX_ERR(index, array.size()));
             }
-            JsonArrayBuilder builder = new JsonArrayBuilderImpl(this.array, JsonUtil.getInternalBufferPool());
+            JsonArrayBuilder builder = new JsonArrayBuilderImpl(this.array, JsonUtil.getInternalBufferPool(), bigIntegerScaleLimit);
             return builder.remove(index).build();
         }
 
@@ -274,7 +280,7 @@ abstract class NodeReference {
             if (!contains()) {
                 throw new JsonException(JsonMessages.NODEREF_ARRAY_INDEX_ERR(index, array.size()));
             }
-            JsonArrayBuilder builder = new JsonArrayBuilderImpl(this.array, JsonUtil.getInternalBufferPool());
+            JsonArrayBuilder builder = new JsonArrayBuilderImpl(this.array, JsonUtil.getInternalBufferPool(), bigIntegerScaleLimit);
             return builder.set(index, value).build();
         }
     }

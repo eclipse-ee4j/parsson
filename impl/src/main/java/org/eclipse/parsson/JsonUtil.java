@@ -17,6 +17,8 @@
 package org.eclipse.parsson;
 
 import java.io.StringReader;
+
+import jakarta.json.JsonException;
 import jakarta.json.JsonReader;
 import jakarta.json.JsonValue;
 import jakarta.json.stream.JsonParsingException;
@@ -81,5 +83,22 @@ public final class JsonUtil {
         reader.close();
         return value;
     }
+
+    // Utility method to be used in constructors:
+    //     Retrieve value of org.eclipse.parsson.maxBigIntegerScale system property
+    static int initMaxBigIntegerScale() throws JsonException {
+        // SecurityException may be thrown when access to the system property is denied by checkPropertyAccess method
+        String property = System.getProperty(JsonNumberImpl.PROPERTY_MAX_BIGINT_SCALE);
+        if (property == null) {
+            return JsonNumberImpl.DEFAULT_MAX_BIGINT_SCALE;
+        }
+        try {
+            return Integer.parseInt(property);
+        } catch (NumberFormatException ex) {
+            throw new JsonException(
+                    String.format("Value of %s property is not a number", JsonNumberImpl.PROPERTY_MAX_BIGINT_SCALE), ex);
+        }
+    }
+
 }
 

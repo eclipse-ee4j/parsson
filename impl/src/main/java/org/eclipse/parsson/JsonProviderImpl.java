@@ -44,6 +44,16 @@ import java.math.BigInteger;
 public class JsonProviderImpl extends JsonProvider {
     private final BufferPool bufferPool = new BufferPoolImpl();
 
+    // Configuration property to limit maximum value of BigInteger scale value.
+    private final int bigIntegerScaleLimit;
+
+    /**
+     * Creates an instance of Parsson implementation of {@link JsonProvider} service provider interface.
+     */
+    public JsonProviderImpl() {
+        bigIntegerScaleLimit = JsonUtil.initMaxBigIntegerScale();
+    }
+
     @Override
     public JsonGenerator createGenerator(Writer writer) {
         return new JsonGeneratorImpl(writer, bufferPool);
@@ -56,12 +66,12 @@ public class JsonProviderImpl extends JsonProvider {
 
     @Override
     public JsonParser createParser(Reader reader) {
-        return new JsonParserImpl(reader, bufferPool);
+        return new JsonParserImpl(reader, bufferPool, bigIntegerScaleLimit);
     }
 
     @Override
     public JsonParser createParser(InputStream in) {
-        return new JsonParserImpl(in, bufferPool);
+        return new JsonParserImpl(in, bufferPool, bigIntegerScaleLimit);
     }
 
     @Override
@@ -73,7 +83,7 @@ public class JsonProviderImpl extends JsonProvider {
         if (pool == null) {
             pool = bufferPool;
         }
-        return new JsonParserFactoryImpl(pool);
+        return new JsonParserFactoryImpl(pool, bigIntegerScaleLimit);
     }
 
     @Override
@@ -104,12 +114,12 @@ public class JsonProviderImpl extends JsonProvider {
 
     @Override
     public JsonReader createReader(Reader reader) {
-        return new JsonReaderImpl(reader, bufferPool);
+        return new JsonReaderImpl(reader, bufferPool, bigIntegerScaleLimit);
     }
 
     @Override
     public JsonReader createReader(InputStream in) {
-        return new JsonReaderImpl(in, bufferPool);
+        return new JsonReaderImpl(in, bufferPool, bigIntegerScaleLimit);
     }
 
     @Override
@@ -170,72 +180,72 @@ public class JsonProviderImpl extends JsonProvider {
             }
             providerConfig = Collections.unmodifiableMap(providerConfig);
         }
-        return new JsonReaderFactoryImpl(providerConfig, pool, rejectDuplicateKeys);
+        return new JsonReaderFactoryImpl(providerConfig, pool, rejectDuplicateKeys, bigIntegerScaleLimit);
     }
 
     @Override
     public JsonObjectBuilder createObjectBuilder() {
-        return new JsonObjectBuilderImpl(bufferPool);
+        return new JsonObjectBuilderImpl(bufferPool, bigIntegerScaleLimit);
     }
 
     @Override
     public JsonObjectBuilder createObjectBuilder(JsonObject object) {
-        return new JsonObjectBuilderImpl(object, bufferPool);
+        return new JsonObjectBuilderImpl(object, bufferPool, bigIntegerScaleLimit);
     }
 
     @Override
     public JsonObjectBuilder createObjectBuilder(Map<String, ?> map) {
-        return new JsonObjectBuilderImpl(map, bufferPool);
+        return new JsonObjectBuilderImpl(map, bufferPool, bigIntegerScaleLimit);
     }
 
     @Override
     public JsonArrayBuilder createArrayBuilder() {
-        return new JsonArrayBuilderImpl(bufferPool);
+        return new JsonArrayBuilderImpl(bufferPool, bigIntegerScaleLimit);
     }
 
     @Override
     public JsonArrayBuilder createArrayBuilder(JsonArray array) {
-        return new JsonArrayBuilderImpl(array, bufferPool);
+        return new JsonArrayBuilderImpl(array, bufferPool, bigIntegerScaleLimit);
     }
 
     @Override
     public JsonArrayBuilder createArrayBuilder(Collection<?> collection) {
-        return new JsonArrayBuilderImpl(collection, bufferPool);
+        return new JsonArrayBuilderImpl(collection, bufferPool, bigIntegerScaleLimit);
     }
 
     @Override
     public JsonPointer createPointer(String jsonPointer) {
-        return new JsonPointerImpl(jsonPointer);
+        return new JsonPointerImpl(jsonPointer, bigIntegerScaleLimit);
     }
 
     @Override
     public JsonPatchBuilder createPatchBuilder() {
-        return new JsonPatchBuilderImpl();
+        return new JsonPatchBuilderImpl(bigIntegerScaleLimit);
     }
 
     @Override
     public JsonPatchBuilder createPatchBuilder(JsonArray array) {
-        return new JsonPatchBuilderImpl(array);
+        return new JsonPatchBuilderImpl(array, bigIntegerScaleLimit);
     }
 
     @Override
     public JsonPatch createPatch(JsonArray array) {
-        return new JsonPatchImpl(array);
+        return new JsonPatchImpl(array, bigIntegerScaleLimit);
     }
 
     @Override
     public JsonPatch createDiff(JsonStructure source, JsonStructure target) {
-        return new JsonPatchImpl(JsonPatchImpl.diff(source, target));
+        return new JsonPatchImpl(JsonPatchImpl.diff(source, target, bigIntegerScaleLimit), bigIntegerScaleLimit);
     }
 
     @Override
     public JsonMergePatch createMergePatch(JsonValue patch) {
-        return new JsonMergePatchImpl(patch);
+        return new JsonMergePatchImpl(patch, bigIntegerScaleLimit);
     }
 
     @Override
     public JsonMergePatch createMergeDiff(JsonValue source, JsonValue target) {
-        return new JsonMergePatchImpl(JsonMergePatchImpl.diff(source, target));
+        return new JsonMergePatchImpl(JsonMergePatchImpl.diff(source, target, bigIntegerScaleLimit), bigIntegerScaleLimit);
     }
 
     @Override
@@ -245,27 +255,27 @@ public class JsonProviderImpl extends JsonProvider {
 
     @Override
     public JsonNumber createValue(int value) {
-        return JsonNumberImpl.getJsonNumber(value);
+        return JsonNumberImpl.getJsonNumber(value, bigIntegerScaleLimit);
     }
 
     @Override
     public JsonNumber createValue(long value) {
-        return JsonNumberImpl.getJsonNumber(value);
+        return JsonNumberImpl.getJsonNumber(value, bigIntegerScaleLimit);
     }
 
     @Override
     public JsonNumber createValue(double value) {
-        return JsonNumberImpl.getJsonNumber(value);
+        return JsonNumberImpl.getJsonNumber(value, bigIntegerScaleLimit);
     }
 
     @Override
     public JsonNumber createValue(BigInteger value) {
-        return JsonNumberImpl.getJsonNumber(value);
+        return JsonNumberImpl.getJsonNumber(value, bigIntegerScaleLimit);
     }
 
     @Override
     public JsonNumber createValue(BigDecimal value) {
-        return JsonNumberImpl.getJsonNumber(value);
+        return JsonNumberImpl.getJsonNumber(value, bigIntegerScaleLimit);
     }
 
     @Override
@@ -278,12 +288,12 @@ public class JsonProviderImpl extends JsonProvider {
     		}
     		rejectDuplicateKeys = JsonProviderImpl.isRejectDuplicateKeysEnabled(config);
     	}
-        return new JsonBuilderFactoryImpl(pool, rejectDuplicateKeys);
+        return new JsonBuilderFactoryImpl(pool, rejectDuplicateKeys, bigIntegerScaleLimit);
     }
 
     @Override
     public JsonNumber createValue(Number value) {
-        return JsonNumberImpl.getJsonNumber(value);
+        return JsonNumberImpl.getJsonNumber(value, bigIntegerScaleLimit);
     }
 
     private void addKnowProperty(Map<String, Object> providerConfig, Map<String, ?> config, String property) {
@@ -299,4 +309,5 @@ public class JsonProviderImpl extends JsonProvider {
     static boolean isRejectDuplicateKeysEnabled(Map<String, ?> config) {
         return config.containsKey(JsonConfig.REJECT_DUPLICATE_KEYS);
     }
+
 }

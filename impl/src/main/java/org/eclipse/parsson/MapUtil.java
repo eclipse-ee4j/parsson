@@ -33,11 +33,15 @@ import java.util.Map;
  */
 public final class MapUtil {
 
-    private MapUtil() {
+    // Configuration property to limit maximum value of BigInteger scale value.
+    private final int bigIntegerScaleLimit;
+
+    MapUtil(int bigIntegerScaleLimit) {
         super();
+        this.bigIntegerScaleLimit = bigIntegerScaleLimit;
     }
 
-    static JsonValue handle(Object value, BufferPool bufferPool) {
+    JsonValue handle(Object value, BufferPool bufferPool) {
         if (value == null) {
             return JsonValue.NULL;
         } else if (value instanceof JsonValue) {
@@ -47,28 +51,28 @@ public final class MapUtil {
         } else if (value instanceof JsonObjectBuilder) {
             return ((JsonObjectBuilder) value).build();
         } else if (value instanceof BigDecimal) {
-            return JsonNumberImpl.getJsonNumber((BigDecimal) value);
+            return JsonNumberImpl.getJsonNumber((BigDecimal) value, bigIntegerScaleLimit);
         } else if (value instanceof BigInteger) {
-            return JsonNumberImpl.getJsonNumber((BigInteger) value);
+            return JsonNumberImpl.getJsonNumber((BigInteger) value, bigIntegerScaleLimit);
         } else if (value instanceof Boolean) {
             Boolean b = (Boolean) value;
             return b ? JsonValue.TRUE : JsonValue.FALSE;
         } else if (value instanceof Double) {
-            return JsonNumberImpl.getJsonNumber((Double) value);
+            return JsonNumberImpl.getJsonNumber((Double) value, bigIntegerScaleLimit);
         } else if (value instanceof Integer) {
-            return JsonNumberImpl.getJsonNumber((Integer) value);
+            return JsonNumberImpl.getJsonNumber((Integer) value, bigIntegerScaleLimit);
         } else if (value instanceof Long) {
-            return JsonNumberImpl.getJsonNumber((Long) value);
+            return JsonNumberImpl.getJsonNumber((Long) value, bigIntegerScaleLimit);
         } else if (value instanceof String) {
             return new JsonStringImpl((String) value);
         } else if (value instanceof Collection) {
             @SuppressWarnings("unchecked")
             Collection<?> collection = (Collection<?>) value;
-            JsonArrayBuilder jsonArrayBuilder = new JsonArrayBuilderImpl(collection, bufferPool);
+            JsonArrayBuilder jsonArrayBuilder = new JsonArrayBuilderImpl(collection, bufferPool, bigIntegerScaleLimit);
             return jsonArrayBuilder.build();
         } else if (value instanceof Map) {
             @SuppressWarnings("unchecked")
-            JsonObjectBuilder object = new JsonObjectBuilderImpl((Map<String, Object>) value, bufferPool);
+            JsonObjectBuilder object = new JsonObjectBuilderImpl((Map<String, Object>) value, bufferPool, bigIntegerScaleLimit);
             return object.build();
         }
 

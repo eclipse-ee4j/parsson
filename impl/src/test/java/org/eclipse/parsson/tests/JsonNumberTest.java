@@ -238,6 +238,13 @@ public class JsonNumberTest extends TestCase {
         assertEquals(Json.createValue(1).toString(), Json.createValue(new CustomNumber(1)).toString());
     }
 
+    // Test default BigInteger scale value limit using value bellow this limit.
+    // Call shall return value.
+    public void testDefaultBigIntegerScaleBellowLimit() {
+        BigDecimal value = new BigDecimal("3.1415926535897932384626433");
+        Json.createValue(value).bigIntegerValue();
+    }
+
     private static class CustomNumber extends Number {
 
         private static final long serialVersionUID = 1L;

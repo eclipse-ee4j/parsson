@@ -33,14 +33,17 @@ import jakarta.json.JsonValue;
 public final class JsonMergePatchImpl implements JsonMergePatch {
 
     private JsonValue patch;
+    // Configuration property to limit maximum value of BigInteger scale value.
+    private final int bigIntegerScaleLimit;
 
-    public JsonMergePatchImpl(JsonValue patch) {
+    public JsonMergePatchImpl(JsonValue patch, int bigIntegerScaleLimit) {
         this.patch = patch;
+        this.bigIntegerScaleLimit = bigIntegerScaleLimit;
     }
 
     @Override
     public JsonValue apply(JsonValue target) {
-        return mergePatch(target, patch);
+        return mergePatch(target, patch, bigIntegerScaleLimit);
     }
 
     @Override
@@ -56,7 +59,7 @@ public final class JsonMergePatchImpl implements JsonMergePatch {
      * @return the {@code JsonValue} as the result of applying the patch
      *    operations on the target.
      */
-    private static JsonValue mergePatch(JsonValue target, JsonValue patch) {
+    private static JsonValue mergePatch(JsonValue target, JsonValue patch, int bigIntegerScaleLimit) {
 
         if (patch.getValueType() != JsonValue.ValueType.OBJECT) {
             return patch;
@@ -66,16 +69,16 @@ public final class JsonMergePatchImpl implements JsonMergePatch {
         }
         JsonObject targetJsonObject = target.asJsonObject();
         JsonObjectBuilder builder =
-            new JsonObjectBuilderImpl(targetJsonObject, JsonUtil.getInternalBufferPool());
+            new JsonObjectBuilderImpl(targetJsonObject, JsonUtil.getInternalBufferPool(), bigIntegerScaleLimit);
         patch.asJsonObject().forEach((key, value) -> {
             if (value == JsonValue.NULL) {
                 if (targetJsonObject.containsKey(key)) {
                     builder.remove(key);
                 }
             } else if (targetJsonObject.containsKey(key)) {
-                builder.add(key, mergePatch(targetJsonObject.get(key), value));
+                builder.add(key, mergePatch(targetJsonObject.get(key), value, bigIntegerScaleLimit));
             } else {
-                builder.add(key, mergePatch(JsonValue.EMPTY_JSON_OBJECT, value));
+                builder.add(key, mergePatch(JsonValue.EMPTY_JSON_OBJECT, value, bigIntegerScaleLimit));
             }
         });
         return builder.build();
@@ -87,21 +90,21 @@ public final class JsonMergePatchImpl implements JsonMergePatch {
      * @param target the target
      * @return a JSON Patch which when applied to the source, yields the target
      */
-    static JsonValue diff(JsonValue source, JsonValue target) {
+    static JsonValue diff(JsonValue source, JsonValue target, int bigIntegerScaleLimit) {
         if (source.getValueType() != JsonValue.ValueType.OBJECT ||
                 target.getValueType() != JsonValue.ValueType.OBJECT) {
             return target;
         }
         JsonObject s = (JsonObject) source;
         JsonObject t = (JsonObject) target;
-        JsonObjectBuilder builder = new JsonObjectBuilderImpl(JsonUtil.getInternalBufferPool());
+        JsonObjectBuilder builder = new JsonObjectBuilderImpl(JsonUtil.getInternalBufferPool(), bigIntegerScaleLimit);
         // First find members to be replaced or removed
         s.forEach((key, value) -> {
             if (t.containsKey(key)) {
                 // key present in both.
                 if (! value.equals(t.get(key))) {
                     // If the values are equal, nop, else get diff for the values
-                    builder.add(key, diff(value, t.get(key)));
+                    builder.add(key, diff(value, t.get(key), bigIntegerScaleLimit));
                 }
             } else {
                 builder.addNull(key);

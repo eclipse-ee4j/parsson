@@ -34,24 +34,27 @@ import java.util.Map;
 class JsonParserFactoryImpl implements JsonParserFactory {
     private final Map<String, ?> config = Collections.emptyMap();
     private final BufferPool bufferPool;
+    // Configuration property to limit maximum value of BigInteger scale value.
+    private final int bigIntegerScaleLimit;
 
-    JsonParserFactoryImpl(BufferPool bufferPool) {
+    JsonParserFactoryImpl(BufferPool bufferPool, int bigIntegerScaleLimit) {
         this.bufferPool = bufferPool;
+        this.bigIntegerScaleLimit = bigIntegerScaleLimit;
     }
 
     @Override
     public JsonParser createParser(Reader reader) {
-        return new JsonParserImpl(reader, bufferPool);
+        return new JsonParserImpl(reader, bufferPool, bigIntegerScaleLimit);
     }
 
     @Override
     public JsonParser createParser(InputStream in) {
-        return new JsonParserImpl(in, bufferPool);
+        return new JsonParserImpl(in, bufferPool, bigIntegerScaleLimit);
     }
 
     @Override
     public JsonParser createParser(InputStream in, Charset charset) {
-        return new JsonParserImpl(in, charset, bufferPool);
+        return new JsonParserImpl(in, charset, bufferPool, bigIntegerScaleLimit);
     }
 
     @Override

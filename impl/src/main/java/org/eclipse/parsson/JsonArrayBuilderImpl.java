@@ -39,19 +39,24 @@ import java.util.Optional;
 class JsonArrayBuilderImpl implements JsonArrayBuilder {
     private ArrayList<JsonValue> valueList;
     private final BufferPool bufferPool;
+    // Configuration property to limit maximum value of BigInteger scale value.
+    private final int bigIntegerScaleLimit;
+    private final MapUtil mapUtil;
 
-    JsonArrayBuilderImpl(BufferPool bufferPool) {
+    JsonArrayBuilderImpl(BufferPool bufferPool, int bigIntegerScaleLimit) {
         this.bufferPool = bufferPool;
+        this.bigIntegerScaleLimit = bigIntegerScaleLimit;
+        this.mapUtil = new MapUtil(bigIntegerScaleLimit);
     }
 
-    JsonArrayBuilderImpl(JsonArray array, BufferPool bufferPool) {
-        this.bufferPool = bufferPool;
+    JsonArrayBuilderImpl(JsonArray array, BufferPool bufferPool, int bigIntegerScaleLimit) {
+        this(bufferPool, bigIntegerScaleLimit);
         valueList = new ArrayList<>();
         valueList.addAll(array);
     }
 
-    JsonArrayBuilderImpl(Collection<?> collection, BufferPool bufferPool) {
-        this.bufferPool = bufferPool;
+    JsonArrayBuilderImpl(Collection<?> collection, BufferPool bufferPool, int bigIntegerScaleLimit) {
+        this(bufferPool, bigIntegerScaleLimit);
         valueList = new ArrayList<>();
         populate(collection);
     }
@@ -73,32 +78,32 @@ class JsonArrayBuilderImpl implements JsonArrayBuilder {
     @Override
     public JsonArrayBuilder add(BigDecimal value) {
         validateValue(value);
-        addValueList(JsonNumberImpl.getJsonNumber(value));
+        addValueList(JsonNumberImpl.getJsonNumber(value, bigIntegerScaleLimit));
         return this;
     }
 
     @Override
     public JsonArrayBuilder add(BigInteger value) {
         validateValue(value);
-        addValueList(JsonNumberImpl.getJsonNumber(value));
+        addValueList(JsonNumberImpl.getJsonNumber(value, bigIntegerScaleLimit));
         return this;
     }
 
     @Override
     public JsonArrayBuilder add(int value) {
-        addValueList(JsonNumberImpl.getJsonNumber(value));
+        addValueList(JsonNumberImpl.getJsonNumber(value, bigIntegerScaleLimit));
         return this;
     }
 
     @Override
     public JsonArrayBuilder add(long value) {
-        addValueList(JsonNumberImpl.getJsonNumber(value));
+        addValueList(JsonNumberImpl.getJsonNumber(value, bigIntegerScaleLimit));
         return this;
     }
 
     @Override
     public JsonArrayBuilder add(double value) {
-        addValueList(JsonNumberImpl.getJsonNumber(value));
+        addValueList(JsonNumberImpl.getJsonNumber(value, bigIntegerScaleLimit));
         return this;
     }
 
@@ -161,32 +166,32 @@ class JsonArrayBuilderImpl implements JsonArrayBuilder {
     @Override
     public JsonArrayBuilder add(int index, BigDecimal value) {
         validateValue(value);
-        addValueList(index, JsonNumberImpl.getJsonNumber(value));
+        addValueList(index, JsonNumberImpl.getJsonNumber(value, bigIntegerScaleLimit));
         return this;
     }
 
     @Override
     public JsonArrayBuilder add(int index, BigInteger value) {
         validateValue(value);
-        addValueList(index, JsonNumberImpl.getJsonNumber(value));
+        addValueList(index, JsonNumberImpl.getJsonNumber(value, bigIntegerScaleLimit));
         return this;
     }
 
     @Override
     public JsonArrayBuilder add(int index, int value) {
-        addValueList(index, JsonNumberImpl.getJsonNumber(value));
+        addValueList(index, JsonNumberImpl.getJsonNumber(value, bigIntegerScaleLimit));
         return this;
     }
 
     @Override
     public JsonArrayBuilder add(int index, long value) {
-        addValueList(index, JsonNumberImpl.getJsonNumber(value));
+        addValueList(index, JsonNumberImpl.getJsonNumber(value, bigIntegerScaleLimit));
         return this;
     }
 
     @Override
     public JsonArrayBuilder add(int index, double value) {
-        addValueList(index, JsonNumberImpl.getJsonNumber(value));
+        addValueList(index, JsonNumberImpl.getJsonNumber(value, bigIntegerScaleLimit));
         return this;
     }
 
@@ -237,32 +242,32 @@ class JsonArrayBuilderImpl implements JsonArrayBuilder {
     @Override
     public JsonArrayBuilder set(int index, BigDecimal value) {
         validateValue(value);
-        setValueList(index, JsonNumberImpl.getJsonNumber(value));
+        setValueList(index, JsonNumberImpl.getJsonNumber(value, bigIntegerScaleLimit));
         return this;
     }
 
     @Override
     public JsonArrayBuilder set(int index, BigInteger value) {
         validateValue(value);
-        setValueList(index, JsonNumberImpl.getJsonNumber(value));
+        setValueList(index, JsonNumberImpl.getJsonNumber(value, bigIntegerScaleLimit));
         return this;
     }
 
     @Override
     public JsonArrayBuilder set(int index, int value) {
-        setValueList(index, JsonNumberImpl.getJsonNumber(value));
+        setValueList(index, JsonNumberImpl.getJsonNumber(value, bigIntegerScaleLimit));
         return this;
     }
 
     @Override
     public JsonArrayBuilder set(int index, long value) {
-        setValueList(index, JsonNumberImpl.getJsonNumber(value));
+        setValueList(index, JsonNumberImpl.getJsonNumber(value, bigIntegerScaleLimit));
         return this;
     }
 
     @Override
     public JsonArrayBuilder set(int index, double value) {
-        setValueList(index, JsonNumberImpl.getJsonNumber(value));
+        setValueList(index, JsonNumberImpl.getJsonNumber(value, bigIntegerScaleLimit));
         return this;
     }
 
@@ -323,9 +328,9 @@ class JsonArrayBuilderImpl implements JsonArrayBuilder {
         for (Object value : collection) {
             if (value != null && value instanceof Optional) {
                 ((Optional<?>) value).ifPresent(v ->
-                        this.valueList.add(MapUtil.handle(v, bufferPool)));
+                        this.valueList.add(mapUtil.handle(v, bufferPool)));
             } else {
-                this.valueList.add(MapUtil.handle(value, bufferPool));
+                this.valueList.add(mapUtil.handle(value, bufferPool));
             }
         }
     }

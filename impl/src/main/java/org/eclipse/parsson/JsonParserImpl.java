@@ -65,37 +65,43 @@ public class JsonParserImpl implements JsonParser {
     private final JsonTokenizer tokenizer;
     private boolean closed = false;
 
-    public JsonParserImpl(Reader reader, BufferPool bufferPool) {
-        this(reader, bufferPool, false, Collections.emptyMap());
+    // Configuration property to limit maximum value of BigInteger scale value.
+    private final int bigIntegerScaleLimit;
+
+    public JsonParserImpl(Reader reader, BufferPool bufferPool, int bigIntegerScaleLimit) {
+        this(reader, bufferPool, false, Collections.emptyMap(), bigIntegerScaleLimit);
     }
 
-    public JsonParserImpl(Reader reader, BufferPool bufferPool, boolean rejectDuplicateKeys, Map<String, ?> config) {
+    public JsonParserImpl(Reader reader, BufferPool bufferPool, boolean rejectDuplicateKeys, Map<String, ?> config, int bigIntegerScaleLimit) {
         this.bufferPool = bufferPool;
         this.rejectDuplicateKeys = rejectDuplicateKeys;
         this.config = config;
+        this.bigIntegerScaleLimit = bigIntegerScaleLimit;
         tokenizer = new JsonTokenizer(reader, bufferPool);
     }
 
-    public JsonParserImpl(InputStream in, BufferPool bufferPool) {
-        this(in, bufferPool, false, Collections.emptyMap());
+    public JsonParserImpl(InputStream in, BufferPool bufferPool, int bigIntegerScaleLimit) {
+        this(in, bufferPool, false, Collections.emptyMap(), bigIntegerScaleLimit);
     }
 
-    public JsonParserImpl(InputStream in, BufferPool bufferPool, boolean rejectDuplicateKeys, Map<String, ?> config) {
+    public JsonParserImpl(InputStream in, BufferPool bufferPool, boolean rejectDuplicateKeys, Map<String, ?> config, int bigIntegerScaleLimit) {
         this.bufferPool = bufferPool;
         this.rejectDuplicateKeys = rejectDuplicateKeys;
         this.config = config;
+        this.bigIntegerScaleLimit = bigIntegerScaleLimit;
         UnicodeDetectingInputStream uin = new UnicodeDetectingInputStream(in);
         tokenizer = new JsonTokenizer(new InputStreamReader(uin, uin.getCharset()), bufferPool);
     }
 
-    public JsonParserImpl(InputStream in, Charset encoding, BufferPool bufferPool) {
-        this(in, encoding, bufferPool, false, Collections.emptyMap());
+    public JsonParserImpl(InputStream in, Charset encoding, BufferPool bufferPool, int bigIntegerScaleLimit) {
+        this(in, encoding, bufferPool, false, Collections.emptyMap(), bigIntegerScaleLimit);
     }
 
-    public JsonParserImpl(InputStream in, Charset encoding, BufferPool bufferPool, boolean rejectDuplicateKeys, Map<String, ?> config) {
+    public JsonParserImpl(InputStream in, Charset encoding, BufferPool bufferPool, boolean rejectDuplicateKeys, Map<String, ?> config, int bigIntegerScaleLimit) {
         this.bufferPool = bufferPool;
         this.rejectDuplicateKeys = rejectDuplicateKeys;
         this.config = config;
+        this.bigIntegerScaleLimit = bigIntegerScaleLimit;
         tokenizer = new JsonTokenizer(new InputStreamReader(in, encoding), bufferPool);
     }
 
@@ -159,7 +165,7 @@ public class JsonParserImpl implements JsonParser {
             throw new IllegalStateException(
                 JsonMessages.PARSER_GETARRAY_ERR(currentEvent));
         }
-        return getArray(new JsonArrayBuilderImpl(bufferPool));
+        return getArray(new JsonArrayBuilderImpl(bufferPool, bigIntegerScaleLimit));
     }
 
     @Override
@@ -168,26 +174,26 @@ public class JsonParserImpl implements JsonParser {
             throw new IllegalStateException(
                 JsonMessages.PARSER_GETOBJECT_ERR(currentEvent));
         }
-        return getObject(new JsonObjectBuilderImpl(bufferPool, rejectDuplicateKeys, config));
+        return getObject(new JsonObjectBuilderImpl(bufferPool, rejectDuplicateKeys, config, bigIntegerScaleLimit));
     }
 
     @Override
     public JsonValue getValue() {
         switch (currentEvent) {
             case START_ARRAY:
-                return getArray(new JsonArrayBuilderImpl(bufferPool));
+                return getArray(new JsonArrayBuilderImpl(bufferPool, bigIntegerScaleLimit));
             case START_OBJECT:
-                return getObject(new JsonObjectBuilderImpl(bufferPool, rejectDuplicateKeys, config));
+                return getObject(new JsonObjectBuilderImpl(bufferPool, rejectDuplicateKeys, config, bigIntegerScaleLimit));
             case KEY_NAME:
             case VALUE_STRING:
                 return new JsonStringImpl(getCharSequence());
             case VALUE_NUMBER:
                 if (isDefinitelyInt()) {
-                    return JsonNumberImpl.getJsonNumber(getInt());
+                    return JsonNumberImpl.getJsonNumber(getInt(), bigIntegerScaleLimit);
                 } else if (isDefinitelyLong()) {
-                    return JsonNumberImpl.getJsonNumber(getLong());
+                    return JsonNumberImpl.getJsonNumber(getLong(), bigIntegerScaleLimit);
                 }
-                return JsonNumberImpl.getJsonNumber(getBigDecimal());
+                return JsonNumberImpl.getJsonNumber(getBigDecimal(), bigIntegerScaleLimit);
             case VALUE_TRUE:
                 return JsonValue.TRUE;
             case VALUE_FALSE:

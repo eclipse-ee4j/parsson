@@ -57,13 +57,16 @@ import jakarta.json.JsonValue.ValueType;
 public class JsonPatchImpl implements JsonPatch {
 
     private final JsonArray patch;
+    // Configuration property to limit maximum value of BigInteger scale value.
+    private final int bigIntegerScaleLimit;
 
     /**
      * Constructs a JsonPatchImpl
      * @param patch the JSON Patch
      */
-    public JsonPatchImpl(JsonArray patch) {
+    public JsonPatchImpl(JsonArray patch, int bigIntegerScaleLimit) {
         this.patch = patch;
+        this.bigIntegerScaleLimit = bigIntegerScaleLimit;
     }
 
     /**
@@ -135,8 +138,8 @@ public class JsonPatchImpl implements JsonPatch {
      * @param target the target, must be the same type as the source
      * @return a JSON Patch which when applied to the source, yields the target
      */
-    public static JsonArray diff(JsonStructure source, JsonStructure target) {
-        return (new DiffGenerator()).diff(source, target);
+    public static JsonArray diff(JsonStructure source, JsonStructure target, int bigIntegerScaleLimit) {
+        return (new DiffGenerator(bigIntegerScaleLimit)).diff(source, target);
     }
 
     /**
@@ -195,7 +198,7 @@ public class JsonPatchImpl implements JsonPatch {
         if (pointerString == null) {
             missingMember(operation.getString("op"), member);
         }
-        return new JsonPointerImpl(pointerString.getString());
+        return new JsonPointerImpl(pointerString.getString(), bigIntegerScaleLimit);
     }
 
     private JsonValue getValue(JsonObject operation) {
@@ -212,9 +215,15 @@ public class JsonPatchImpl implements JsonPatch {
 
     static class DiffGenerator {
         private JsonPatchBuilder builder;
+        // Configuration property to limit maximum value of BigInteger scale value.
+        private final int bigIntegerScaleLimit;
+
+        private DiffGenerator(int bigIntegerScaleLimit) {
+            this.bigIntegerScaleLimit = bigIntegerScaleLimit;
+        }
 
         JsonArray diff(JsonStructure source, JsonStructure target) {
-            builder = new JsonPatchBuilderImpl();
+            builder = new JsonPatchBuilderImpl(bigIntegerScaleLimit);
             diff("", source, target);
             return builder.build().toJsonArray();
         }

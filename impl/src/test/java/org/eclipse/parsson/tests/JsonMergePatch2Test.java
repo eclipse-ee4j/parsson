@@ -21,6 +21,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.eclipse.parsson.JsonMergePatchImpl;
+import org.eclipse.parsson.JsonNumberImpl;
 import org.junit.Test;
 
 import jakarta.json.Json;
@@ -41,6 +42,7 @@ public class JsonMergePatch2Test {
 
     @Test
     public void testEquals() {
+        int bigIntegerScaleLimit = JsonNumberImpl.initMaxBigIntegerScale();
         JsonMergePatchImpl j1 = new JsonMergePatchImpl(Json.createValue("test"));
         JsonMergePatchImpl j2 = new JsonMergePatchImpl(Json.createValue("test"));
         JsonMergePatchImpl j3 = new JsonMergePatchImpl(j1.toJsonValue());

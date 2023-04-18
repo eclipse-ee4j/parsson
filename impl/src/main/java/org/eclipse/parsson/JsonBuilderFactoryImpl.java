@@ -34,41 +34,44 @@ class JsonBuilderFactoryImpl implements JsonBuilderFactory {
     private final Map<String, ?> config;
     private final BufferPool bufferPool;
     private final boolean rejectDuplicateKeys;
+    // Configuration property to limit maximum value of BigInteger scale value.
+    private final int bigIntegerScaleLimit;
 
-    JsonBuilderFactoryImpl(BufferPool bufferPool, boolean rejectDuplicateKeys) {
+    JsonBuilderFactoryImpl(BufferPool bufferPool, boolean rejectDuplicateKeys, int bigIntegerScaleLimit) {
         this.config = Collections.emptyMap();
         this.bufferPool = bufferPool;
         this.rejectDuplicateKeys = rejectDuplicateKeys;
+        this.bigIntegerScaleLimit = bigIntegerScaleLimit;
     }
 
     @Override
     public JsonObjectBuilder createObjectBuilder() {
-        return new JsonObjectBuilderImpl(bufferPool, rejectDuplicateKeys, Collections.emptyMap());
+        return new JsonObjectBuilderImpl(bufferPool, rejectDuplicateKeys, Collections.emptyMap(), bigIntegerScaleLimit);
     }
  
     @Override
     public JsonObjectBuilder createObjectBuilder(JsonObject object) {
-        return new JsonObjectBuilderImpl(object, bufferPool, rejectDuplicateKeys, Collections.emptyMap());
+        return new JsonObjectBuilderImpl(object, bufferPool, rejectDuplicateKeys, Collections.emptyMap(), bigIntegerScaleLimit);
     }
 
     @Override
     public JsonObjectBuilder createObjectBuilder(Map<String, Object> object) {
-        return new JsonObjectBuilderImpl(object, bufferPool, rejectDuplicateKeys, Collections.emptyMap());
+        return new JsonObjectBuilderImpl(object, bufferPool, rejectDuplicateKeys, Collections.emptyMap(), bigIntegerScaleLimit);
     }
 
     @Override
     public JsonArrayBuilder createArrayBuilder() {
-        return new JsonArrayBuilderImpl(bufferPool);
+        return new JsonArrayBuilderImpl(bufferPool, bigIntegerScaleLimit);
     }
 
     @Override
     public JsonArrayBuilder createArrayBuilder(JsonArray array) {
-        return new JsonArrayBuilderImpl(array, bufferPool);
+        return new JsonArrayBuilderImpl(array, bufferPool, bigIntegerScaleLimit);
     }
 
     @Override
     public JsonArrayBuilder createArrayBuilder(Collection<?> collection) {
-        return new JsonArrayBuilderImpl(collection, bufferPool);
+        return new JsonArrayBuilderImpl(collection, bufferPool, bigIntegerScaleLimit);
     }
 
     @Override
