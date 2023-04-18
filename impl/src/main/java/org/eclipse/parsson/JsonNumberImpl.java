@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -16,6 +16,7 @@
 
 package org.eclipse.parsson;
 
+import jakarta.json.JsonException;
 import jakarta.json.JsonNumber;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -27,6 +28,22 @@ import java.math.BigInteger;
  * @author Jitendra Kotamraju
  */
 abstract class JsonNumberImpl implements JsonNumber {
+
+    /**
+     * Configuration system property to limit maximum value of BigInteger scale value.
+     * This property limits maximum value of scale value to be allowed
+     * in {@link jakarta.json.JsonNumber#bigIntegerValue()}
+     * and {@link jakarta.json.JsonNumber#bigIntegerValueExact()} implemented methods.
+     * Default value is set to {@code 100000} and higher values may be a security risc
+     * allowing dDoS attacks.
+     */
+    private static final String PROPERTY_MAX_BIGINT_SCALE = "org.eclipse.parsson.maxBigIntegerScale";
+
+    /** Default maximum value of BigInteger scale value limit. */
+    private static final int DEFAULT_MAX_BIGINT_SCALE = 100000;
+
+    /** Maximum value of BigInteger scale value. */
+    private static final int MAX_BIGINT_SCALE = initMaxBigIntegerScale();
 
     private int hashCode;
 
@@ -277,12 +294,26 @@ abstract class JsonNumberImpl implements JsonNumber {
 
     @Override
     public BigInteger bigIntegerValue() {
-        return bigDecimalValue().toBigInteger();
+        BigDecimal bd = bigDecimalValue();
+        if (bd.scale() <= MAX_BIGINT_SCALE) {
+            return bd.toBigInteger();
+        }
+        throw new UnsupportedOperationException(
+                String.format(
+                        "Scale value %d of this BigInteger exceeded maximal allowed value of %d",
+                        bd.scale(), MAX_BIGINT_SCALE));
     }
 
     @Override
     public BigInteger bigIntegerValueExact() {
-        return bigDecimalValue().toBigIntegerExact();
+        BigDecimal bd = bigDecimalValue();
+        if (bd.scale() <= MAX_BIGINT_SCALE) {
+            return bd.toBigIntegerExact();
+        }
+        throw new UnsupportedOperationException(
+                String.format(
+                        "Scale value %d of this BigInteger exceeded maximal allowed value of %d",
+                        bd.scale(), MAX_BIGINT_SCALE));
     }
 
     @Override
@@ -314,6 +345,22 @@ abstract class JsonNumberImpl implements JsonNumber {
     public String toString() {
         return bigDecimalValue().toString();
     }
+
+    // Utility method to initialize maximum value of BigInteger scale value in static context.
+    private static int initMaxBigIntegerScale() throws JsonException {
+        // SecurityException may be thrown when access to the system property is denied by checkPropertyAccess method
+        String property = System.getProperty(JsonNumberImpl.PROPERTY_MAX_BIGINT_SCALE);
+        if (property == null) {
+            return JsonNumberImpl.DEFAULT_MAX_BIGINT_SCALE;
+        }
+        try {
+            return Integer.parseInt(property);
+        } catch (NumberFormatException ex) {
+            throw new JsonException(
+                    String.format("Value of %s property is not a number", JsonNumberImpl.PROPERTY_MAX_BIGINT_SCALE), ex);
+        }
+    }
+
 
 }
 

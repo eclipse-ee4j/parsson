@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -236,6 +236,26 @@ public class JsonNumberTest extends TestCase {
         assertEquals(Json.createValue(1D).toString(), Json.createValue(Double.valueOf(1)).toString());
         assertEquals(Json.createValue(1), Json.createValue(new CustomNumber(1)));
         assertEquals(Json.createValue(1).toString(), Json.createValue(new CustomNumber(1)).toString());
+    }
+
+    // Test default BigInteger scale value limit using value bellow limit.
+    // Call shall return value.
+    public void testDefaultBigIntegerScaleBellowLimit() {
+        BigDecimal value = new BigDecimal("3.1415926535897932384626433");
+        Json.createValue(value).bigIntegerValue();
+    }
+
+    // Test default BigInteger scale value limit using value above limit.
+    // Call shall throw specific UnsupportedOperationException exception.
+    public void testDefaultBigIntegerScaleAboveLimit() {
+        BigDecimal value = new BigDecimal("3.1415926535897932384626433").setScale(100001);
+        try {
+            Json.createValue(value).bigIntegerValue();
+            fail("No exception was thrown from bigIntegerValue with scale over limit");
+        } catch (UnsupportedOperationException e) {
+            // UnsupportedOperationException is expected to be thrown
+            assertTrue(e.getMessage().equals("Scale value 100001 of this BigInteger exceeded maximal allowed value of 100000"));
+        }
     }
 
     private static class CustomNumber extends Number {
