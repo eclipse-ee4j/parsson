@@ -20,6 +20,9 @@ import jakarta.json.JsonException;
 import jakarta.json.JsonNumber;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
+import java.security.PrivilegedActionException;
 
 /**
  * JsonNumber impl. Subclasses provide optimized implementations
@@ -348,8 +351,10 @@ abstract class JsonNumberImpl implements JsonNumber {
 
     // Utility method to initialize maximum value of BigInteger scale value in static context.
     private static int initMaxBigIntegerScale() throws JsonException {
-        // SecurityException may be thrown when access to the system property is denied by checkPropertyAccess method
-        String property = System.getProperty(JsonNumberImpl.PROPERTY_MAX_BIGINT_SCALE);
+        @SuppressWarnings("removal")
+        String property = AccessController.doPrivileged(
+                (PrivilegedAction<String>) JsonNumberImpl::propertyAction
+        );
         if (property == null) {
             return JsonNumberImpl.DEFAULT_MAX_BIGINT_SCALE;
         }
@@ -361,6 +366,9 @@ abstract class JsonNumberImpl implements JsonNumber {
         }
     }
 
+    private static String propertyAction() {
+        return System.getProperty(JsonNumberImpl.PROPERTY_MAX_BIGINT_SCALE);
+    }
 
 }
 
