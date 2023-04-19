@@ -45,6 +45,8 @@ class JsonContext {
 
     static final String PROPERTY_BUFFER_POOL = BufferPool.class.getName();
 
+    @SuppressWarnings("removal")
+    private static final boolean IS_SECURITY_MANAGER = System.getSecurityManager() != null;
     private final Map<String, ?> config;
 
     // Maximum value of BigInteger scale value
@@ -115,12 +117,12 @@ class JsonContext {
 
     @SuppressWarnings("removal")
     private static String getSystemProperty(String propertyName) throws JsonException {
-        return AccessController.doPrivileged(
-                (PrivilegedAction<String>) () -> System.getProperty(propertyName));
-    }
-
-    private static String propertyAction(String propertyName) {
-        return System.getProperty(propertyName);
+        if (IS_SECURITY_MANAGER) {
+            return AccessController.doPrivileged(
+                    (PrivilegedAction<String>) () -> System.getProperty(propertyName));
+        } else {
+            return System.getProperty(propertyName);
+        }
     }
 
     private static int propertyStringToInt(String propertyName, String propertyValue) throws JsonException {
