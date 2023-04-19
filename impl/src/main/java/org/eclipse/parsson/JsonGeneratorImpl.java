@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -92,18 +92,18 @@ class JsonGeneratorImpl implements JsonGenerator {
     private int len = 0;
     private boolean closed = false;
 
-    JsonGeneratorImpl(Writer writer, BufferPool bufferPool) {
+    JsonGeneratorImpl(Writer writer, JsonContext jsonContext) {
+        this.bufferPool = jsonContext.bufferPool();
         this.writer = writer;
-        this.bufferPool = bufferPool;
-        this.buf = bufferPool.take();
+        this.buf = jsonContext.bufferPool().take();
     }
 
-    JsonGeneratorImpl(OutputStream out, BufferPool bufferPool) {
-        this(out, StandardCharsets.UTF_8, bufferPool);
+    JsonGeneratorImpl(OutputStream out, JsonContext jsonContext) {
+        this(out, StandardCharsets.UTF_8, jsonContext);
     }
 
-    JsonGeneratorImpl(OutputStream out, Charset encoding, BufferPool bufferPool) {
-        this(new OutputStreamWriter(out, encoding), bufferPool);
+    JsonGeneratorImpl(OutputStream out, Charset encoding, JsonContext jsonContext) {
+        this(new OutputStreamWriter(out, encoding), jsonContext);
     }
 
     @Override

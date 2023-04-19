@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -26,8 +26,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import org.eclipse.parsson.api.BufferPool;
-
 import jakarta.json.JsonArray;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonConfig.KeyStrategy;
@@ -47,38 +45,37 @@ import jakarta.json.JsonWriter;
 class JsonObjectBuilderImpl implements JsonObjectBuilder {
 
     protected Map<String, JsonValue> valueMap;
-    private final BufferPool bufferPool;
+    private final JsonContext jsonContext;
     private final DuplicateStrategy duplicateStrategy;
 
-    JsonObjectBuilderImpl(BufferPool bufferPool) {
-        this(bufferPool, false, Collections.emptyMap());
-    }
-    
-    JsonObjectBuilderImpl(BufferPool bufferPool, boolean rejectDuplicateKeys, Map<String, ?> config) {
-        this.bufferPool = bufferPool;
-        this.duplicateStrategy = DuplicateStrategy.strategyFromProperty(config.get(jakarta.json.JsonConfig.KEY_STRATEGY), rejectDuplicateKeys);
+    JsonObjectBuilderImpl(boolean rejectDuplicateKeys, JsonContext jsonContext) {
+        this.jsonContext = jsonContext;
+        this.duplicateStrategy = DuplicateStrategy.strategyFromProperty(
+                jsonContext.config(jakarta.json.JsonConfig.KEY_STRATEGY), rejectDuplicateKeys);
     }
 
-    JsonObjectBuilderImpl(JsonObject object, BufferPool bufferPool) {
-        this(object, bufferPool, false, Collections.emptyMap());
+    JsonObjectBuilderImpl(JsonContext jsonContext) {
+        this(false, jsonContext);
+    }
+
+    JsonObjectBuilderImpl(JsonObject object, JsonContext jsonContext) {
+        this(object, false, jsonContext);
     }
     
-    JsonObjectBuilderImpl(JsonObject object, BufferPool bufferPool, boolean rejectDuplicateKeys, Map<String, ?> config) {
-        this.bufferPool = bufferPool;
+    JsonObjectBuilderImpl(JsonObject object, boolean rejectDuplicateKeys, JsonContext jsonContext) {
+        this(rejectDuplicateKeys, jsonContext);
         valueMap = new LinkedHashMap<>();
         valueMap.putAll(object);
-        this.duplicateStrategy = DuplicateStrategy.strategyFromProperty(config.get(jakarta.json.JsonConfig.KEY_STRATEGY), rejectDuplicateKeys);
     }
 
-    JsonObjectBuilderImpl(Map<String, ?> map, BufferPool bufferPool) {
-        this(map, bufferPool, false, Collections.emptyMap());
+    JsonObjectBuilderImpl(Map<String, ?> map, JsonContext jsonContext) {
+        this(map, false, jsonContext);
     }
     
-    JsonObjectBuilderImpl(Map<String, ?> map, BufferPool bufferPool, boolean rejectDuplicateKeys, Map<String, ?> config) {
-    	this.bufferPool = bufferPool;
+    JsonObjectBuilderImpl(Map<String, ?> map, boolean rejectDuplicateKeys, JsonContext jsonContext) {
+        this(rejectDuplicateKeys, jsonContext);
     	valueMap = new LinkedHashMap<>();
     	populate(map);
-    	this.duplicateStrategy = DuplicateStrategy.strategyFromProperty(config.get(jakarta.json.JsonConfig.KEY_STRATEGY), rejectDuplicateKeys);
     }
 
     @Override
@@ -101,7 +98,7 @@ class JsonObjectBuilderImpl implements JsonObjectBuilder {
     public JsonObjectBuilder add(String name, BigInteger value) {
         validateName(name);
         validateValue(value);
-        putValueMap(name, JsonNumberImpl.getJsonNumber(value));
+        putValueMap(name, JsonNumberImpl.getJsonNumber(value, jsonContext.bigIntegerScaleLimit()));
         return this;
     }
 
@@ -109,28 +106,28 @@ class JsonObjectBuilderImpl implements JsonObjectBuilder {
     public JsonObjectBuilder add(String name, BigDecimal value) {
         validateName(name);
         validateValue(value);
-        putValueMap(name, JsonNumberImpl.getJsonNumber(value));
+        putValueMap(name, JsonNumberImpl.getJsonNumber(value, jsonContext.bigIntegerScaleLimit()));
         return this;
     }
 
     @Override
     public JsonObjectBuilder add(String name, int value) {
         validateName(name);
-        putValueMap(name, JsonNumberImpl.getJsonNumber(value));
+        putValueMap(name, JsonNumberImpl.getJsonNumber(value, jsonContext.bigIntegerScaleLimit()));
         return this;
     }
 
     @Override
     public JsonObjectBuilder add(String name, long value) {
         validateName(name);
-        putValueMap(name, JsonNumberImpl.getJsonNumber(value));
+        putValueMap(name, JsonNumberImpl.getJsonNumber(value, jsonContext.bigIntegerScaleLimit()));
         return this;
     }
 
     @Override
     public JsonObjectBuilder add(String name, double value) {
         validateName(name);
-        putValueMap(name, JsonNumberImpl.getJsonNumber(value));
+        putValueMap(name, JsonNumberImpl.getJsonNumber(value, jsonContext.bigIntegerScaleLimit()));
         return this;
     }
 
@@ -193,18 +190,18 @@ class JsonObjectBuilderImpl implements JsonObjectBuilder {
                 ? Collections.<String, JsonValue>emptyMap()
                 : Collections.unmodifiableMap(valueMap);
         valueMap = null;
-        return new JsonObjectImpl(snapshot, bufferPool);
+        return new JsonObjectImpl(snapshot, jsonContext);
     }
 
     private void populate(Map<String, ?> map) {
         final Set<String> fields = map.keySet();
         for (String field : fields) {
             Object value = map.get(field);
-            if (value != null && value instanceof Optional) {
+            if (value instanceof Optional) {
                 ((Optional<?>) value).ifPresent(v ->
-                        this.valueMap.put(field, MapUtil.handle(v, bufferPool)));
+                        this.valueMap.put(field, MapUtil.handle(v, jsonContext)));
             } else {
-                this.valueMap.put(field, MapUtil.handle(value, bufferPool));
+                this.valueMap.put(field, MapUtil.handle(value, jsonContext));
             }
         }
     }
@@ -231,12 +228,12 @@ class JsonObjectBuilderImpl implements JsonObjectBuilder {
 
     private static final class JsonObjectImpl extends AbstractMap<String, JsonValue> implements JsonObject {
         private final Map<String, JsonValue> valueMap;      // unmodifiable
-        private final BufferPool bufferPool;
+        private final JsonContext jsonContext;
         private int hashCode;
 
-        JsonObjectImpl(Map<String, JsonValue> valueMap, BufferPool bufferPool) {
+        JsonObjectImpl(Map<String, JsonValue> valueMap, JsonContext jsonContext) {
             this.valueMap = valueMap;
-            this.bufferPool = bufferPool;
+            this.jsonContext = jsonContext;
         }
 
         @Override
@@ -341,7 +338,7 @@ class JsonObjectBuilderImpl implements JsonObjectBuilder {
         @Override
         public String toString() {
             StringWriter sw = new StringWriter();
-            try (JsonWriter jw = new JsonWriterImpl(sw, bufferPool)) {
+            try (JsonWriter jw = new JsonWriterImpl(sw, jsonContext)) {
                 jw.write(this);
             }
             return sw.toString();

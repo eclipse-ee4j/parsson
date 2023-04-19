@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -16,8 +16,6 @@
 
 package org.eclipse.parsson;
 
-import org.eclipse.parsson.api.BufferPool;
-
 import jakarta.json.stream.JsonGenerator;
 import jakarta.json.stream.JsonGeneratorFactory;
 import java.io.OutputStream;
@@ -30,41 +28,40 @@ import java.util.Map;
  */
 class JsonGeneratorFactoryImpl implements JsonGeneratorFactory {
 
+    // TODO: Move into JsonContext
     private final boolean prettyPrinting;
-    private final Map<String, ?> config;    // unmodifiable map
-    private final BufferPool bufferPool;
 
-    JsonGeneratorFactoryImpl(Map<String, ?> config, boolean prettyPrinting,
-            BufferPool bufferPool) {
-        this.config = config;
+    private final JsonContext jsonContext;
+
+    JsonGeneratorFactoryImpl(boolean prettyPrinting, JsonContext jsonContext) {
+        this.jsonContext = jsonContext;
         this.prettyPrinting = prettyPrinting;
-        this.bufferPool = bufferPool;
     }
 
     @Override
     public JsonGenerator createGenerator(Writer writer) {
         return prettyPrinting
-                ? new JsonPrettyGeneratorImpl(writer, bufferPool)
-                : new JsonGeneratorImpl(writer, bufferPool);
+                ? new JsonPrettyGeneratorImpl(writer, jsonContext)
+                : new JsonGeneratorImpl(writer, jsonContext);
     }
 
     @Override
     public JsonGenerator createGenerator(OutputStream out) {
         return prettyPrinting
-                ? new JsonPrettyGeneratorImpl(out, bufferPool)
-                : new JsonGeneratorImpl(out, bufferPool);
+                ? new JsonPrettyGeneratorImpl(out, jsonContext)
+                : new JsonGeneratorImpl(out, jsonContext);
     }
 
     @Override
     public JsonGenerator createGenerator(OutputStream out, Charset charset) {
         return prettyPrinting
-                ? new JsonPrettyGeneratorImpl(out, charset, bufferPool)
-                : new JsonGeneratorImpl(out, charset, bufferPool);
+                ? new JsonPrettyGeneratorImpl(out, charset, jsonContext)
+                : new JsonGeneratorImpl(out, charset, jsonContext);
     }
 
     @Override
     public Map<String, ?> getConfigInUse() {
-        return config;
+        return jsonContext.config();
     }
 
 }

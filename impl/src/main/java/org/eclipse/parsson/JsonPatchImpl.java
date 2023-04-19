@@ -57,13 +57,15 @@ import jakarta.json.JsonValue.ValueType;
 public class JsonPatchImpl implements JsonPatch {
 
     private final JsonArray patch;
+    private final JsonContext jsonContext;
 
     /**
      * Constructs a JsonPatchImpl
      * @param patch the JSON Patch
      */
-    public JsonPatchImpl(JsonArray patch) {
+    public JsonPatchImpl(JsonArray patch, JsonContext jsonContext) {
         this.patch = patch;
+        this.jsonContext = jsonContext;
     }
 
     /**
@@ -135,8 +137,8 @@ public class JsonPatchImpl implements JsonPatch {
      * @param target the target, must be the same type as the source
      * @return a JSON Patch which when applied to the source, yields the target
      */
-    public static JsonArray diff(JsonStructure source, JsonStructure target) {
-        return (new DiffGenerator()).diff(source, target);
+    static JsonArray diff(JsonStructure source, JsonStructure target, JsonContext jsonContext) {
+        return (new DiffGenerator(jsonContext)).diff(source, target);
     }
 
     /**
@@ -195,7 +197,7 @@ public class JsonPatchImpl implements JsonPatch {
         if (pointerString == null) {
             missingMember(operation.getString("op"), member);
         }
-        return new JsonPointerImpl(pointerString.getString());
+        return new JsonPointerImpl(pointerString.getString(), jsonContext);
     }
 
     private JsonValue getValue(JsonObject operation) {
@@ -212,9 +214,14 @@ public class JsonPatchImpl implements JsonPatch {
 
     static class DiffGenerator {
         private JsonPatchBuilder builder;
+        private final JsonContext jsonContext;
+
+        DiffGenerator(JsonContext jsonContext) {
+            this.jsonContext = jsonContext;
+        }
 
         JsonArray diff(JsonStructure source, JsonStructure target) {
-            builder = new JsonPatchBuilderImpl();
+            builder = new JsonPatchBuilderImpl(jsonContext);
             diff("", source, target);
             return builder.build().toJsonArray();
         }

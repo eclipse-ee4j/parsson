@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -16,8 +16,6 @@
 
 package org.eclipse.parsson;
 
-import org.eclipse.parsson.api.BufferPool;
-
 import jakarta.json.stream.JsonGenerator;
 import java.io.OutputStream;
 import java.io.Writer;
@@ -30,16 +28,16 @@ public class JsonPrettyGeneratorImpl extends JsonGeneratorImpl {
     private int indentLevel;
     private static final String INDENT = "    ";
 
-    public JsonPrettyGeneratorImpl(Writer writer, BufferPool bufferPool) {
-        super(writer, bufferPool);
+    public JsonPrettyGeneratorImpl(Writer writer, JsonContext jsonContext) {
+        super(writer, jsonContext);
     }
 
-    public JsonPrettyGeneratorImpl(OutputStream out, BufferPool bufferPool) {
-        super(out, bufferPool);
+    public JsonPrettyGeneratorImpl(OutputStream out, JsonContext jsonContext) {
+        super(out, jsonContext);
     }
 
-    public JsonPrettyGeneratorImpl(OutputStream out, Charset encoding, BufferPool bufferPool) {
-        super(out, encoding, bufferPool);
+    public JsonPrettyGeneratorImpl(OutputStream out, Charset encoding, JsonContext jsonContext) {
+        super(out, encoding, jsonContext);
     }
 
     @Override

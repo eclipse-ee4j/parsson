@@ -29,34 +29,33 @@ import java.util.Map;
  * @author Jitendra Kotamraju
  */
 class JsonWriterFactoryImpl implements JsonWriterFactory {
-    private final Map<String, ?> config;        // unmodifiable map
+    // TODO: Move into JsonContext
     private final boolean prettyPrinting;
-    private final BufferPool bufferPool;
+    private final JsonContext jsonContext;
 
-    JsonWriterFactoryImpl(Map<String, ?> config, boolean prettyPrinting,
-            BufferPool bufferPool) {
-        this.config = config;
+    JsonWriterFactoryImpl(boolean prettyPrinting, JsonContext jsonContext) {
+        this.jsonContext = jsonContext;
         this.prettyPrinting = prettyPrinting;
-        this.bufferPool = bufferPool;
     }
 
     @Override
     public JsonWriter createWriter(Writer writer) {
-        return new JsonWriterImpl(writer, prettyPrinting, bufferPool);
+        return new JsonWriterImpl(writer, prettyPrinting, jsonContext);
     }
 
     @Override
     public JsonWriter createWriter(OutputStream out) {
-        return new JsonWriterImpl(out, prettyPrinting, bufferPool);
+        return new JsonWriterImpl(out, prettyPrinting, jsonContext);
     }
 
     @Override
     public JsonWriter createWriter(OutputStream out, Charset charset) {
-        return new JsonWriterImpl(out, charset, prettyPrinting, bufferPool);
+        return new JsonWriterImpl(out, charset, prettyPrinting, jsonContext);
     }
 
     @Override
     public Map<String, ?> getConfigInUse() {
-        return config;
+        return jsonContext.config();
     }
+
 }

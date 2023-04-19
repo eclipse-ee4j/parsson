@@ -43,28 +43,28 @@ class JsonReaderImpl implements JsonReader {
     private final JsonParserImpl parser;
     private boolean readDone;
     
-    JsonReaderImpl(Reader reader, BufferPool bufferPool) {
-        this(reader, bufferPool, false, Collections.emptyMap());
+    JsonReaderImpl(Reader reader, JsonContext jsonContext) {
+        this(reader, false, jsonContext);
     }
 
-    JsonReaderImpl(Reader reader, BufferPool bufferPool, boolean rejectDuplicateKeys, Map<String, ?> config) {
-        parser = new JsonParserImpl(reader, bufferPool, rejectDuplicateKeys, config);
+    JsonReaderImpl(Reader reader, boolean rejectDuplicateKeys, JsonContext jsonContext) {
+        parser = new JsonParserImpl(reader, rejectDuplicateKeys, jsonContext);
     }
 
-    JsonReaderImpl(InputStream in, BufferPool bufferPool) {
-        this(in, bufferPool, false, Collections.emptyMap());
+    JsonReaderImpl(InputStream in, JsonContext jsonContext) {
+        this(in, false, jsonContext);
     }
 
-    JsonReaderImpl(InputStream in, BufferPool bufferPool, boolean rejectDuplicateKeys, Map<String, ?> config) {
-        parser = new JsonParserImpl(in, bufferPool, rejectDuplicateKeys, config);
+    JsonReaderImpl(InputStream in, boolean rejectDuplicateKeys, JsonContext jsonContext) {
+        parser = new JsonParserImpl(in, rejectDuplicateKeys, jsonContext);
     }
 
-    JsonReaderImpl(InputStream in, Charset charset, BufferPool bufferPool) {
-        this(in, charset, bufferPool, false, Collections.emptyMap());
+    JsonReaderImpl(InputStream in, Charset charset, JsonContext jsonContext) {
+        this(in, charset, false, jsonContext);
     }
 
-    JsonReaderImpl(InputStream in, Charset charset, BufferPool bufferPool, boolean rejectDuplicateKeys, Map<String, ?> config) {
-        parser = new JsonParserImpl(in, charset, bufferPool, rejectDuplicateKeys, config);
+    JsonReaderImpl(InputStream in, Charset charset, boolean rejectDuplicateKeys, JsonContext jsonContext) {
+        parser = new JsonParserImpl(in, charset, rejectDuplicateKeys, jsonContext);
     }
 
     @Override

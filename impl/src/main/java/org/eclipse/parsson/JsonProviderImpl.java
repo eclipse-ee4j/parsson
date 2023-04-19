@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -43,199 +43,171 @@ import java.math.BigInteger;
  */
 public class JsonProviderImpl extends JsonProvider {
     private final BufferPool bufferPool = new BufferPoolImpl();
+    private final JsonContext emptyContext = new JsonContext(Collections.emptyMap(), bufferPool);
 
     @Override
     public JsonGenerator createGenerator(Writer writer) {
-        return new JsonGeneratorImpl(writer, bufferPool);
+        return new JsonGeneratorImpl(writer, emptyContext);
     }
 
     @Override
     public JsonGenerator createGenerator(OutputStream out) {
-        return new JsonGeneratorImpl(out, bufferPool);
+        return new JsonGeneratorImpl(out, emptyContext);
     }
 
     @Override
     public JsonParser createParser(Reader reader) {
-        return new JsonParserImpl(reader, bufferPool);
+        return new JsonParserImpl(reader, emptyContext);
     }
 
     @Override
     public JsonParser createParser(InputStream in) {
-        return new JsonParserImpl(in, bufferPool);
+        return new JsonParserImpl(in, emptyContext);
     }
 
     @Override
     public JsonParserFactory createParserFactory(Map<String, ?> config) {
-        BufferPool pool = null;
-        if (config != null && config.containsKey(BufferPool.class.getName())) {
-            pool = (BufferPool)config.get(BufferPool.class.getName());
-        }
-        if (pool == null) {
-            pool = bufferPool;
-        }
-        return new JsonParserFactoryImpl(pool);
+        return new JsonParserFactoryImpl(new JsonContext(config, bufferPool));
     }
 
     @Override
     public JsonGeneratorFactory createGeneratorFactory(Map<String, ?> config) {
-        Map<String, Object> providerConfig;
-        boolean prettyPrinting;
-        BufferPool pool;
         if (config == null) {
-            providerConfig = Collections.emptyMap();
-            prettyPrinting = false;
-            pool = bufferPool;
-        } else {
-            providerConfig = new HashMap<>();
-            if (prettyPrinting=JsonProviderImpl.isPrettyPrintingEnabled(config)) {
-                providerConfig.put(JsonGenerator.PRETTY_PRINTING, true);
-            }
-            pool = (BufferPool)config.get(BufferPool.class.getName());
-            if (pool != null) {
-                providerConfig.put(BufferPool.class.getName(), pool);
-            } else {
-                pool = bufferPool;
-            }
-            providerConfig = Collections.unmodifiableMap(providerConfig);
+            return new JsonGeneratorFactoryImpl(false, emptyContext);
         }
-
-        return new JsonGeneratorFactoryImpl(providerConfig, prettyPrinting, pool);
+        Map<String, Object> providerConfig = new HashMap<>();
+        boolean prettyPrinting = JsonProviderImpl.isPrettyPrintingEnabled(config);
+        if (prettyPrinting) {
+            providerConfig.put(JsonGenerator.PRETTY_PRINTING, true);
+        }
+        BufferPool pool = (BufferPool) config.get(JsonContext.PROPERTY_BUFFER_POOL);
+        if (pool != null) {
+            providerConfig.put(JsonContext.PROPERTY_BUFFER_POOL, pool);
+        }
+        return new JsonGeneratorFactoryImpl(
+                prettyPrinting, new JsonContext(Collections.unmodifiableMap(providerConfig), bufferPool));
     }
 
     @Override
     public JsonReader createReader(Reader reader) {
-        return new JsonReaderImpl(reader, bufferPool);
+        return new JsonReaderImpl(reader, emptyContext);
     }
 
     @Override
     public JsonReader createReader(InputStream in) {
-        return new JsonReaderImpl(in, bufferPool);
+        return new JsonReaderImpl(in, emptyContext);
     }
 
     @Override
     public JsonWriter createWriter(Writer writer) {
-        return new JsonWriterImpl(writer, bufferPool);
+        return new JsonWriterImpl(writer, emptyContext);
     }
 
     @Override
     public JsonWriter createWriter(OutputStream out) {
-        return new JsonWriterImpl(out, bufferPool);
+        return new JsonWriterImpl(out, emptyContext);
     }
 
     @Override
     public JsonWriterFactory createWriterFactory(Map<String, ?> config) {
-        Map<String, Object> providerConfig;
-        boolean prettyPrinting;
-        BufferPool pool;
         if (config == null) {
-            providerConfig = Collections.emptyMap();
-            prettyPrinting = false;
-            pool = bufferPool;
-        } else {
-            providerConfig = new HashMap<>();
-            if (prettyPrinting=JsonProviderImpl.isPrettyPrintingEnabled(config)) {
-                providerConfig.put(JsonGenerator.PRETTY_PRINTING, true);
-            }
-            pool = (BufferPool)config.get(BufferPool.class.getName());
-            if (pool != null) {
-                providerConfig.put(BufferPool.class.getName(), pool);
-            } else {
-                pool = bufferPool;
-            }
-            providerConfig = Collections.unmodifiableMap(providerConfig);
+            return new JsonWriterFactoryImpl(false, emptyContext);
         }
-        return new JsonWriterFactoryImpl(providerConfig, prettyPrinting, pool);
+        Map<String, Object> providerConfig = new HashMap<>();
+        boolean prettyPrinting = JsonProviderImpl.isPrettyPrintingEnabled(config);
+        if (prettyPrinting) {
+            providerConfig.put(JsonGenerator.PRETTY_PRINTING, true);
+        }
+        BufferPool pool = (BufferPool) config.get(JsonContext.PROPERTY_BUFFER_POOL);
+        if (pool != null) {
+            providerConfig.put(JsonContext.PROPERTY_BUFFER_POOL, pool);
+        }
+        return new JsonWriterFactoryImpl(
+                prettyPrinting, new JsonContext(Collections.unmodifiableMap(providerConfig), bufferPool));
     }
 
     @Override
     public JsonReaderFactory createReaderFactory(Map<String, ?> config) {
-        Map<String, Object> providerConfig;
-        boolean rejectDuplicateKeys;
-        BufferPool pool;
         if (config == null) {
-            providerConfig = Collections.emptyMap();
-            rejectDuplicateKeys = false;
-            pool = bufferPool;
-        } else {
-            providerConfig = new HashMap<>();
-            addKnowProperty(providerConfig, config, jakarta.json.JsonConfig.KEY_STRATEGY);
-            if (rejectDuplicateKeys = JsonProviderImpl.isRejectDuplicateKeysEnabled(config)) {
-                providerConfig.put(JsonConfig.REJECT_DUPLICATE_KEYS, true);
-            }
-            pool = (BufferPool) config.get(BufferPool.class.getName());
-            if (pool != null) {
-                providerConfig.put(BufferPool.class.getName(), pool);
-            } else {
-                pool = bufferPool;
-            }
-            providerConfig = Collections.unmodifiableMap(providerConfig);
+            return new JsonReaderFactoryImpl(false, emptyContext);
         }
-        return new JsonReaderFactoryImpl(providerConfig, pool, rejectDuplicateKeys);
+        Map<String, Object> providerConfig = new HashMap<>();
+        boolean rejectDuplicateKeys = JsonProviderImpl.isRejectDuplicateKeysEnabled(config);
+        if (rejectDuplicateKeys) {
+            providerConfig.put(JsonConfig.REJECT_DUPLICATE_KEYS, true);
+        }
+        addKnowProperty(providerConfig, config, jakarta.json.JsonConfig.KEY_STRATEGY);
+        BufferPool pool = (BufferPool) config.get(JsonContext.PROPERTY_BUFFER_POOL);
+        if (pool != null) {
+            providerConfig.put(JsonContext.PROPERTY_BUFFER_POOL, pool);
+        }
+        return new JsonReaderFactoryImpl(
+                rejectDuplicateKeys, new JsonContext(Collections.unmodifiableMap(providerConfig), bufferPool));
     }
 
     @Override
     public JsonObjectBuilder createObjectBuilder() {
-        return new JsonObjectBuilderImpl(bufferPool);
+        return new JsonObjectBuilderImpl(emptyContext);
     }
 
     @Override
     public JsonObjectBuilder createObjectBuilder(JsonObject object) {
-        return new JsonObjectBuilderImpl(object, bufferPool);
+        return new JsonObjectBuilderImpl(object, emptyContext);
     }
 
     @Override
     public JsonObjectBuilder createObjectBuilder(Map<String, ?> map) {
-        return new JsonObjectBuilderImpl(map, bufferPool);
+        return new JsonObjectBuilderImpl(map, emptyContext);
     }
 
     @Override
     public JsonArrayBuilder createArrayBuilder() {
-        return new JsonArrayBuilderImpl(bufferPool);
+        return new JsonArrayBuilderImpl(emptyContext);
     }
 
     @Override
     public JsonArrayBuilder createArrayBuilder(JsonArray array) {
-        return new JsonArrayBuilderImpl(array, bufferPool);
+        return new JsonArrayBuilderImpl(array, emptyContext);
     }
 
     @Override
     public JsonArrayBuilder createArrayBuilder(Collection<?> collection) {
-        return new JsonArrayBuilderImpl(collection, bufferPool);
+        return new JsonArrayBuilderImpl(collection, emptyContext);
     }
 
     @Override
     public JsonPointer createPointer(String jsonPointer) {
-        return new JsonPointerImpl(jsonPointer);
+        return new JsonPointerImpl(jsonPointer, emptyContext);
     }
 
     @Override
     public JsonPatchBuilder createPatchBuilder() {
-        return new JsonPatchBuilderImpl();
+        return new JsonPatchBuilderImpl(emptyContext);
     }
 
     @Override
     public JsonPatchBuilder createPatchBuilder(JsonArray array) {
-        return new JsonPatchBuilderImpl(array);
+        return new JsonPatchBuilderImpl(array, emptyContext);
     }
 
     @Override
     public JsonPatch createPatch(JsonArray array) {
-        return new JsonPatchImpl(array);
+        return new JsonPatchImpl(array, emptyContext);
     }
 
     @Override
     public JsonPatch createDiff(JsonStructure source, JsonStructure target) {
-        return new JsonPatchImpl(JsonPatchImpl.diff(source, target));
+        return new JsonPatchImpl(JsonPatchImpl.diff(source, target, emptyContext), emptyContext);
     }
 
     @Override
     public JsonMergePatch createMergePatch(JsonValue patch) {
-        return new JsonMergePatchImpl(patch);
+        return new JsonMergePatchImpl(patch, emptyContext);
     }
 
     @Override
     public JsonMergePatch createMergeDiff(JsonValue source, JsonValue target) {
-        return new JsonMergePatchImpl(JsonMergePatchImpl.diff(source, target));
+        return new JsonMergePatchImpl(JsonMergePatchImpl.diff(source, target, emptyContext), emptyContext);
     }
 
     @Override
@@ -245,27 +217,27 @@ public class JsonProviderImpl extends JsonProvider {
 
     @Override
     public JsonNumber createValue(int value) {
-        return JsonNumberImpl.getJsonNumber(value);
+        return JsonNumberImpl.getJsonNumber(value, emptyContext.bigIntegerScaleLimit());
     }
 
     @Override
     public JsonNumber createValue(long value) {
-        return JsonNumberImpl.getJsonNumber(value);
+        return JsonNumberImpl.getJsonNumber(value, emptyContext.bigIntegerScaleLimit());
     }
 
     @Override
     public JsonNumber createValue(double value) {
-        return JsonNumberImpl.getJsonNumber(value);
+        return JsonNumberImpl.getJsonNumber(value, emptyContext.bigIntegerScaleLimit());
     }
 
     @Override
     public JsonNumber createValue(BigInteger value) {
-        return JsonNumberImpl.getJsonNumber(value);
+        return JsonNumberImpl.getJsonNumber(value, emptyContext.bigIntegerScaleLimit());
     }
 
     @Override
     public JsonNumber createValue(BigDecimal value) {
-        return JsonNumberImpl.getJsonNumber(value);
+        return JsonNumberImpl.getJsonNumber(value, emptyContext.bigIntegerScaleLimit());
     }
 
     @Override
@@ -278,12 +250,12 @@ public class JsonProviderImpl extends JsonProvider {
     		}
     		rejectDuplicateKeys = JsonProviderImpl.isRejectDuplicateKeysEnabled(config);
     	}
-        return new JsonBuilderFactoryImpl(pool, rejectDuplicateKeys);
+        return new JsonBuilderFactoryImpl(rejectDuplicateKeys, new JsonContext(config, bufferPool));
     }
 
     @Override
     public JsonNumber createValue(Number value) {
-        return JsonNumberImpl.getJsonNumber(value);
+        return JsonNumberImpl.getJsonNumber(value, emptyContext.bigIntegerScaleLimit());
     }
 
     private void addKnowProperty(Map<String, Object> providerConfig, Map<String, ?> config, String property) {

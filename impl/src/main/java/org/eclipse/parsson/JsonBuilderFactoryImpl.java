@@ -31,48 +31,49 @@ import java.util.Map;
  * @author Jitendra Kotamraju
  */
 class JsonBuilderFactoryImpl implements JsonBuilderFactory {
-    private final Map<String, ?> config;
-    private final BufferPool bufferPool;
+    private final JsonContext jsonContext;
+
+    // TODO: Move into JsonContext
     private final boolean rejectDuplicateKeys;
 
-    JsonBuilderFactoryImpl(BufferPool bufferPool, boolean rejectDuplicateKeys) {
-        this.config = Collections.emptyMap();
-        this.bufferPool = bufferPool;
+    JsonBuilderFactoryImpl(boolean rejectDuplicateKeys, JsonContext jsonContext) {
+        this.jsonContext = jsonContext;
         this.rejectDuplicateKeys = rejectDuplicateKeys;
     }
 
     @Override
     public JsonObjectBuilder createObjectBuilder() {
-        return new JsonObjectBuilderImpl(bufferPool, rejectDuplicateKeys, Collections.emptyMap());
+        return new JsonObjectBuilderImpl(rejectDuplicateKeys, jsonContext);
     }
  
     @Override
     public JsonObjectBuilder createObjectBuilder(JsonObject object) {
-        return new JsonObjectBuilderImpl(object, bufferPool, rejectDuplicateKeys, Collections.emptyMap());
+        return new JsonObjectBuilderImpl(object, rejectDuplicateKeys, jsonContext);
     }
 
     @Override
     public JsonObjectBuilder createObjectBuilder(Map<String, Object> object) {
-        return new JsonObjectBuilderImpl(object, bufferPool, rejectDuplicateKeys, Collections.emptyMap());
+        return new JsonObjectBuilderImpl(object, rejectDuplicateKeys, jsonContext);
     }
 
     @Override
     public JsonArrayBuilder createArrayBuilder() {
-        return new JsonArrayBuilderImpl(bufferPool);
+        return new JsonArrayBuilderImpl(jsonContext);
     }
 
     @Override
     public JsonArrayBuilder createArrayBuilder(JsonArray array) {
-        return new JsonArrayBuilderImpl(array, bufferPool);
+        return new JsonArrayBuilderImpl(array, jsonContext);
     }
 
     @Override
     public JsonArrayBuilder createArrayBuilder(Collection<?> collection) {
-        return new JsonArrayBuilderImpl(collection, bufferPool);
+        return new JsonArrayBuilderImpl(collection, jsonContext);
     }
 
     @Override
     public Map<String, ?> getConfigInUse() {
-        return config;
+        return jsonContext.config();
     }
+
 }

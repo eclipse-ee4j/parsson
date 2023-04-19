@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -16,8 +16,6 @@
 
 package org.eclipse.parsson;
 
-import org.eclipse.parsson.api.BufferPool;
-
 import jakarta.json.JsonReader;
 import jakarta.json.JsonReaderFactory;
 import java.io.InputStream;
@@ -29,33 +27,31 @@ import java.util.Map;
  * @author Jitendra Kotamraju
  */
 class JsonReaderFactoryImpl implements JsonReaderFactory {
-    private final Map<String, ?> config;
-    private final BufferPool bufferPool;
+    private final JsonContext jsonContext;
     private final boolean rejectDuplicateKeys;
 
-    JsonReaderFactoryImpl(Map<String, ?> config, BufferPool bufferPool, boolean rejectDuplicateKeys) {
-        this.config = config;
-        this.bufferPool = bufferPool;
+    JsonReaderFactoryImpl(boolean rejectDuplicateKeys, JsonContext jsonContext) {
+        this.jsonContext = jsonContext;
         this.rejectDuplicateKeys = rejectDuplicateKeys;
     }
 
     @Override
     public JsonReader createReader(Reader reader) {
-        return new JsonReaderImpl(reader, bufferPool, rejectDuplicateKeys, config);
+        return new JsonReaderImpl(reader, rejectDuplicateKeys, jsonContext);
     }
 
     @Override
     public JsonReader createReader(InputStream in) {
-        return new JsonReaderImpl(in, bufferPool, rejectDuplicateKeys, config);
+        return new JsonReaderImpl(in, rejectDuplicateKeys, jsonContext);
     }
 
     @Override
     public JsonReader createReader(InputStream in, Charset charset) {
-        return new JsonReaderImpl(in, charset, bufferPool, rejectDuplicateKeys, config);
+        return new JsonReaderImpl(in, charset, rejectDuplicateKeys, jsonContext);
     }
 
     @Override
     public Map<String, ?> getConfigInUse() {
-        return config;
+        return jsonContext.config();
     }
 }

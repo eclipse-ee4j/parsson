@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -15,8 +15,6 @@
  */
 
 package org.eclipse.parsson;
-
-import org.eclipse.parsson.api.BufferPool;
 
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObjectBuilder;
@@ -37,7 +35,7 @@ public final class MapUtil {
         super();
     }
 
-    static JsonValue handle(Object value, BufferPool bufferPool) {
+    static JsonValue handle(Object value, JsonContext jsonContext) {
         if (value == null) {
             return JsonValue.NULL;
         } else if (value instanceof JsonValue) {
@@ -47,28 +45,27 @@ public final class MapUtil {
         } else if (value instanceof JsonObjectBuilder) {
             return ((JsonObjectBuilder) value).build();
         } else if (value instanceof BigDecimal) {
-            return JsonNumberImpl.getJsonNumber((BigDecimal) value);
+            return JsonNumberImpl.getJsonNumber((BigDecimal) value, jsonContext.bigIntegerScaleLimit());
         } else if (value instanceof BigInteger) {
-            return JsonNumberImpl.getJsonNumber((BigInteger) value);
+            return JsonNumberImpl.getJsonNumber((BigInteger) value, jsonContext.bigIntegerScaleLimit());
         } else if (value instanceof Boolean) {
             Boolean b = (Boolean) value;
             return b ? JsonValue.TRUE : JsonValue.FALSE;
         } else if (value instanceof Double) {
-            return JsonNumberImpl.getJsonNumber((Double) value);
+            return JsonNumberImpl.getJsonNumber((Double) value, jsonContext.bigIntegerScaleLimit());
         } else if (value instanceof Integer) {
-            return JsonNumberImpl.getJsonNumber((Integer) value);
+            return JsonNumberImpl.getJsonNumber((Integer) value, jsonContext.bigIntegerScaleLimit());
         } else if (value instanceof Long) {
-            return JsonNumberImpl.getJsonNumber((Long) value);
+            return JsonNumberImpl.getJsonNumber((Long) value, jsonContext.bigIntegerScaleLimit());
         } else if (value instanceof String) {
             return new JsonStringImpl((String) value);
         } else if (value instanceof Collection) {
-            @SuppressWarnings("unchecked")
             Collection<?> collection = (Collection<?>) value;
-            JsonArrayBuilder jsonArrayBuilder = new JsonArrayBuilderImpl(collection, bufferPool);
+            JsonArrayBuilder jsonArrayBuilder = new JsonArrayBuilderImpl(collection, jsonContext);
             return jsonArrayBuilder.build();
         } else if (value instanceof Map) {
             @SuppressWarnings("unchecked")
-            JsonObjectBuilder object = new JsonObjectBuilderImpl((Map<String, Object>) value, bufferPool);
+            JsonObjectBuilder object = new JsonObjectBuilderImpl((Map<String, Object>) value, jsonContext);
             return object.build();
         }
 
