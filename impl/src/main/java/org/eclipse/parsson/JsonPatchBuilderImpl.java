@@ -45,7 +45,7 @@ import jakarta.json.JsonValue;
  *
  * @since 1.1
  */
-final class JsonPatchBuilderImpl implements JsonPatchBuilder {
+public final class JsonPatchBuilderImpl implements JsonPatchBuilder {
 
     private final JsonContext jsonContext;
     private final JsonArrayBuilder builder;
@@ -55,7 +55,7 @@ final class JsonPatchBuilderImpl implements JsonPatchBuilder {
      * JSON Patch
      * @param patch the JSON Patch
      */
-    JsonPatchBuilderImpl(JsonArray patch, JsonContext jsonContext) {
+    public JsonPatchBuilderImpl(JsonArray patch, JsonContext jsonContext) {
         this.jsonContext = jsonContext;
         builder = new JsonArrayBuilderImpl(patch, jsonContext);
     }
@@ -63,7 +63,7 @@ final class JsonPatchBuilderImpl implements JsonPatchBuilder {
     /**
      * Creates JsonPatchBuilderImpl with empty JSON Patch
      */
-    JsonPatchBuilderImpl(JsonContext jsonContext) {
+    public JsonPatchBuilderImpl(JsonContext jsonContext) {
         this.jsonContext = jsonContext;
         builder = new JsonArrayBuilderImpl(jsonContext);
     }

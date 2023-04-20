@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -28,7 +28,7 @@ import org.eclipse.parsson.api.BufferPool;
  * Parsson configuration.
  * Values are composed from properties {@code Map}, system properties and default value.
  */
-class JsonContext {
+final class JsonContext {
 
     /**
      * Configuration system property to limit maximum value of BigInteger scale value.
@@ -43,10 +43,11 @@ class JsonContext {
     /** Default maximum value of BigInteger scale value limit. */
     private static final int DEFAULT_MAX_BIGINT_SCALE = 100000;
 
+    /**
+     * Custom char[] pool instance property. Can be set in properties {@code Map} only.
+     */
     static final String PROPERTY_BUFFER_POOL = BufferPool.class.getName();
 
-    @SuppressWarnings("removal")
-    private static final boolean IS_SECURITY_MANAGER = System.getSecurityManager() != null;
     private final Map<String, ?> config;
 
     // Maximum value of BigInteger scale value
@@ -117,7 +118,7 @@ class JsonContext {
 
     @SuppressWarnings("removal")
     private static String getSystemProperty(String propertyName) throws JsonException {
-        if (IS_SECURITY_MANAGER) {
+        if (System.getSecurityManager() != null) {
             return AccessController.doPrivileged(
                     (PrivilegedAction<String>) () -> System.getProperty(propertyName));
         } else {

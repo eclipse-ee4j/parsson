@@ -31,13 +31,13 @@ import jakarta.json.JsonValue;
  * @since 1.1
  */
 
-final class JsonMergePatchImpl implements JsonMergePatch {
+public final class JsonMergePatchImpl implements JsonMergePatch {
 
     private final JsonValue patch;
 
     private final JsonContext jsonContext;
 
-    JsonMergePatchImpl(JsonValue patch, JsonContext jsonContext) {
+    public JsonMergePatchImpl(JsonValue patch, JsonContext jsonContext) {
         this.jsonContext = jsonContext;
         this.patch = patch;
     }
