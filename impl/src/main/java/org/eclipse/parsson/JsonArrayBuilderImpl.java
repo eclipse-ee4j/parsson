@@ -33,8 +33,8 @@ import java.util.Optional;
  * @author Jitendra Kotamraju
  * @author Kin-man Chung
  */
-
 class JsonArrayBuilderImpl implements JsonArrayBuilder {
+
     private ArrayList<JsonValue> valueList;
     private final JsonContext jsonContext;
 

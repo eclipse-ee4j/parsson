@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -17,43 +17,38 @@
 package org.eclipse.parsson;
 
 import java.util.Collection;
-import org.eclipse.parsson.api.BufferPool;
 
 import jakarta.json.JsonObject;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonBuilderFactory;
 import jakarta.json.JsonObjectBuilder;
-import java.util.Collections;
 import java.util.Map;
 
 /**
  * @author Jitendra Kotamraju
  */
 class JsonBuilderFactoryImpl implements JsonBuilderFactory {
+
     private final JsonContext jsonContext;
 
-    // TODO: Move into JsonContext
-    private final boolean rejectDuplicateKeys;
-
-    JsonBuilderFactoryImpl(boolean rejectDuplicateKeys, JsonContext jsonContext) {
+    JsonBuilderFactoryImpl(JsonContext jsonContext) {
         this.jsonContext = jsonContext;
-        this.rejectDuplicateKeys = rejectDuplicateKeys;
     }
 
     @Override
     public JsonObjectBuilder createObjectBuilder() {
-        return new JsonObjectBuilderImpl(rejectDuplicateKeys, jsonContext);
+        return new JsonObjectBuilderImpl(jsonContext);
     }
  
     @Override
     public JsonObjectBuilder createObjectBuilder(JsonObject object) {
-        return new JsonObjectBuilderImpl(object, rejectDuplicateKeys, jsonContext);
+        return new JsonObjectBuilderImpl(object, jsonContext);
     }
 
     @Override
     public JsonObjectBuilder createObjectBuilder(Map<String, Object> object) {
-        return new JsonObjectBuilderImpl(object, rejectDuplicateKeys, jsonContext);
+        return new JsonObjectBuilderImpl(object, jsonContext);
     }
 
     @Override

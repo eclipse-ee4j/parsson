@@ -27,27 +27,26 @@ import java.util.Map;
  * @author Jitendra Kotamraju
  */
 class JsonReaderFactoryImpl implements JsonReaderFactory {
-    private final JsonContext jsonContext;
-    private final boolean rejectDuplicateKeys;
 
-    JsonReaderFactoryImpl(boolean rejectDuplicateKeys, JsonContext jsonContext) {
+    private final JsonContext jsonContext;
+
+    JsonReaderFactoryImpl(JsonContext jsonContext) {
         this.jsonContext = jsonContext;
-        this.rejectDuplicateKeys = rejectDuplicateKeys;
     }
 
     @Override
     public JsonReader createReader(Reader reader) {
-        return new JsonReaderImpl(reader, rejectDuplicateKeys, jsonContext);
+        return new JsonReaderImpl(reader, jsonContext);
     }
 
     @Override
     public JsonReader createReader(InputStream in) {
-        return new JsonReaderImpl(in, rejectDuplicateKeys, jsonContext);
+        return new JsonReaderImpl(in, jsonContext);
     }
 
     @Override
     public JsonReader createReader(InputStream in, Charset charset) {
-        return new JsonReaderImpl(in, charset, rejectDuplicateKeys, jsonContext);
+        return new JsonReaderImpl(in, charset, jsonContext);
     }
 
     @Override

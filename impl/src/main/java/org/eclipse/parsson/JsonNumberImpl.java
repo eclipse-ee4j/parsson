@@ -16,11 +16,9 @@
 
 package org.eclipse.parsson;
 
-import jakarta.json.JsonException;
 import jakarta.json.JsonNumber;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.security.PrivilegedAction;
 
 /**
  * JsonNumber impl. Subclasses provide optimized implementations
@@ -31,7 +29,6 @@ import java.security.PrivilegedAction;
 abstract class JsonNumberImpl implements JsonNumber {
 
     private int hashCode;
-
     private final int bigIntegerScaleLimit;
 
     JsonNumberImpl(int bigIntegerScaleLimit) {

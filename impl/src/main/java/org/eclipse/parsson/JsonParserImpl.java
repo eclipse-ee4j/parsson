@@ -52,7 +52,6 @@ import org.eclipse.parsson.JsonTokenizer.JsonToken;
  */
 public class JsonParserImpl implements JsonParser {
 
-    private final boolean rejectDuplicateKeys;
     private Context currentContext = new NoneContext();
     private Event currentEvent;
 
@@ -63,34 +62,19 @@ public class JsonParserImpl implements JsonParser {
     private final JsonContext jsonContext;
 
     public JsonParserImpl(Reader reader, JsonContext jsonContext) {
-        this(reader, false, jsonContext);
-    }
-
-    public JsonParserImpl(Reader reader, boolean rejectDuplicateKeys, JsonContext jsonContext) {
         this.jsonContext = jsonContext;
-        this.rejectDuplicateKeys = rejectDuplicateKeys;
-        tokenizer = new JsonTokenizer(reader, jsonContext);
+        this.tokenizer = new JsonTokenizer(reader, jsonContext);
     }
 
     public JsonParserImpl(InputStream in, JsonContext jsonContext) {
-        this(in, false, jsonContext);
-    }
-
-    public JsonParserImpl(InputStream in, boolean rejectDuplicateKeys, JsonContext jsonContext) {
         this.jsonContext = jsonContext;
-        this.rejectDuplicateKeys = rejectDuplicateKeys;
         UnicodeDetectingInputStream uin = new UnicodeDetectingInputStream(in);
-        tokenizer = new JsonTokenizer(new InputStreamReader(uin, uin.getCharset()), jsonContext);
+        this.tokenizer = new JsonTokenizer(new InputStreamReader(uin, uin.getCharset()), jsonContext);
     }
 
     public JsonParserImpl(InputStream in, Charset encoding, JsonContext jsonContext) {
-        this(in, encoding, false, jsonContext);
-    }
-
-    public JsonParserImpl(InputStream in, Charset encoding, boolean rejectDuplicateKeys, JsonContext jsonContext) {
         this.jsonContext = jsonContext;
-        this.rejectDuplicateKeys = rejectDuplicateKeys;
-        tokenizer = new JsonTokenizer(new InputStreamReader(in, encoding), jsonContext);
+        this.tokenizer = new JsonTokenizer(new InputStreamReader(in, encoding), jsonContext);
     }
 
     @Override
@@ -162,7 +146,7 @@ public class JsonParserImpl implements JsonParser {
             throw new IllegalStateException(
                 JsonMessages.PARSER_GETOBJECT_ERR(currentEvent));
         }
-        return getObject(new JsonObjectBuilderImpl(rejectDuplicateKeys, jsonContext));
+        return getObject(new JsonObjectBuilderImpl(jsonContext));
     }
 
     @Override
@@ -171,7 +155,7 @@ public class JsonParserImpl implements JsonParser {
             case START_ARRAY:
                 return getArray(new JsonArrayBuilderImpl(jsonContext));
             case START_OBJECT:
-                return getObject(new JsonObjectBuilderImpl(rejectDuplicateKeys, jsonContext));
+                return getObject(new JsonObjectBuilderImpl(jsonContext));
             case KEY_NAME:
             case VALUE_STRING:
                 return new JsonStringImpl(getCharSequence());

@@ -28,33 +28,29 @@ import java.util.Map;
  */
 class JsonGeneratorFactoryImpl implements JsonGeneratorFactory {
 
-    // TODO: Move into JsonContext
-    private final boolean prettyPrinting;
-
     private final JsonContext jsonContext;
 
-    JsonGeneratorFactoryImpl(boolean prettyPrinting, JsonContext jsonContext) {
+    JsonGeneratorFactoryImpl(JsonContext jsonContext) {
         this.jsonContext = jsonContext;
-        this.prettyPrinting = prettyPrinting;
     }
 
     @Override
     public JsonGenerator createGenerator(Writer writer) {
-        return prettyPrinting
+        return jsonContext.prettyPrinting()
                 ? new JsonPrettyGeneratorImpl(writer, jsonContext)
                 : new JsonGeneratorImpl(writer, jsonContext);
     }
 
     @Override
     public JsonGenerator createGenerator(OutputStream out) {
-        return prettyPrinting
+        return jsonContext.prettyPrinting()
                 ? new JsonPrettyGeneratorImpl(out, jsonContext)
                 : new JsonGeneratorImpl(out, jsonContext);
     }
 
     @Override
     public JsonGenerator createGenerator(OutputStream out, Charset charset) {
-        return prettyPrinting
+        return jsonContext.prettyPrinting()
                 ? new JsonPrettyGeneratorImpl(out, charset, jsonContext)
                 : new JsonGeneratorImpl(out, charset, jsonContext);
     }

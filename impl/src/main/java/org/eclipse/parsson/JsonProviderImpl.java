@@ -30,8 +30,6 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -42,8 +40,9 @@ import java.math.BigInteger;
  * @author Alex Soto
  */
 public class JsonProviderImpl extends JsonProvider {
+
     private final BufferPool bufferPool = new BufferPoolImpl();
-    private final JsonContext emptyContext = new JsonContext(Collections.emptyMap(), bufferPool);
+    private final JsonContext emptyContext = new JsonContext(null, bufferPool);
 
     @Override
     public JsonGenerator createGenerator(Writer writer) {
@@ -72,20 +71,12 @@ public class JsonProviderImpl extends JsonProvider {
 
     @Override
     public JsonGeneratorFactory createGeneratorFactory(Map<String, ?> config) {
-        if (config == null) {
-            return new JsonGeneratorFactoryImpl(false, emptyContext);
-        }
-        Map<String, Object> providerConfig = new HashMap<>();
-        boolean prettyPrinting = JsonProviderImpl.isPrettyPrintingEnabled(config);
-        if (prettyPrinting) {
-            providerConfig.put(JsonGenerator.PRETTY_PRINTING, true);
-        }
-        BufferPool pool = (BufferPool) config.get(JsonContext.PROPERTY_BUFFER_POOL);
-        if (pool != null) {
-            providerConfig.put(JsonContext.PROPERTY_BUFFER_POOL, pool);
-        }
-        return new JsonGeneratorFactoryImpl(
-                prettyPrinting, new JsonContext(Collections.unmodifiableMap(providerConfig), bufferPool));
+        return config == null
+                ? new JsonGeneratorFactoryImpl(emptyContext)
+                : new JsonGeneratorFactoryImpl(
+                        new JsonContext(config, bufferPool,
+                                        JsonGenerator.PRETTY_PRINTING,
+                                        JsonContext.PROPERTY_BUFFER_POOL));
     }
 
     @Override
@@ -110,39 +101,23 @@ public class JsonProviderImpl extends JsonProvider {
 
     @Override
     public JsonWriterFactory createWriterFactory(Map<String, ?> config) {
-        if (config == null) {
-            return new JsonWriterFactoryImpl(false, emptyContext);
-        }
-        Map<String, Object> providerConfig = new HashMap<>();
-        boolean prettyPrinting = JsonProviderImpl.isPrettyPrintingEnabled(config);
-        if (prettyPrinting) {
-            providerConfig.put(JsonGenerator.PRETTY_PRINTING, true);
-        }
-        BufferPool pool = (BufferPool) config.get(JsonContext.PROPERTY_BUFFER_POOL);
-        if (pool != null) {
-            providerConfig.put(JsonContext.PROPERTY_BUFFER_POOL, pool);
-        }
-        return new JsonWriterFactoryImpl(
-                prettyPrinting, new JsonContext(Collections.unmodifiableMap(providerConfig), bufferPool));
+        return config == null
+                ? new JsonWriterFactoryImpl(emptyContext)
+                : new JsonWriterFactoryImpl(
+                        new JsonContext(config, bufferPool,
+                                        JsonGenerator.PRETTY_PRINTING,
+                                        JsonContext.PROPERTY_BUFFER_POOL));
     }
 
     @Override
     public JsonReaderFactory createReaderFactory(Map<String, ?> config) {
-        if (config == null) {
-            return new JsonReaderFactoryImpl(false, emptyContext);
-        }
-        Map<String, Object> providerConfig = new HashMap<>();
-        boolean rejectDuplicateKeys = JsonProviderImpl.isRejectDuplicateKeysEnabled(config);
-        if (rejectDuplicateKeys) {
-            providerConfig.put(JsonConfig.REJECT_DUPLICATE_KEYS, true);
-        }
-        addKnowProperty(providerConfig, config, jakarta.json.JsonConfig.KEY_STRATEGY);
-        BufferPool pool = (BufferPool) config.get(JsonContext.PROPERTY_BUFFER_POOL);
-        if (pool != null) {
-            providerConfig.put(JsonContext.PROPERTY_BUFFER_POOL, pool);
-        }
-        return new JsonReaderFactoryImpl(
-                rejectDuplicateKeys, new JsonContext(Collections.unmodifiableMap(providerConfig), bufferPool));
+        return config == null
+                ? new JsonReaderFactoryImpl(emptyContext)
+                : new JsonReaderFactoryImpl(
+                        new JsonContext(config, bufferPool,
+                                        JsonConfig.REJECT_DUPLICATE_KEYS,
+                                        jakarta.json.JsonConfig.KEY_STRATEGY,
+                                        JsonContext.PROPERTY_BUFFER_POOL));
     }
 
     @Override
@@ -242,15 +217,13 @@ public class JsonProviderImpl extends JsonProvider {
 
     @Override
     public JsonBuilderFactory createBuilderFactory(Map<String, ?> config) {
-    	BufferPool pool = bufferPool;
-    	boolean rejectDuplicateKeys = false;
-    	if (config != null) {
-    		if (config.containsKey(BufferPool.class.getName())) {
-    			pool = (BufferPool) config.get(BufferPool.class.getName());
-    		}
-    		rejectDuplicateKeys = JsonProviderImpl.isRejectDuplicateKeysEnabled(config);
-    	}
-        return new JsonBuilderFactoryImpl(rejectDuplicateKeys, new JsonContext(config, bufferPool));
+        return config == null
+                ? new JsonBuilderFactoryImpl(emptyContext)
+                : new JsonBuilderFactoryImpl(
+                        new JsonContext(config, bufferPool,
+                                        JsonConfig.REJECT_DUPLICATE_KEYS,
+                                        jakarta.json.JsonConfig.KEY_STRATEGY,
+                                        JsonContext.PROPERTY_BUFFER_POOL));
     }
 
     @Override
@@ -258,17 +231,4 @@ public class JsonProviderImpl extends JsonProvider {
         return JsonNumberImpl.getJsonNumber(value, emptyContext.bigIntegerScaleLimit());
     }
 
-    private void addKnowProperty(Map<String, Object> providerConfig, Map<String, ?> config, String property) {
-        if (config.containsKey(property)) {
-            providerConfig.put(property, config.get(property));
-        }
-    }
-
-    static boolean isPrettyPrintingEnabled(Map<String, ?> config) {
-        return config.containsKey(JsonGenerator.PRETTY_PRINTING);
-    }
-
-    static boolean isRejectDuplicateKeysEnabled(Map<String, ?> config) {
-        return config.containsKey(JsonConfig.REJECT_DUPLICATE_KEYS);
-    }
 }

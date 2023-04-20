@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -16,8 +16,6 @@
 
 package org.eclipse.parsson;
 
-import org.eclipse.parsson.api.BufferPool;
-
 import jakarta.json.JsonWriter;
 import jakarta.json.JsonWriterFactory;
 import java.io.OutputStream;
@@ -29,28 +27,26 @@ import java.util.Map;
  * @author Jitendra Kotamraju
  */
 class JsonWriterFactoryImpl implements JsonWriterFactory {
-    // TODO: Move into JsonContext
-    private final boolean prettyPrinting;
+
     private final JsonContext jsonContext;
 
-    JsonWriterFactoryImpl(boolean prettyPrinting, JsonContext jsonContext) {
+    JsonWriterFactoryImpl(JsonContext jsonContext) {
         this.jsonContext = jsonContext;
-        this.prettyPrinting = prettyPrinting;
     }
 
     @Override
     public JsonWriter createWriter(Writer writer) {
-        return new JsonWriterImpl(writer, prettyPrinting, jsonContext);
+        return new JsonWriterImpl(writer, jsonContext);
     }
 
     @Override
     public JsonWriter createWriter(OutputStream out) {
-        return new JsonWriterImpl(out, prettyPrinting, jsonContext);
+        return new JsonWriterImpl(out, jsonContext);
     }
 
     @Override
     public JsonWriter createWriter(OutputStream out, Charset charset) {
-        return new JsonWriterImpl(out, charset, prettyPrinting, jsonContext);
+        return new JsonWriterImpl(out, charset, jsonContext);
     }
 
     @Override

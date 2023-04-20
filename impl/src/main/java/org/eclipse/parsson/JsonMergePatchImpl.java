@@ -16,7 +16,6 @@
 
 package org.eclipse.parsson;
 
-import java.util.Collections;
 import java.util.Objects;
 
 import jakarta.json.JsonMergePatch;
@@ -34,7 +33,6 @@ import jakarta.json.JsonValue;
 public final class JsonMergePatchImpl implements JsonMergePatch {
 
     private final JsonValue patch;
-
     private final JsonContext jsonContext;
 
     public JsonMergePatchImpl(JsonValue patch, JsonContext jsonContext) {

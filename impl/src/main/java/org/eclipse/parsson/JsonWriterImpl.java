@@ -37,30 +37,21 @@ class JsonWriterImpl implements JsonWriter {
     private final NoFlushOutputStream os;
 
     JsonWriterImpl(Writer writer, JsonContext jsonContext) {
-        this(writer, false, jsonContext);
-    }
-
-    JsonWriterImpl(Writer writer, boolean prettyPrinting, JsonContext jsonContext) {
-        generator = prettyPrinting
+        this.generator = jsonContext.prettyPrinting()
                 ? new JsonPrettyGeneratorImpl(writer, jsonContext)
                 : new JsonGeneratorImpl(writer, jsonContext);
-        os = null;
+        this.os = null;
     }
 
     JsonWriterImpl(OutputStream out, JsonContext jsonContext) {
-        this(out, StandardCharsets.UTF_8, false, jsonContext);
+        this(out, StandardCharsets.UTF_8, jsonContext);
     }
 
-    JsonWriterImpl(OutputStream out, boolean prettyPrinting, JsonContext jsonContext) {
-        this(out, StandardCharsets.UTF_8, prettyPrinting, jsonContext);
-    }
-
-    JsonWriterImpl(OutputStream out, Charset charset,
-                   boolean prettyPrinting, JsonContext jsonContext) {
+    JsonWriterImpl(OutputStream out, Charset charset, JsonContext jsonContext) {
         // Decorating the given stream, so that buffered contents can be
         // written without actually flushing the stream.
         this.os = new NoFlushOutputStream(out);
-        generator = prettyPrinting
+        this.generator = jsonContext.prettyPrinting()
                 ? new JsonPrettyGeneratorImpl(os, charset, jsonContext)
                 : new JsonGeneratorImpl(os, charset, jsonContext);
     }

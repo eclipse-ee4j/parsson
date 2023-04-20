@@ -19,10 +19,14 @@ package org.eclipse.parsson;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import jakarta.json.JsonException;
+import jakarta.json.stream.JsonGenerator;
 import org.eclipse.parsson.api.BufferPool;
+import org.eclipse.parsson.api.JsonConfig;
 
 /**
  * Parsson configuration.
@@ -53,12 +57,42 @@ final class JsonContext {
     // Maximum value of BigInteger scale value
     private final int bigIntegerScaleLimit;
 
+    // Whether JSON pretty printing is enabled
+    private final boolean prettyPrinting;
+
+    // Whether duplicate keys in JsonObject shall be rejected.
+    private final boolean rejectDuplicateKeys;
+
     private final BufferPool bufferPool;
 
+    /**
+     * Creates an instance of Parsson configuration.
+     *
+     * @param config a {@code Map} of provider specific properties to configure the JSON parsers
+     * @param defaultPool default char[] pool to use when no instance is configured
+     */
     JsonContext(Map<String, ?> config, BufferPool defaultPool) {
-        this.config = config != null ? Collections.unmodifiableMap(config) : null;
         this.bigIntegerScaleLimit = getIntConfig(PROPERTY_MAX_BIGINT_SCALE, config, DEFAULT_MAX_BIGINT_SCALE);
+        this.prettyPrinting = getBooleanConfig(JsonGenerator.PRETTY_PRINTING, config);
+        this.rejectDuplicateKeys = getBooleanConfig(JsonConfig.REJECT_DUPLICATE_KEYS, config);
         this.bufferPool = getBufferPool(config, defaultPool);
+        this.config = config != null ? Collections.unmodifiableMap(config) : null;
+    }
+
+    /**
+     * Creates an instance of Parsson configuration.
+     *
+     * @param config a map of provider specific properties to configure the JSON parsers
+     * @param defaultPool default char[] pool to use when no instance is configured
+     * @param properties properties to store in local copy of provider specific properties {@code Map}
+     */
+    JsonContext(Map<String, ?> config, BufferPool defaultPool, String... properties) {
+        this.bigIntegerScaleLimit = getIntConfig(PROPERTY_MAX_BIGINT_SCALE, config, DEFAULT_MAX_BIGINT_SCALE);
+        this.prettyPrinting = getBooleanConfig(JsonGenerator.PRETTY_PRINTING, config);
+        this.rejectDuplicateKeys = getBooleanConfig(JsonConfig.REJECT_DUPLICATE_KEYS, config);
+        this.bufferPool = getBufferPool(config, defaultPool);
+        this.config = config != null
+                ? Collections.unmodifiableMap(copyPropertiesMap(this, config, properties)) : null;
     }
 
     Map<String, ?> config() {
@@ -71,6 +105,14 @@ final class JsonContext {
 
     int bigIntegerScaleLimit() {
         return bigIntegerScaleLimit;
+    }
+
+    boolean prettyPrinting() {
+        return prettyPrinting;
+    }
+
+    boolean rejectDuplicateKeys() {
+        return rejectDuplicateKeys;
     }
 
     BufferPool bufferPool() {
@@ -88,11 +130,22 @@ final class JsonContext {
         if (intConfig != null) {
             return intConfig;
         }
+        // Try system properties as fallback.
         intConfig = getIntSystemProperty(propertyName);
         return intConfig != null ? intConfig : defaultValue;
     }
 
-    private static Integer getIntProperty(String propertyName, Map<String, ?> config) throws JsonException {
+    private static boolean getBooleanConfig(String propertyName, Map<String, ?> config) throws JsonException {
+        // Try config Map first
+        Boolean booleanConfig = config != null ? getBooleanProperty(propertyName, config) : null;
+        if (booleanConfig != null) {
+            return booleanConfig;
+        }
+        // Try system properties as fallback.
+        return getBooleanSystemProperty(propertyName);
+    }
+
+        private static Integer getIntProperty(String propertyName, Map<String, ?> config) throws JsonException {
         Object property = config.get(propertyName);
         if (property == null) {
             return null;
@@ -108,12 +161,23 @@ final class JsonContext {
                               propertyName, property.getClass().getName()));
     }
 
+    // Returns true when property exists or null otherwise. Property value is ignored.
+    private static Boolean getBooleanProperty(String propertyName, Map<String, ?> config) throws JsonException {
+        return config.containsKey(propertyName) ? true : null;
+    }
+
+
     private static Integer getIntSystemProperty(String propertyName) throws JsonException {
         String systemProperty = getSystemProperty(propertyName);
         if (systemProperty == null) {
             return null;
         }
         return propertyStringToInt(propertyName, systemProperty);
+    }
+
+    // Returns true when property exists or false otherwise. Property value is ignored.
+    private static boolean getBooleanSystemProperty(String propertyName) throws JsonException {
+        return getSystemProperty(propertyName) != null;
     }
 
     @SuppressWarnings("removal")
@@ -133,6 +197,37 @@ final class JsonContext {
             throw new JsonException(
                     String.format("Value of %s property is not a number", propertyName), ex);
         }
+    }
+
+    // Constructor helper: Copy provider specific properties Map. Only specified properties are added.
+    // Instance prettyPrinting and rejectDuplicateKeys variables must be initialized before
+    // this method is called.
+    private static Map<String, ?> copyPropertiesMap(JsonContext instance, Map<String, ?> config, String... properties) {
+        Objects.requireNonNull(config, "Map of provider specific properties is null");
+        if (properties == null || properties.length == 0) {
+            return Collections.emptyMap();
+        }
+        Map<String, Object> newConfig = new HashMap<>(properties.length);
+        for (String propertyName : properties) {
+            switch (propertyName) {
+                // Some properties need special handling.
+                case JsonGenerator.PRETTY_PRINTING:
+                    if (instance.prettyPrinting) {
+                        newConfig.put(JsonGenerator.PRETTY_PRINTING, true);
+                    }
+                    break;
+                case JsonConfig.REJECT_DUPLICATE_KEYS:
+                    if (instance.rejectDuplicateKeys) {
+                        newConfig.put(JsonConfig.REJECT_DUPLICATE_KEYS, true);
+                    }
+                // Rest of properties are copied without changes
+                default:
+                    if (config.containsKey(propertyName)) {
+                        newConfig.put(propertyName, config.get(propertyName));
+                    }
+            }
+        }
+        return newConfig;
     }
 
 }

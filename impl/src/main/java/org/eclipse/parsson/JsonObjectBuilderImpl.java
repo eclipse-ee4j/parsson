@@ -48,33 +48,21 @@ class JsonObjectBuilderImpl implements JsonObjectBuilder {
     private final JsonContext jsonContext;
     private final DuplicateStrategy duplicateStrategy;
 
-    JsonObjectBuilderImpl(boolean rejectDuplicateKeys, JsonContext jsonContext) {
+    JsonObjectBuilderImpl(JsonContext jsonContext) {
         this.jsonContext = jsonContext;
         this.duplicateStrategy = DuplicateStrategy.strategyFromProperty(
-                jsonContext.config(jakarta.json.JsonConfig.KEY_STRATEGY), rejectDuplicateKeys);
-    }
-
-    JsonObjectBuilderImpl(JsonContext jsonContext) {
-        this(false, jsonContext);
+                jsonContext.config(jakarta.json.JsonConfig.KEY_STRATEGY), jsonContext.rejectDuplicateKeys());
     }
 
     JsonObjectBuilderImpl(JsonObject object, JsonContext jsonContext) {
-        this(object, false, jsonContext);
-    }
-    
-    JsonObjectBuilderImpl(JsonObject object, boolean rejectDuplicateKeys, JsonContext jsonContext) {
-        this(rejectDuplicateKeys, jsonContext);
-        valueMap = new LinkedHashMap<>();
-        valueMap.putAll(object);
+        this(jsonContext);
+        this.valueMap = new LinkedHashMap<>();
+        this.valueMap.putAll(object);
     }
 
     JsonObjectBuilderImpl(Map<String, ?> map, JsonContext jsonContext) {
-        this(map, false, jsonContext);
-    }
-    
-    JsonObjectBuilderImpl(Map<String, ?> map, boolean rejectDuplicateKeys, JsonContext jsonContext) {
-        this(rejectDuplicateKeys, jsonContext);
-    	valueMap = new LinkedHashMap<>();
+        this(jsonContext);
+        this.valueMap = new LinkedHashMap<>();
     	populate(map);
     }
 

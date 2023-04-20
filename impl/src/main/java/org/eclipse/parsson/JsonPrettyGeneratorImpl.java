@@ -25,6 +25,7 @@ import java.nio.charset.Charset;
  * @author Jitendra Kotamraju
  */
 public class JsonPrettyGeneratorImpl extends JsonGeneratorImpl {
+
     private int indentLevel;
     private static final String INDENT = "    ";
 

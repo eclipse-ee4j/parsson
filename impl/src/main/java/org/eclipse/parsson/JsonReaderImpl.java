@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2022 Contributors to the Eclipse Foundation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -17,13 +17,9 @@
 
 package org.eclipse.parsson;
 
-import org.eclipse.parsson.api.BufferPool;
-
 import java.io.InputStream;
 import java.io.Reader;
 import java.nio.charset.Charset;
-import java.util.Collections;
-import java.util.Map;
 
 import jakarta.json.JsonArray;
 import jakarta.json.JsonException;
@@ -40,31 +36,20 @@ import jakarta.json.stream.JsonParsingException;
  * @author Jitendra Kotamraju
  */
 class JsonReaderImpl implements JsonReader {
+
     private final JsonParserImpl parser;
     private boolean readDone;
     
     JsonReaderImpl(Reader reader, JsonContext jsonContext) {
-        this(reader, false, jsonContext);
-    }
-
-    JsonReaderImpl(Reader reader, boolean rejectDuplicateKeys, JsonContext jsonContext) {
-        parser = new JsonParserImpl(reader, rejectDuplicateKeys, jsonContext);
+        parser = new JsonParserImpl(reader, jsonContext);
     }
 
     JsonReaderImpl(InputStream in, JsonContext jsonContext) {
-        this(in, false, jsonContext);
-    }
-
-    JsonReaderImpl(InputStream in, boolean rejectDuplicateKeys, JsonContext jsonContext) {
-        parser = new JsonParserImpl(in, rejectDuplicateKeys, jsonContext);
+        parser = new JsonParserImpl(in, jsonContext);
     }
 
     JsonReaderImpl(InputStream in, Charset charset, JsonContext jsonContext) {
-        this(in, charset, false, jsonContext);
-    }
-
-    JsonReaderImpl(InputStream in, Charset charset, boolean rejectDuplicateKeys, JsonContext jsonContext) {
-        parser = new JsonParserImpl(in, charset, rejectDuplicateKeys, jsonContext);
+        parser = new JsonParserImpl(in, charset, jsonContext);
     }
 
     @Override
