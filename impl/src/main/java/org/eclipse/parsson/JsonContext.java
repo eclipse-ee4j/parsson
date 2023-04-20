@@ -34,16 +34,6 @@ import org.eclipse.parsson.api.JsonConfig;
  */
 final class JsonContext {
 
-    /**
-     * Configuration system property to limit maximum value of BigInteger scale value.
-     * This property limits maximum value of scale value to be allowed
-     * in {@link jakarta.json.JsonNumber#bigIntegerValue()}
-     * and {@link jakarta.json.JsonNumber#bigIntegerValueExact()} implemented methods.
-     * Default value is set to {@code 100000} and higher values may be a security risc
-     * allowing dDoS attacks.
-     */
-    private static final String PROPERTY_MAX_BIGINT_SCALE = "org.eclipse.parsson.maxBigIntegerScale";
-
     /** Default maximum value of BigInteger scale value limit. */
     private static final int DEFAULT_MAX_BIGINT_SCALE = 100000;
 
@@ -72,7 +62,7 @@ final class JsonContext {
      * @param defaultPool default char[] pool to use when no instance is configured
      */
     JsonContext(Map<String, ?> config, BufferPool defaultPool) {
-        this.bigIntegerScaleLimit = getIntConfig(PROPERTY_MAX_BIGINT_SCALE, config, DEFAULT_MAX_BIGINT_SCALE);
+        this.bigIntegerScaleLimit = getIntConfig(JsonConfig.MAX_BIGINT_SCALE, config, DEFAULT_MAX_BIGINT_SCALE);
         this.prettyPrinting = getBooleanConfig(JsonGenerator.PRETTY_PRINTING, config);
         this.rejectDuplicateKeys = getBooleanConfig(JsonConfig.REJECT_DUPLICATE_KEYS, config);
         this.bufferPool = getBufferPool(config, defaultPool);
@@ -87,7 +77,7 @@ final class JsonContext {
      * @param properties properties to store in local copy of provider specific properties {@code Map}
      */
     JsonContext(Map<String, ?> config, BufferPool defaultPool, String... properties) {
-        this.bigIntegerScaleLimit = getIntConfig(PROPERTY_MAX_BIGINT_SCALE, config, DEFAULT_MAX_BIGINT_SCALE);
+        this.bigIntegerScaleLimit = getIntConfig(JsonConfig.MAX_BIGINT_SCALE, config, DEFAULT_MAX_BIGINT_SCALE);
         this.prettyPrinting = getBooleanConfig(JsonGenerator.PRETTY_PRINTING, config);
         this.rejectDuplicateKeys = getBooleanConfig(JsonConfig.REJECT_DUPLICATE_KEYS, config);
         this.bufferPool = getBufferPool(config, defaultPool);
