@@ -135,7 +135,7 @@ final class JsonContext {
         return getBooleanSystemProperty(propertyName);
     }
 
-        private static Integer getIntProperty(String propertyName, Map<String, ?> config) throws JsonException {
+    private static Integer getIntProperty(String propertyName, Map<String, ?> config) throws JsonException {
         Object property = config.get(propertyName);
         if (property == null) {
             return null;
