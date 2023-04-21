@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2020, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -17,9 +17,22 @@
 package org.eclipse.parsson.api;
 
 public interface JsonConfig {
+
     /**
-     * Configuration property to reject duplicate keys. The value of the property could be
-     * be anything.
+     * Configuration property to limit maximum value of BigInteger scale value.
+     * This property limits maximum value of scale value to be allowed
+     * in {@link jakarta.json.JsonNumber#bigIntegerValue()}
+     * and {@link jakarta.json.JsonNumber#bigIntegerValueExact()} implemented methods.
+     * Default value is set to {@code 100000}.
+     */
+    String MAX_BIGINT_SCALE = "org.eclipse.parsson.maxBigIntegerScale";
+
+    /**
+     * Configuration property to reject duplicate keys.
+     * The value of the property could be anything.
+     *
+     * @deprecated in favor of {@link jakarta.json.JsonConfig#KEY_STRATEGY}
      */
     String REJECT_DUPLICATE_KEYS = "org.eclipse.parsson.rejectDuplicateKeys";
+
 }
