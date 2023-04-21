@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -17,28 +17,24 @@
 package org.eclipse.parsson;
 
 import java.io.StringReader;
+import java.util.Collections;
+
 import jakarta.json.JsonReader;
 import jakarta.json.JsonValue;
-import jakarta.json.stream.JsonParsingException;
-import org.eclipse.parsson.api.BufferPool;
 
 /**
- * A utility class
- * 
- * @since 1.1
+ * Local test utils.
  */
-public final class JsonUtil {
+public class TestUtils {
 
-    private static BufferPool internalPool;
-
-    private JsonUtil() {
-    }
-
-    static BufferPool getInternalBufferPool() {
-        if (internalPool == null) {
-            internalPool = new BufferPoolImpl();
-        }
-        return internalPool;
+    /**
+     * Creates an instance of JSON Merge Patch with empty context.
+     *
+     * @param patch JSON Merge Patch
+     * @return new JSON Merge Patch instance
+     */
+    public static JsonMergePatchImpl createJsonMergePatchImpl(JsonValue patch) {
+        return new JsonMergePatchImpl(patch, new JsonContext(null, new BufferPoolImpl()));
     }
 
     /**
@@ -50,7 +46,7 @@ public final class JsonUtil {
      *
      * @param jsonString the input JSON data
      * @return the object model for {@code jsonString}
-     * @throws JsonParsingException if the input is not legal JSON text
+     * @throws jakarta.json.stream.JsonParsingException if the input is not legal JSON text
      */
     public static JsonValue toJson(String jsonString) {
         StringBuilder builder = new StringBuilder();
@@ -73,13 +69,14 @@ public final class JsonUtil {
             }
             builder.append(ch);
         }
-                   
+
         JsonReader reader = new JsonReaderImpl(
-                                new StringReader(builder.toString()),
-                                getInternalBufferPool());
+                new StringReader(builder.toString()),
+                new JsonContext(Collections.emptyMap(), new BufferPoolImpl()));
         JsonValue value = reader.readValue();
         reader.close();
         return value;
     }
-}
 
+
+}

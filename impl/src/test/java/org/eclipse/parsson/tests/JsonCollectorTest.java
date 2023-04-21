@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -16,6 +16,7 @@
 
 package org.eclipse.parsson.tests;
 
+import org.eclipse.parsson.TestUtils;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -25,7 +26,6 @@ import jakarta.json.JsonObject;
 import jakarta.json.JsonPatchBuilder;
 import jakarta.json.JsonValue;
 import jakarta.json.stream.JsonCollectors;
-import org.eclipse.parsson.JsonUtil;
 
 import static org.junit.Assert.assertEquals;
 
@@ -40,7 +40,7 @@ public class JsonCollectorTest {
     @BeforeClass
     public static void setUpClass() {
         // The JSON source
-        contacts = (JsonArray) JsonUtil.toJson(
+        contacts = (JsonArray) TestUtils.toJson(
         "[                                 " +
         "  { 'name': 'Duke',               " +
         "    'age': 18,                    " +
@@ -70,7 +70,7 @@ public class JsonCollectorTest {
                    .filter(x->"F".equals(x.getString("gender")))
                    .map(x-> x.get("name"))
                    .collect(JsonCollectors.toJsonArray());
-        JsonValue expected = JsonUtil.toJson("['Jane','Joanna']");
+        JsonValue expected = TestUtils.toJson("['Jane','Joanna']");
         assertEquals(expected, result);
     }
 
@@ -86,7 +86,7 @@ public class JsonCollectorTest {
                             x->x.asJsonObject().getString("name"),
                             x->x.asJsonObject().getJsonObject("phones").get("mobile")))
                     ;
-        JsonValue expected = JsonUtil.toJson(
+        JsonValue expected = TestUtils.toJson(
                 "{'Jane': '707-999-5555', 'Joanna': '505-333-4444'}");
         assertEquals(expected, result);
     }
@@ -99,7 +99,7 @@ public class JsonCollectorTest {
          */
         JsonObject result = contacts.getValuesAs(JsonObject.class).stream()
             .collect(JsonCollectors.groupingBy(x->((JsonObject)x).getString("gender")));
-        JsonValue expected = JsonUtil.toJson(
+        JsonValue expected = TestUtils.toJson(
         "{'F':                               " +
         "  [                                 " +
         "    { 'name': 'Jane',               " +
@@ -141,7 +141,7 @@ public class JsonCollectorTest {
             .forEach(p-> builder.replace("/"+index+"/age", p.getInt("age")+1));
         JsonArray result = builder.build().apply(contacts);
 
-        JsonValue expected = (JsonArray) JsonUtil.toJson(
+        JsonValue expected = (JsonArray) TestUtils.toJson(
         "[                                 " +
         "  { 'name': 'Duke',               " +
         "    'age': 19,                    " +

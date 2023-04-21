@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -20,7 +20,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import org.eclipse.parsson.JsonMergePatchImpl;
+import org.eclipse.parsson.TestUtils;
 import org.junit.Test;
 
 import jakarta.json.Json;
@@ -41,11 +41,11 @@ public class JsonMergePatch2Test {
 
     @Test
     public void testEquals() {
-        JsonMergePatchImpl j1 = new JsonMergePatchImpl(Json.createValue("test"));
-        JsonMergePatchImpl j2 = new JsonMergePatchImpl(Json.createValue("test"));
-        JsonMergePatchImpl j3 = new JsonMergePatchImpl(j1.toJsonValue());
-        JsonMergePatchImpl j4 = new JsonMergePatchImpl(Json.createValue("test2"));
-        JsonMergePatchImpl j5 = new JsonMergePatchImpl(null);
+        JsonMergePatch j1 = TestUtils.createJsonMergePatchImpl(Json.createValue("test"));
+        JsonMergePatch j2 = TestUtils.createJsonMergePatchImpl(Json.createValue("test"));
+        JsonMergePatch j3 = TestUtils.createJsonMergePatchImpl(j1.toJsonValue());
+        JsonMergePatch j4 = TestUtils.createJsonMergePatchImpl(Json.createValue("test2"));
+        JsonMergePatch j5 = TestUtils.createJsonMergePatchImpl(null);
 
         assertTrue(j1.equals(j1));
 
@@ -62,4 +62,5 @@ public class JsonMergePatch2Test {
         assertFalse(j1.equals(j5));
         assertFalse(j1.equals(null));
     }
+
 }
