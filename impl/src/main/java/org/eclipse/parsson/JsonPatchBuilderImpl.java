@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -47,6 +47,7 @@ import jakarta.json.JsonValue;
  */
 public final class JsonPatchBuilderImpl implements JsonPatchBuilder {
 
+    private final JsonContext jsonContext;
     private final JsonArrayBuilder builder;
 
     /**
@@ -54,15 +55,17 @@ public final class JsonPatchBuilderImpl implements JsonPatchBuilder {
      * JSON Patch
      * @param patch the JSON Patch
      */
-    public JsonPatchBuilderImpl(JsonArray patch) {
-        builder = new JsonArrayBuilderImpl(patch, JsonUtil.getInternalBufferPool());
+    public JsonPatchBuilderImpl(JsonArray patch, JsonContext jsonContext) {
+        this.jsonContext = jsonContext;
+        builder = new JsonArrayBuilderImpl(patch, jsonContext);
     }
 
     /**
      * Creates JsonPatchBuilderImpl with empty JSON Patch
      */
-    public JsonPatchBuilderImpl() {
-        builder = new JsonArrayBuilderImpl(JsonUtil.getInternalBufferPool());
+    public JsonPatchBuilderImpl(JsonContext jsonContext) {
+        this.jsonContext = jsonContext;
+        builder = new JsonArrayBuilderImpl(jsonContext);
     }
 
     /**
@@ -87,7 +90,7 @@ public final class JsonPatchBuilderImpl implements JsonPatchBuilder {
      */
     @Override
     public JsonPatchBuilder add(String path, JsonValue value) {
-        builder.add(new JsonObjectBuilderImpl(JsonUtil.getInternalBufferPool())
+        builder.add(new JsonObjectBuilderImpl(jsonContext)
                            .add("op", Operation.ADD.operationName())
                            .add("path", path)
                            .add("value", value)
@@ -103,7 +106,7 @@ public final class JsonPatchBuilderImpl implements JsonPatchBuilder {
      */
     @Override
     public JsonPatchBuilder add(String path, String value) {
-        builder.add(new JsonObjectBuilderImpl(JsonUtil.getInternalBufferPool())
+        builder.add(new JsonObjectBuilderImpl(jsonContext)
                            .add("op", Operation.ADD.operationName())
                            .add("path", path)
                            .add("value", value)
@@ -119,7 +122,7 @@ public final class JsonPatchBuilderImpl implements JsonPatchBuilder {
      */
     @Override
     public JsonPatchBuilder add(String path, int value) {
-        builder.add(new JsonObjectBuilderImpl(JsonUtil.getInternalBufferPool())
+        builder.add(new JsonObjectBuilderImpl(jsonContext)
                            .add("op", Operation.ADD.operationName())
                            .add("path", path)
                            .add("value", value)
@@ -135,7 +138,7 @@ public final class JsonPatchBuilderImpl implements JsonPatchBuilder {
      */
     @Override
     public JsonPatchBuilder add(String path, boolean value) {
-        builder.add(new JsonObjectBuilderImpl(JsonUtil.getInternalBufferPool())
+        builder.add(new JsonObjectBuilderImpl(jsonContext)
                            .add("op", Operation.ADD.operationName())
                            .add("path", path)
                            .add("value", value)
@@ -150,7 +153,7 @@ public final class JsonPatchBuilderImpl implements JsonPatchBuilder {
      */
     @Override
     public JsonPatchBuilder remove(String path) {
-        builder.add(new JsonObjectBuilderImpl(JsonUtil.getInternalBufferPool())
+        builder.add(new JsonObjectBuilderImpl(jsonContext)
                            .add("op", Operation.REMOVE.operationName())
                            .add("path", path)
                     );
@@ -165,7 +168,7 @@ public final class JsonPatchBuilderImpl implements JsonPatchBuilder {
      */
     @Override
     public JsonPatchBuilder replace(String path, JsonValue value) {
-        builder.add(new JsonObjectBuilderImpl(JsonUtil.getInternalBufferPool())
+        builder.add(new JsonObjectBuilderImpl(jsonContext)
                            .add("op", Operation.REPLACE.operationName())
                            .add("path", path)
                            .add("value", value)
@@ -181,7 +184,7 @@ public final class JsonPatchBuilderImpl implements JsonPatchBuilder {
      */
     @Override
     public JsonPatchBuilder replace(String path, String value) {
-        builder.add(new JsonObjectBuilderImpl(JsonUtil.getInternalBufferPool())
+        builder.add(new JsonObjectBuilderImpl(jsonContext)
                            .add("op", Operation.REPLACE.operationName())
                            .add("path", path)
                            .add("value", value)
@@ -197,7 +200,7 @@ public final class JsonPatchBuilderImpl implements JsonPatchBuilder {
      */
     @Override
     public JsonPatchBuilder replace(String path, int value) {
-        builder.add(new JsonObjectBuilderImpl(JsonUtil.getInternalBufferPool())
+        builder.add(new JsonObjectBuilderImpl(jsonContext)
                            .add("op", Operation.REPLACE.operationName())
                            .add("path", path)
                            .add("value", value)
@@ -213,7 +216,7 @@ public final class JsonPatchBuilderImpl implements JsonPatchBuilder {
      */
     @Override
     public JsonPatchBuilder replace(String path, boolean value) {
-        builder.add(new JsonObjectBuilderImpl(JsonUtil.getInternalBufferPool())
+        builder.add(new JsonObjectBuilderImpl(jsonContext)
                            .add("op", Operation.REPLACE.operationName())
                            .add("path", path)
                            .add("value", value)
@@ -229,7 +232,7 @@ public final class JsonPatchBuilderImpl implements JsonPatchBuilder {
      */
     @Override
     public JsonPatchBuilder move(String path, String from) {
-        builder.add(new JsonObjectBuilderImpl(JsonUtil.getInternalBufferPool())
+        builder.add(new JsonObjectBuilderImpl(jsonContext)
                            .add("op", Operation.MOVE.operationName())
                            .add("path", path)
                            .add("from", from)
@@ -245,7 +248,7 @@ public final class JsonPatchBuilderImpl implements JsonPatchBuilder {
      */
     @Override
     public JsonPatchBuilder copy(String path, String from) {
-        builder.add(new JsonObjectBuilderImpl(JsonUtil.getInternalBufferPool())
+        builder.add(new JsonObjectBuilderImpl(jsonContext)
                            .add("op", Operation.COPY.operationName())
                            .add("path", path)
                            .add("from", from)
@@ -261,7 +264,7 @@ public final class JsonPatchBuilderImpl implements JsonPatchBuilder {
      */
     @Override
     public JsonPatchBuilder test(String path, JsonValue value) {
-        builder.add(new JsonObjectBuilderImpl(JsonUtil.getInternalBufferPool())
+        builder.add(new JsonObjectBuilderImpl(jsonContext)
                            .add("op", Operation.TEST.operationName())
                            .add("path", path)
                            .add("value", value)
@@ -277,7 +280,7 @@ public final class JsonPatchBuilderImpl implements JsonPatchBuilder {
      */
     @Override
     public JsonPatchBuilder test(String path, String value) {
-        builder.add(new JsonObjectBuilderImpl(JsonUtil.getInternalBufferPool())
+        builder.add(new JsonObjectBuilderImpl(jsonContext)
                            .add("op", Operation.TEST.operationName())
                            .add("path", path)
                            .add("value", value)
@@ -293,7 +296,7 @@ public final class JsonPatchBuilderImpl implements JsonPatchBuilder {
      */
     @Override
     public JsonPatchBuilder test(String path, int value) {
-        builder.add(new JsonObjectBuilderImpl(JsonUtil.getInternalBufferPool())
+        builder.add(new JsonObjectBuilderImpl(jsonContext)
                            .add("op", Operation.TEST.operationName())
                            .add("path", path)
                            .add("value", value)
@@ -309,7 +312,7 @@ public final class JsonPatchBuilderImpl implements JsonPatchBuilder {
      */
     @Override
     public JsonPatchBuilder test(String path, boolean value) {
-        builder.add(new JsonObjectBuilderImpl(JsonUtil.getInternalBufferPool())
+        builder.add(new JsonObjectBuilderImpl(jsonContext)
                            .add("op", Operation.TEST.operationName())
                            .add("path", path)
                            .add("value", value)
@@ -331,7 +334,8 @@ public final class JsonPatchBuilderImpl implements JsonPatchBuilder {
      */
     @Override
     public JsonPatch build() {
-        return new JsonPatchImpl(buildAsJsonArray());
+        return new JsonPatchImpl(buildAsJsonArray(), jsonContext);
     }
+
 }
 

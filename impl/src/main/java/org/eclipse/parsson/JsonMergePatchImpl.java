@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -30,9 +30,11 @@ import jakarta.json.JsonValue;
 
 public final class JsonMergePatchImpl implements JsonMergePatch {
 
-    private JsonValue patch;
+    private final JsonValue patch;
+    private final JsonContext jsonContext;
 
-    public JsonMergePatchImpl(JsonValue patch) {
+    public JsonMergePatchImpl(JsonValue patch, JsonContext jsonContext) {
+        this.jsonContext = jsonContext;
         this.patch = patch;
     }
 
@@ -54,7 +56,7 @@ public final class JsonMergePatchImpl implements JsonMergePatch {
      * @return the {@code JsonValue} as the result of applying the patch
      *    operations on the target.
      */
-    private static JsonValue mergePatch(JsonValue target, JsonValue patch) {
+    private JsonValue mergePatch(JsonValue target, JsonValue patch) {
 
         if (patch.getValueType() != JsonValue.ValueType.OBJECT) {
             return patch;
@@ -64,7 +66,7 @@ public final class JsonMergePatchImpl implements JsonMergePatch {
         }
         JsonObject targetJsonObject = target.asJsonObject();
         JsonObjectBuilder builder =
-            new JsonObjectBuilderImpl(targetJsonObject, JsonUtil.getInternalBufferPool());
+            new JsonObjectBuilderImpl(targetJsonObject, jsonContext);
         patch.asJsonObject().forEach((key, value) -> {
             if (value == JsonValue.NULL) {
                 if (targetJsonObject.containsKey(key)) {
@@ -85,21 +87,21 @@ public final class JsonMergePatchImpl implements JsonMergePatch {
      * @param target the target
      * @return a JSON Patch which when applied to the source, yields the target
      */
-    static JsonValue diff(JsonValue source, JsonValue target) {
+    static JsonValue diff(JsonValue source, JsonValue target, JsonContext jsonContext) {
         if (source.getValueType() != JsonValue.ValueType.OBJECT ||
                 target.getValueType() != JsonValue.ValueType.OBJECT) {
             return target;
         }
         JsonObject s = (JsonObject) source;
         JsonObject t = (JsonObject) target;
-        JsonObjectBuilder builder = new JsonObjectBuilderImpl(JsonUtil.getInternalBufferPool());
+        JsonObjectBuilder builder = new JsonObjectBuilderImpl(jsonContext);
         // First find members to be replaced or removed
         s.forEach((key, value) -> {
             if (t.containsKey(key)) {
                 // key present in both.
                 if (! value.equals(t.get(key))) {
                     // If the values are equal, nop, else get diff for the values
-                    builder.add(key, diff(value, t.get(key)));
+                    builder.add(key, diff(value, t.get(key), jsonContext));
                 }
             } else {
                 builder.addNull(key);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -52,6 +52,7 @@ public final class JsonPointerImpl implements JsonPointer, Serializable {
     private static final long serialVersionUID = -8123110179640843141L;
     private final String[] tokens;
     private final String jsonPointer;
+    private final JsonContext jsonContext;
 
     /**
      * Constructs and initializes a JsonPointerImpl.
@@ -59,8 +60,9 @@ public final class JsonPointerImpl implements JsonPointer, Serializable {
      * @throws NullPointerException if {@code jsonPointer} is {@code null}
      * @throws JsonException if {@code jsonPointer} is not a valid JSON Pointer
      */
-    public JsonPointerImpl(String jsonPointer) {
+    public JsonPointerImpl(String jsonPointer, JsonContext jsonContext) {
         this.jsonPointer = jsonPointer;
+        this.jsonContext = jsonContext;
         tokens = jsonPointer.split("/", -1);  // keep the trailing blanks
         if (! "".equals(tokens[0])) {
             throw new JsonException(JsonMessages.POINTER_FORMAT_INVALID());
@@ -243,7 +245,7 @@ public final class JsonPointerImpl implements JsonPointer, Serializable {
             switch (value.getValueType()) {
                 case OBJECT:
                     JsonObject object = (JsonObject) value;
-                    references[s-i-1] = NodeReference.of(object, tokens[i]);
+                    references[s-i-1] = NodeReference.of(object, tokens[i], jsonContext);
                     if (i < s-1) {
                         value = object.get(tokens[i]);
                         if (value == null) {
@@ -255,7 +257,7 @@ public final class JsonPointerImpl implements JsonPointer, Serializable {
                 case ARRAY:
                     int index = getIndex(tokens[i]);
                     JsonArray array = (JsonArray) value;
-                    references[s-i-1] = NodeReference.of(array, index);
+                    references[s-i-1] = NodeReference.of(array, index, jsonContext);
                     if (i < s-1 && index != -1) {
                         if (index >= array.size()) {
                             throw new JsonException(JsonMessages.NODEREF_ARRAY_INDEX_ERR(index, array.size()));

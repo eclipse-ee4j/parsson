@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -16,13 +16,24 @@
 
 package org.eclipse.parsson;
 
-import org.eclipse.parsson.api.BufferPool;
-
-import jakarta.json.*;
 import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.*;
+import java.util.AbstractMap;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+
+import jakarta.json.JsonArray;
+import jakarta.json.JsonArrayBuilder;
+import jakarta.json.JsonNumber;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonObjectBuilder;
+import jakarta.json.JsonString;
+import jakarta.json.JsonValue;
+import jakarta.json.JsonWriter;
 
 /**
  * JsonObjectBuilder implementation
@@ -33,45 +44,22 @@ import java.util.*;
 class JsonObjectBuilderImpl implements JsonObjectBuilder {
 
     protected Map<String, JsonValue> valueMap;
-    private final BufferPool bufferPool;
-    private final boolean rejectDuplicateKeys;
+    private final JsonContext jsonContext;
 
-    JsonObjectBuilderImpl(BufferPool bufferPool) {
-        this.bufferPool = bufferPool;
-        rejectDuplicateKeys = false;
-    }
-    
-    JsonObjectBuilderImpl(BufferPool bufferPool, boolean rejectDuplicateKeys) {
-        this.bufferPool = bufferPool;
-        this.rejectDuplicateKeys = rejectDuplicateKeys;
+    JsonObjectBuilderImpl(JsonContext jsonContext) {
+        this.jsonContext = jsonContext;
     }
 
-    JsonObjectBuilderImpl(JsonObject object, BufferPool bufferPool) {
-        this.bufferPool = bufferPool;
-        valueMap = new LinkedHashMap<>();
-        valueMap.putAll(object);
-        rejectDuplicateKeys = false;
-    }
-    
-    JsonObjectBuilderImpl(JsonObject object, BufferPool bufferPool, boolean rejectDuplicateKeys) {
-        this.bufferPool = bufferPool;
-        valueMap = new LinkedHashMap<>();
-        valueMap.putAll(object);
-        this.rejectDuplicateKeys = rejectDuplicateKeys;
+    JsonObjectBuilderImpl(JsonObject object, JsonContext jsonContext) {
+        this(jsonContext);
+        this.valueMap = new LinkedHashMap<>();
+        this.valueMap.putAll(object);
     }
 
-    JsonObjectBuilderImpl(Map<String, Object> map, BufferPool bufferPool) {
-        this.bufferPool = bufferPool;
-        valueMap = new LinkedHashMap<>();
-        populate(map);
-        rejectDuplicateKeys = false;
-    }
-    
-    JsonObjectBuilderImpl(Map<String, Object> map, BufferPool bufferPool, boolean rejectDuplicateKeys) {
-    	this.bufferPool = bufferPool;
-    	valueMap = new LinkedHashMap<>();
+    JsonObjectBuilderImpl(Map<String, ?> map, JsonContext jsonContext) {
+        this(jsonContext);
+        this.valueMap = new LinkedHashMap<>();
     	populate(map);
-    	this.rejectDuplicateKeys = rejectDuplicateKeys;
     }
 
     @Override
@@ -94,7 +82,7 @@ class JsonObjectBuilderImpl implements JsonObjectBuilder {
     public JsonObjectBuilder add(String name, BigInteger value) {
         validateName(name);
         validateValue(value);
-        putValueMap(name, JsonNumberImpl.getJsonNumber(value));
+        putValueMap(name, JsonNumberImpl.getJsonNumber(value, jsonContext.bigIntegerScaleLimit()));
         return this;
     }
 
@@ -102,28 +90,28 @@ class JsonObjectBuilderImpl implements JsonObjectBuilder {
     public JsonObjectBuilder add(String name, BigDecimal value) {
         validateName(name);
         validateValue(value);
-        putValueMap(name, JsonNumberImpl.getJsonNumber(value));
+        putValueMap(name, JsonNumberImpl.getJsonNumber(value, jsonContext.bigIntegerScaleLimit()));
         return this;
     }
 
     @Override
     public JsonObjectBuilder add(String name, int value) {
         validateName(name);
-        putValueMap(name, JsonNumberImpl.getJsonNumber(value));
+        putValueMap(name, JsonNumberImpl.getJsonNumber(value, jsonContext.bigIntegerScaleLimit()));
         return this;
     }
 
     @Override
     public JsonObjectBuilder add(String name, long value) {
         validateName(name);
-        putValueMap(name, JsonNumberImpl.getJsonNumber(value));
+        putValueMap(name, JsonNumberImpl.getJsonNumber(value, jsonContext.bigIntegerScaleLimit()));
         return this;
     }
 
     @Override
     public JsonObjectBuilder add(String name, double value) {
         validateName(name);
-        putValueMap(name, JsonNumberImpl.getJsonNumber(value));
+        putValueMap(name, JsonNumberImpl.getJsonNumber(value, jsonContext.bigIntegerScaleLimit()));
         return this;
     }
 
@@ -186,18 +174,18 @@ class JsonObjectBuilderImpl implements JsonObjectBuilder {
                 ? Collections.<String, JsonValue>emptyMap()
                 : Collections.unmodifiableMap(valueMap);
         valueMap = null;
-        return new JsonObjectImpl(snapshot, bufferPool);
+        return new JsonObjectImpl(snapshot, jsonContext);
     }
 
-    private void populate(Map<String, Object> map) {
+    private void populate(Map<String, ?> map) {
         final Set<String> fields = map.keySet();
         for (String field : fields) {
             Object value = map.get(field);
-            if (value != null && value instanceof Optional) {
+            if (value instanceof Optional) {
                 ((Optional<?>) value).ifPresent(v ->
-                        this.valueMap.put(field, MapUtil.handle(v, bufferPool)));
+                        this.valueMap.put(field, MapUtil.handle(v, jsonContext)));
             } else {
-                this.valueMap.put(field, MapUtil.handle(value, bufferPool));
+                this.valueMap.put(field, MapUtil.handle(value, jsonContext));
             }
         }
     }
@@ -207,7 +195,7 @@ class JsonObjectBuilderImpl implements JsonObjectBuilder {
             this.valueMap = new LinkedHashMap<>();
         }
         JsonValue previousValue = valueMap.put(name, value);
-        if (rejectDuplicateKeys && previousValue != null) {
+        if (jsonContext.rejectDuplicateKeys() && previousValue != null) {
             throw new IllegalStateException(JsonMessages.DUPLICATE_KEY(name));
         }
     }
@@ -226,12 +214,12 @@ class JsonObjectBuilderImpl implements JsonObjectBuilder {
 
     private static final class JsonObjectImpl extends AbstractMap<String, JsonValue> implements JsonObject {
         private final Map<String, JsonValue> valueMap;      // unmodifiable
-        private final BufferPool bufferPool;
+        private final JsonContext jsonContext;
         private int hashCode;
 
-        JsonObjectImpl(Map<String, JsonValue> valueMap, BufferPool bufferPool) {
+        JsonObjectImpl(Map<String, JsonValue> valueMap, JsonContext jsonContext) {
             this.valueMap = valueMap;
-            this.bufferPool = bufferPool;
+            this.jsonContext = jsonContext;
         }
 
         @Override
@@ -336,7 +324,7 @@ class JsonObjectBuilderImpl implements JsonObjectBuilder {
         @Override
         public String toString() {
             StringWriter sw = new StringWriter();
-            try (JsonWriter jw = new JsonWriterImpl(sw, bufferPool)) {
+            try (JsonWriter jw = new JsonWriterImpl(sw, jsonContext)) {
                 jw.write(this);
             }
             return sw.toString();
