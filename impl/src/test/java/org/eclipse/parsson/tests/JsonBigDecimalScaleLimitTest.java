@@ -21,6 +21,7 @@ import java.math.RoundingMode;
 
 import jakarta.json.Json;
 import junit.framework.TestCase;
+import org.eclipse.parsson.api.JsonConfig;
 
 /**
  * Test maxBigIntegerScale limit set from System property.
@@ -33,12 +34,12 @@ public class JsonBigDecimalScaleLimitTest extends TestCase {
 
     @Override
     protected void setUp() {
-        System.setProperty("org.eclipse.parsson.maxBigIntegerScale", "50000");
+        System.setProperty(JsonConfig.MAX_BIGINTEGER_SCALE, "50000");
     }
 
     @Override
     protected void tearDown() {
-        System.clearProperty("org.eclipse.parsson.maxBigIntegerScale");
+        System.clearProperty(JsonConfig.MAX_BIGINTEGER_SCALE);
     }
 
     // Test BigInteger scale value limit set from system property using value bellow limit.

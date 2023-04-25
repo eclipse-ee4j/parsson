@@ -35,7 +35,10 @@ import org.eclipse.parsson.api.JsonConfig;
 final class JsonContext {
 
     /** Default maximum value of BigInteger scale value limit. */
-    private static final int DEFAULT_MAX_BIGINT_SCALE = 100000;
+    private static final int DEFAULT_MAX_BIGINTEGER_SCALE = 100000;
+
+    /** Default maximum number of characters of BigDecimal source being parsed. */
+    private static final int DEFAULT_MAX_BIGDECIMAL_LEN = 1100;
 
     /**
      * Custom char[] pool instance property. Can be set in properties {@code Map} only.
@@ -46,6 +49,9 @@ final class JsonContext {
 
     // Maximum value of BigInteger scale value
     private final int bigIntegerScaleLimit;
+
+    // Maximum number of characters of BigDecimal source
+    private final int bigDecimalLengthLimit;
 
     // Whether JSON pretty printing is enabled
     private final boolean prettyPrinting;
@@ -62,7 +68,8 @@ final class JsonContext {
      * @param defaultPool default char[] pool to use when no instance is configured
      */
     JsonContext(Map<String, ?> config, BufferPool defaultPool) {
-        this.bigIntegerScaleLimit = getIntConfig(JsonConfig.MAX_BIGINT_SCALE, config, DEFAULT_MAX_BIGINT_SCALE);
+        this.bigIntegerScaleLimit = getIntConfig(JsonConfig.MAX_BIGINTEGER_SCALE, config, DEFAULT_MAX_BIGINTEGER_SCALE);
+        this.bigDecimalLengthLimit = getIntConfig(JsonConfig.MAX_BIGDECIMAL_LEN, config, DEFAULT_MAX_BIGDECIMAL_LEN);
         this.prettyPrinting = getBooleanConfig(JsonGenerator.PRETTY_PRINTING, config);
         this.rejectDuplicateKeys = getBooleanConfig(JsonConfig.REJECT_DUPLICATE_KEYS, config);
         this.bufferPool = getBufferPool(config, defaultPool);
@@ -77,7 +84,8 @@ final class JsonContext {
      * @param properties properties to store in local copy of provider specific properties {@code Map}
      */
     JsonContext(Map<String, ?> config, BufferPool defaultPool, String... properties) {
-        this.bigIntegerScaleLimit = getIntConfig(JsonConfig.MAX_BIGINT_SCALE, config, DEFAULT_MAX_BIGINT_SCALE);
+        this.bigIntegerScaleLimit = getIntConfig(JsonConfig.MAX_BIGINTEGER_SCALE, config, DEFAULT_MAX_BIGINTEGER_SCALE);
+        this.bigDecimalLengthLimit = getIntConfig(JsonConfig.MAX_BIGDECIMAL_LEN, config, DEFAULT_MAX_BIGDECIMAL_LEN);
         this.prettyPrinting = getBooleanConfig(JsonGenerator.PRETTY_PRINTING, config);
         this.rejectDuplicateKeys = getBooleanConfig(JsonConfig.REJECT_DUPLICATE_KEYS, config);
         this.bufferPool = getBufferPool(config, defaultPool);
@@ -95,6 +103,10 @@ final class JsonContext {
 
     int bigIntegerScaleLimit() {
         return bigIntegerScaleLimit;
+    }
+
+    int bigDecimalLengthLimit() {
+        return bigDecimalLengthLimit;
     }
 
     boolean prettyPrinting() {
