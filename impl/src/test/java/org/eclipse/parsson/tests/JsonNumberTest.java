@@ -58,7 +58,7 @@ public class JsonNumberTest extends TestCase {
             + "0359825349042875546873115956286388235378759375195778185778053217122680661300192787661119590921642019"
             + "8938095257201065485863278865936153381827968230301952035301852968995773622599413891249721775283479131";
 
-    // π as JsonNumber with 1100 source characters
+    // π as JsonNumber with 1101 source characters
     private static final String Π_1101 = Π_1100 + "5";
 
     public JsonNumberTest(String testName) {
