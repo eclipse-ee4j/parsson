@@ -16,8 +16,6 @@
 
 package org.eclipse.parsson;
 
-import org.eclipse.parsson.api.BufferPool;
-
 import jakarta.json.JsonException;
 import jakarta.json.stream.JsonLocation;
 import jakarta.json.stream.JsonParser;
@@ -52,7 +50,7 @@ final class JsonTokenizer implements Closeable {
     }
     private final static int HEX_LENGTH = HEX.length;
 
-    private final BufferPool bufferPool;
+    private final JsonContext jsonContext;
 
     private final Reader reader;
 
@@ -123,8 +121,8 @@ final class JsonTokenizer implements Closeable {
 
     JsonTokenizer(Reader reader, JsonContext jsonContext) {
         this.reader = reader;
-        this.bufferPool = jsonContext.bufferPool();
-        buf = bufferPool.take();
+        this.jsonContext = jsonContext;
+        buf = jsonContext.bufferPool().take();
     }
 
     private void readString() {
@@ -477,7 +475,7 @@ final class JsonTokenizer implements Closeable {
                 if (storeLen == buf.length) {
                     // buffer is full, double the capacity
                     char[] doubleBuf = Arrays.copyOf(buf, 2 * buf.length);
-                    bufferPool.recycle(buf);
+                    jsonContext.bufferPool().recycle(buf);
                     buf = doubleBuf;
                 } else {
                     // Left shift all the stored data to make space
@@ -519,7 +517,14 @@ final class JsonTokenizer implements Closeable {
 
     BigDecimal getBigDecimal() {
         if (bd == null) {
-            bd = new BigDecimal(buf, storeBegin, storeEnd-storeBegin);
+            int sourceLen = storeEnd - storeBegin;
+            if (sourceLen > jsonContext.bigDecimalLengthLimit()) {
+                throw new UnsupportedOperationException(
+                        String.format(
+                                "Number of BigDecimal source characters %d exceeded maximal allowed value of %d",
+                                sourceLen, jsonContext.bigDecimalLengthLimit()));
+            }
+            bd = new BigDecimal(buf, storeBegin, sourceLen);
         }
         return bd;
     }
@@ -575,7 +580,7 @@ final class JsonTokenizer implements Closeable {
     @Override
     public void close() throws IOException {
         reader.close();
-        bufferPool.recycle(buf);
+        jsonContext.bufferPool().recycle(buf);
     }
 
     private JsonParsingException unexpectedChar(int ch) {
