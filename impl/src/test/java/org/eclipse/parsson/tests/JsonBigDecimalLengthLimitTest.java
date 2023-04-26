@@ -48,13 +48,8 @@ public class JsonBigDecimalLengthLimitTest extends TestCase  {
     // Test BigDecimal max source characters array length using length equal to system property limit of 500.
     // Parsing shall pass and return value equal to source String.
     public void testLargeBigDecimalBellowLimit() {
-        String sourceValue = "3.14159265358979323846264338327950288419716939937510582097494459230781640628620899862803482534211706"
-                + "7982148086513282306647093844609550582231725359408128481117450284102701938521105559644622948954930381"
-                + "9644288109756659334461284756482337867831652712019091456485669234603486104543266482133936072602491412"
-                + "7372458700660631558817488152092096282925409171536436789259036001133053054882046652138414695194151160"
-                + "9433057270365759591953092186117381932611793105118548074462379962749567351885752724891227938183011949";
-        JsonReader reader = Json.createReader(new StringReader(sourceValue));
-        JsonNumber check = Json.createValue(new BigDecimal(sourceValue));
+        JsonReader reader = Json.createReader(new StringReader(JsonNumberTest.Π_500));
+        JsonNumber check = Json.createValue(new BigDecimal(JsonNumberTest.Π_500));
         JsonValue value = reader.readValue();
         assertEquals(value.getValueType(), JsonValue.ValueType.NUMBER);
         assertEquals(value, check);
@@ -63,13 +58,7 @@ public class JsonBigDecimalLengthLimitTest extends TestCase  {
     // Test BigDecimal max source characters array length using length above system property limit of 500.
     // Parsing shall pass and return value equal to source String.
     public void testLargeBigDecimalAboveLimit() {
-        String sourceValue = "3.14159265358979323846264338327950288419716939937510582097494459230781640628620899862803482534211706"
-                + "7982148086513282306647093844609550582231725359408128481117450284102701938521105559644622948954930381"
-                + "9644288109756659334461284756482337867831652712019091456485669234603486104543266482133936072602491412"
-                + "7372458700660631558817488152092096282925409171536436789259036001133053054882046652138414695194151160"
-                + "9433057270365759591953092186117381932611793105118548074462379962749567351885752724891227938183011949"
-                + "1";
-        JsonReader reader = Json.createReader(new StringReader(sourceValue));
+        JsonReader reader = Json.createReader(new StringReader(JsonNumberTest.Π_501));
         try {
             reader.readValue();
             fail("No exception was thrown from BigDecimal parsing with source characters array length over limit");
