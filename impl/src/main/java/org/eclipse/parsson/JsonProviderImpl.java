@@ -66,7 +66,9 @@ public class JsonProviderImpl extends JsonProvider {
 
     @Override
     public JsonParserFactory createParserFactory(Map<String, ?> config) {
-        return new JsonParserFactoryImpl(new JsonContext(config, bufferPool));
+        return config == null
+                ? new JsonParserFactoryImpl(emptyContext)
+                : new JsonParserFactoryImpl(new JsonContext(config, bufferPool, JsonContext.PROPERTY_BUFFER_POOL));
     }
 
     @Override
