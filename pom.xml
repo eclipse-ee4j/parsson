@@ -94,7 +94,7 @@
         <spotbugs.exclude>${config.dir}/exclude.xml</spotbugs.exclude>
         <spotbugs.skip>false</spotbugs.skip>
         <spotbugs.threshold>Low</spotbugs.threshold>
-        <spotbugs.version>4.7.1.0</spotbugs.version>
+        <spotbugs.version>4.7.3.4</spotbugs.version>
 
         <jakarta.json-api.version>2.1.1</jakarta.json-api.version>
 
@@ -193,7 +193,7 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
                     <release>9</release>
-		     <!-- Workaround to compile package-info with JDK8 -->
+                    <!-- Workaround to compile package-info with JDK8 -->
                     <createMissingPackageInfoClass>false</createMissingPackageInfoClass>
                     <compilerArgs>
                         <arg>-Xlint:all</arg>
@@ -207,7 +207,6 @@
                         </goals>
                         <configuration>
                             <release>8</release>
-                            <createMissingPackageInfoClass>true</createMissingPackageInfoClass>
                             <excludes>
                                 <exclude>module-info.java</exclude>
                             </excludes>
@@ -283,7 +282,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-enforcer-plugin</artifactId>
-                    <version>3.1.0</version>
+                    <version>3.3.0</version>
                 </plugin>
 
                 <plugin>
@@ -309,7 +308,7 @@
                 <plugin>
                     <groupId>org.apache.felix</groupId>
                     <artifactId>maven-bundle-plugin</artifactId>
-                    <version>5.1.7</version>
+                    <version>5.1.8</version>
                     <configuration>
                         <niceManifest>true</niceManifest>
                         <instructions>
@@ -325,7 +324,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>3.4.0</version>
+                    <version>3.5.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -335,22 +334,22 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.10.1</version>
+                    <version>3.11.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jar-plugin</artifactId>
-                    <version>3.2.2</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-dependency-plugin</artifactId>
                     <version>3.3.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-dependency-plugin</artifactId>
+                    <version>3.5.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-resources-plugin</artifactId>
-                    <version>3.2.0</version>
+                    <version>3.3.1</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -370,12 +369,12 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>3.0.0-M7</version>
+                    <version>3.1.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-assembly-plugin</artifactId>
-                    <version>3.4.1</version>
+                    <version>3.5.0</version>
                 </plugin>
             </plugins>
         </pluginManagement>
