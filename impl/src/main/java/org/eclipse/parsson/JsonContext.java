@@ -40,6 +40,9 @@ final class JsonContext {
     /** Default maximum number of characters of BigDecimal source being parsed. */
     private static final int DEFAULT_MAX_BIGDECIMAL_LEN = 1100;
 
+    /** Default maximum level of nesting. */
+    private static final int DEFAULT_MAX_DEPTH = 1000;
+
     /**
      * Custom char[] pool instance property. Can be set in properties {@code Map} only.
      */
@@ -52,6 +55,9 @@ final class JsonContext {
 
     // Maximum number of characters of BigDecimal source
     private final int bigDecimalLengthLimit;
+
+    // Maximum depth to parse
+    private final int depthLimit;
 
     // Whether JSON pretty printing is enabled
     private final boolean prettyPrinting;
@@ -70,6 +76,7 @@ final class JsonContext {
     JsonContext(Map<String, ?> config, BufferPool defaultPool) {
         this.bigIntegerScaleLimit = getIntConfig(JsonConfig.MAX_BIGINTEGER_SCALE, config, DEFAULT_MAX_BIGINTEGER_SCALE);
         this.bigDecimalLengthLimit = getIntConfig(JsonConfig.MAX_BIGDECIMAL_LEN, config, DEFAULT_MAX_BIGDECIMAL_LEN);
+        this.depthLimit = getIntConfig(JsonConfig.MAX_DEPTH, config, DEFAULT_MAX_DEPTH);
         this.prettyPrinting = getBooleanConfig(JsonGenerator.PRETTY_PRINTING, config);
         this.rejectDuplicateKeys = getBooleanConfig(JsonConfig.REJECT_DUPLICATE_KEYS, config);
         this.bufferPool = getBufferPool(config, defaultPool);
@@ -86,6 +93,7 @@ final class JsonContext {
     JsonContext(Map<String, ?> config, BufferPool defaultPool, String... properties) {
         this.bigIntegerScaleLimit = getIntConfig(JsonConfig.MAX_BIGINTEGER_SCALE, config, DEFAULT_MAX_BIGINTEGER_SCALE);
         this.bigDecimalLengthLimit = getIntConfig(JsonConfig.MAX_BIGDECIMAL_LEN, config, DEFAULT_MAX_BIGDECIMAL_LEN);
+        this.depthLimit = getIntConfig(JsonConfig.MAX_DEPTH, config, DEFAULT_MAX_DEPTH);
         this.prettyPrinting = getBooleanConfig(JsonGenerator.PRETTY_PRINTING, config);
         this.rejectDuplicateKeys = getBooleanConfig(JsonConfig.REJECT_DUPLICATE_KEYS, config);
         this.bufferPool = getBufferPool(config, defaultPool);
@@ -107,6 +115,10 @@ final class JsonContext {
 
     int bigDecimalLengthLimit() {
         return bigDecimalLengthLimit;
+    }
+
+    int depthLimit() {
+        return depthLimit;
     }
 
     boolean prettyPrinting() {
