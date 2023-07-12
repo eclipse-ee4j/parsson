@@ -35,6 +35,12 @@ public interface JsonConfig {
     String MAX_BIGDECIMAL_LEN = "org.eclipse.parsson.maxBigDecimalLength";
 
     /**
+     * Configuration property to limit maximum level of nesting when being parsing JSON string.
+     * Default value is set to {@code 1000}.
+     */
+    String MAX_DEPTH = "org.eclipse.parsson.maxDepth";
+
+    /**
      * Configuration property to reject duplicate keys.
      * The value of the property could be anything.
      */
