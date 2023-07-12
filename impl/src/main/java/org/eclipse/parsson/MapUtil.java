@@ -21,6 +21,7 @@ import jakarta.json.JsonObjectBuilder;
 import jakarta.json.JsonValue;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 
@@ -67,6 +68,57 @@ public final class MapUtil {
             @SuppressWarnings("unchecked")
             JsonObjectBuilder object = new JsonObjectBuilderImpl((Map<String, Object>) value, jsonContext);
             return object.build();
+        } else if (value instanceof Object[]) {
+            JsonArrayBuilder jsonArrayBuilder = new JsonArrayBuilderImpl(Arrays.asList((Object[]) value), jsonContext);
+            return jsonArrayBuilder.build();
+        } else if (value instanceof int[]) {
+            JsonArrayBuilder jsonArrayBuilder = new JsonArrayBuilderImpl(jsonContext);
+            for (int d : (int[]) value) {
+                jsonArrayBuilder.add(d);
+            }
+            return jsonArrayBuilder.build();
+        } else if (value instanceof long[]) {
+            JsonArrayBuilder jsonArrayBuilder = new JsonArrayBuilderImpl(jsonContext);
+            for (long d : (long[]) value) {
+                jsonArrayBuilder.add(d);
+            }
+            return jsonArrayBuilder.build();
+        } else if (value instanceof double[]) {
+            JsonArrayBuilder jsonArrayBuilder = new JsonArrayBuilderImpl(jsonContext);
+            for (double d : (double[]) value) {
+                jsonArrayBuilder.add(d);
+            }
+            return jsonArrayBuilder.build();
+        } else if (value instanceof boolean[]) {
+            JsonArrayBuilder jsonArrayBuilder = new JsonArrayBuilderImpl(jsonContext);
+            for (boolean d : (boolean[]) value) {
+                jsonArrayBuilder.add(d);
+            }
+            return jsonArrayBuilder.build();
+        } else if (value instanceof char[]) {
+            JsonArrayBuilder jsonArrayBuilder = new JsonArrayBuilderImpl(jsonContext);
+            for (char d : (char[]) value) {
+                jsonArrayBuilder.add(d);
+            }
+            return jsonArrayBuilder.build();
+        } else if (value instanceof float[]) {
+            JsonArrayBuilder jsonArrayBuilder = new JsonArrayBuilderImpl(jsonContext);
+            for (float d : (float[]) value) {
+                jsonArrayBuilder.add(d);
+            }
+            return jsonArrayBuilder.build();
+        } else if (value instanceof byte[]) {
+            JsonArrayBuilder jsonArrayBuilder = new JsonArrayBuilderImpl(jsonContext);
+            for (byte d : (byte[]) value) {
+                jsonArrayBuilder.add(d);
+            }
+            return jsonArrayBuilder.build();
+        } else if (value instanceof short[]) {
+            JsonArrayBuilder jsonArrayBuilder = new JsonArrayBuilderImpl(jsonContext);
+            for (short d : (short[]) value) {
+                jsonArrayBuilder.add(d);
+            }
+            return jsonArrayBuilder.build();
         }
 
         throw new IllegalArgumentException(String.format("Type %s is not supported.", value.getClass()));

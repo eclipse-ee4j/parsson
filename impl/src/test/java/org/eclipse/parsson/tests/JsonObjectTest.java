@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -229,4 +229,23 @@ public class JsonObjectTest extends TestCase {
         assertTrue(object3.hashCode() == object4.hashCode()); //equal instances have same hashCode
     }
 
+    public void testArrays() {
+        String[] stringArr = new String[] {"a", "b", "c"};
+        boolean[] boolArr = new boolean[] {true, false, true};
+        int[] intArr = new int[] {1, 2, 3};
+        char[] charArr = new char[] {'a', 'b', 'c'};
+        float[] floatArr = new float[] {1.0f, 2.0f, 3.0f};
+        Map<String, Object> m = new HashMap<>();
+        m.put("stringArray", stringArr);
+        m.put("booleanArray", boolArr);
+        m.put("intArray", intArr);
+        m.put("charArray", charArr);
+        m.put("floatArray", floatArr);
+        JsonObject object = Json.createObjectBuilder(m).build();
+        assertEquals("b", object.get("stringArray").asJsonArray().getString(1));
+        assertEquals(false, object.get("booleanArray").asJsonArray().getBoolean(1));
+        assertEquals(2, object.get("intArray").asJsonArray().getInt(1));
+        assertEquals('b', object.get("charArray").asJsonArray().getInt(1));
+        assertEquals(2.0, object.get("floatArray").asJsonArray().getJsonNumber(1).doubleValue());
+    }
 }
