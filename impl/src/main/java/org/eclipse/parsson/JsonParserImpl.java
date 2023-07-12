@@ -55,7 +55,7 @@ public class JsonParserImpl implements JsonParser {
     private Context currentContext = new NoneContext();
     private Event currentEvent;
 
-    private final Stack stack = new Stack();
+    private final Stack stack;
     private final JsonTokenizer tokenizer;
     private boolean closed = false;
 
@@ -63,17 +63,20 @@ public class JsonParserImpl implements JsonParser {
 
     public JsonParserImpl(Reader reader, JsonContext jsonContext) {
         this.jsonContext = jsonContext;
+        stack = new Stack(jsonContext.depthLimit());
         this.tokenizer = new JsonTokenizer(reader, jsonContext);
     }
 
     public JsonParserImpl(InputStream in, JsonContext jsonContext) {
         this.jsonContext = jsonContext;
+        stack = new Stack(jsonContext.depthLimit());
         UnicodeDetectingInputStream uin = new UnicodeDetectingInputStream(in);
         this.tokenizer = new JsonTokenizer(new InputStreamReader(uin, uin.getCharset()), jsonContext);
     }
 
     public JsonParserImpl(InputStream in, Charset encoding, JsonContext jsonContext) {
         this.jsonContext = jsonContext;
+        stack = new Stack(jsonContext.depthLimit());
         this.tokenizer = new JsonTokenizer(new InputStreamReader(in, encoding), jsonContext);
     }
 
@@ -380,9 +383,18 @@ public class JsonParserImpl implements JsonParser {
     // Using the optimized stack impl as we don't require other things
     // like iterator etc.
     private static final class Stack {
+        int size = 0;
+        final int limit;
         private Context head;
 
+        Stack(int size) {
+            this.limit = size;
+        }
+
         private void push(Context context) {
+            if (++size >= limit) {
+                throw new RuntimeException("Input is too deeply nested " + size);
+            }
             context.next = head;
             head = context;
         }
@@ -391,6 +403,7 @@ public class JsonParserImpl implements JsonParser {
             if (head == null) {
                 throw new NoSuchElementException();
             }
+            size--;
             Context temp = head;
             head = head.next;
             return temp;
