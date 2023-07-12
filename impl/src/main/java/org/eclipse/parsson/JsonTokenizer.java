@@ -83,6 +83,7 @@ final class JsonTokenizer implements Closeable {
     // offset in the stream for the start of the buffer, will be used in
     // calculating JsonLocation's stream offset, column no.
     private long bufferOffset = 0;
+    private boolean closed = false;
 
     private boolean minus;
     private boolean fracOrExp;
@@ -579,8 +580,11 @@ final class JsonTokenizer implements Closeable {
 
     @Override
     public void close() throws IOException {
-        reader.close();
-        jsonContext.bufferPool().recycle(buf);
+        if (!closed) {
+            reader.close();
+            jsonContext.bufferPool().recycle(buf);
+            closed = true;
+        }
     }
 
     private JsonParsingException unexpectedChar(int ch) {
