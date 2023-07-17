@@ -116,7 +116,11 @@ final class JsonMessages {
     static String PARSER_INPUT_ENC_DETECT_IOERR() {
         return localize("parser.input.enc.detect.ioerr");
     }
-    
+
+    static String PARSER_INPUT_NESTED_TOO_DEEP(int limit) {
+        return localize("parser.input.nested.too.deep", limit);
+    }
+
     static String DUPLICATE_KEY(String name) {
         return localize("parser.duplicate.key", name);
     }

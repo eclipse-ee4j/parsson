@@ -393,7 +393,7 @@ public class JsonParserImpl implements JsonParser {
 
         private void push(Context context) {
             if (++size >= limit) {
-                throw new RuntimeException("Input is too deeply nested " + size);
+                throw new RuntimeException(JsonMessages.PARSER_INPUT_NESTED_TOO_DEEP(size));
             }
             context.next = head;
             head = context;
