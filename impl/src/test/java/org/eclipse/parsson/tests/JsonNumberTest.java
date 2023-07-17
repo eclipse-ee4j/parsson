@@ -21,6 +21,7 @@ import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
+import java.text.MessageFormat;
 import java.util.Map;
 
 import jakarta.json.Json;
@@ -60,6 +61,9 @@ public class JsonNumberTest extends TestCase {
 
     // π as JsonNumber with 1101 source characters
     private static final String Π_1101 = Π_1100 + "5";
+
+    // Default maximum value of BigInteger scale value limit from JsonContext
+    private static final int DEFAULT_MAX_BIGINTEGER_SCALE = 100000;
 
     public JsonNumberTest(String testName) {
         super(testName);
@@ -273,7 +277,7 @@ public class JsonNumberTest extends TestCase {
         Json.createValue(value).bigIntegerValue();
     }
 
-    // Test default BigInteger scale value limit using value above limit.
+    // Test default BigInteger scale value limit using positive value above limit.
     // Call shall throw specific UnsupportedOperationException exception.
     public void testDefaultBigIntegerScaleAboveLimit() {
         BigDecimal value = new BigDecimal("3.1415926535897932384626433")
@@ -283,13 +287,12 @@ public class JsonNumberTest extends TestCase {
             fail("No exception was thrown from bigIntegerValue with scale over limit");
         } catch (UnsupportedOperationException e) {
             // UnsupportedOperationException is expected to be thrown
-            assertEquals(
-                    "Scale value 100001 of this BigInteger exceeded maximal allowed absolute value of 100000",
-                    e.getMessage());
+            assertExceptionMessageContainsNumber(e, 100001);
+            assertExceptionMessageContainsNumber(e, DEFAULT_MAX_BIGINTEGER_SCALE);
         }
     }
 
-    // Test default BigInteger scale value limit using value above limit.
+    // Test default BigInteger scale value limit using negative value above limit.
     // Call shall throw specific UnsupportedOperationException exception.
     public void testDefaultBigIntegerNegScaleAboveLimit() {
         BigDecimal value = new BigDecimal("3.1415926535897932384626433")
@@ -299,9 +302,8 @@ public class JsonNumberTest extends TestCase {
             fail("No exception was thrown from bigIntegerValue with scale over limit");
         } catch (UnsupportedOperationException e) {
             // UnsupportedOperationException is expected to be thrown
-            assertEquals(
-                    "Scale value -100001 of this BigInteger exceeded maximal allowed absolute value of 100000",
-                    e.getMessage());
+            assertExceptionMessageContainsNumber(e, -100001);
+            assertExceptionMessageContainsNumber(e, DEFAULT_MAX_BIGINTEGER_SCALE);
         }
     }
 
@@ -323,9 +325,8 @@ public class JsonNumberTest extends TestCase {
             fail("No exception was thrown from bigIntegerValue with scale over limit");
         } catch (UnsupportedOperationException e) {
             // UnsupportedOperationException is expected to be thrown
-            assertEquals(
-                    "Scale value 50001 of this BigInteger exceeded maximal allowed absolute value of 50000",
-                    e.getMessage());
+            assertExceptionMessageContainsNumber(e, 50001);
+            assertExceptionMessageContainsNumber(e, 50000);
         }
     }
 
@@ -347,9 +348,8 @@ public class JsonNumberTest extends TestCase {
             fail("No exception was thrown from bigIntegerValue with scale over limit");
         } catch (UnsupportedOperationException e) {
             // UnsupportedOperationException is expected to be thrown
-            assertEquals(
-                    "Scale value -50001 of this BigInteger exceeded maximal allowed absolute value of 50000",
-                    e.getMessage());
+            assertExceptionMessageContainsNumber(e, -50001);
+            assertExceptionMessageContainsNumber(e, 50000);
         }
     }
 
@@ -403,6 +403,13 @@ public class JsonNumberTest extends TestCase {
                     "Number of BigDecimal source characters 501 exceeded maximal allowed value of 500",
                     e.getMessage());
         }
+    }
+
+    static void assertExceptionMessageContainsNumber(Exception e, int number) {
+        // Format the number as being written to message from messages bundle
+        String numberString = MessageFormat.format("{0}", number);
+        assertTrue("Substring \"" + numberString + "\" was not found in \"" + e.getMessage() + "\"",
+                   e.getMessage().contains(numberString));
     }
 
     private static class CustomNumber extends Number {

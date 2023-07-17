@@ -162,6 +162,10 @@ final class JsonMessages {
         return localize("reader.read.already.called");
     }
 
+    // JSON number messages
+    static String NUMBER_SCALE_LIMIT_EXCEPTION(int value, int limit) {
+        return localize("number.scale.limit.exception", value, limit);
+    }
 
     // obj builder messages
     static String OBJBUILDER_NAME_NULL() {

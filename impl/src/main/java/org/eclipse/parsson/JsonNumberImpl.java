@@ -28,9 +28,6 @@ import java.math.BigInteger;
  */
 abstract class JsonNumberImpl implements JsonNumber {
 
-    private static final String SCALE_LIMIT_EXCEPTION_MESSAGE
-            = "Scale value %d of this BigInteger exceeded maximal allowed absolute value of %d";
-
     private int hashCode;
     private final int bigIntegerScaleLimit;
 
@@ -294,7 +291,7 @@ abstract class JsonNumberImpl implements JsonNumber {
             return bd.toBigInteger();
         }
         throw new UnsupportedOperationException(
-                String.format(SCALE_LIMIT_EXCEPTION_MESSAGE, bd.scale(), bigIntegerScaleLimit));
+                JsonMessages.NUMBER_SCALE_LIMIT_EXCEPTION(bd.scale(), bigIntegerScaleLimit));
     }
 
     @Override
@@ -304,7 +301,7 @@ abstract class JsonNumberImpl implements JsonNumber {
             return bd.toBigIntegerExact();
         }
         throw new UnsupportedOperationException(
-                String.format(SCALE_LIMIT_EXCEPTION_MESSAGE, bd.scale(), bigIntegerScaleLimit));
+                JsonMessages.NUMBER_SCALE_LIMIT_EXCEPTION(bd.scale(), bigIntegerScaleLimit));
     }
 
     @Override
