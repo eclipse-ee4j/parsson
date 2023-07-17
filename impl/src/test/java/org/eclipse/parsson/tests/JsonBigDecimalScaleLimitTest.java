@@ -62,7 +62,26 @@ public class JsonBigDecimalScaleLimitTest extends TestCase {
         } catch (UnsupportedOperationException e) {
             // UnsupportedOperationException is expected to be thrown
             assertEquals(
-                    "Scale value 50001 of this BigInteger exceeded maximal allowed value of 50000",
+                    "Scale value 50001 of this BigInteger exceeded maximal allowed absolute value of 50000",
+                    e.getMessage());
+        }
+        System.clearProperty("org.eclipse.parsson.maxBigIntegerScale");
+    }
+
+    // Test BigInteger scale value limit set from system property using value above limit.
+    // Call shall throw specific UnsupportedOperationException exception.
+    // Default value is 100000 and system property lowered it to 50000 so value with scale -50001
+    // test shall fail with exception message matching modified limits.
+    public void testSystemPropertyBigIntegerNegScaleAboveLimit() {
+        BigDecimal value = new BigDecimal("3.1415926535897932384626433")
+                .setScale(-50001, RoundingMode.HALF_UP);
+        try {
+            Json.createValue(value).bigIntegerValue();
+            fail("No exception was thrown from bigIntegerValue with scale over limit");
+        } catch (UnsupportedOperationException e) {
+            // UnsupportedOperationException is expected to be thrown
+            assertEquals(
+                    "Scale value -50001 of this BigInteger exceeded maximal allowed absolute value of 50000",
                     e.getMessage());
         }
         System.clearProperty("org.eclipse.parsson.maxBigIntegerScale");

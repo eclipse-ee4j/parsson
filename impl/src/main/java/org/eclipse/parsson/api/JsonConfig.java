@@ -19,8 +19,8 @@ package org.eclipse.parsson.api;
 public interface JsonConfig {
 
     /**
-     * Configuration property to limit maximum value of BigInteger scale value.
-     * This property limits maximum value of scale value to be allowed
+     * Configuration property to limit maximum absolute value of BigInteger scale.
+     * This property limits maximum absolute value of scale to be allowed
      * in {@link jakarta.json.JsonNumber#bigIntegerValue()}
      * and {@link jakarta.json.JsonNumber#bigIntegerValueExact()} implemented methods.
      * Default value is set to {@code 100000}.
