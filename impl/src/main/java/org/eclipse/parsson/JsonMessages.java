@@ -116,7 +116,11 @@ final class JsonMessages {
     static String PARSER_INPUT_ENC_DETECT_IOERR() {
         return localize("parser.input.enc.detect.ioerr");
     }
-    
+
+    static String PARSER_INPUT_NESTED_TOO_DEEP(int limit) {
+        return localize("parser.input.nested.too.deep", limit);
+    }
+
     static String DUPLICATE_KEY(String name) {
         return localize("parser.duplicate.key", name);
     }
@@ -162,6 +166,10 @@ final class JsonMessages {
         return localize("reader.read.already.called");
     }
 
+    // JSON number messages
+    static String NUMBER_SCALE_LIMIT_EXCEPTION(int value, int limit) {
+        return localize("number.scale.limit.exception", value, limit);
+    }
 
     // obj builder messages
     static String OBJBUILDER_NAME_NULL() {

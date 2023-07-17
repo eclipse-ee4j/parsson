@@ -287,25 +287,21 @@ abstract class JsonNumberImpl implements JsonNumber {
     @Override
     public BigInteger bigIntegerValue() {
         BigDecimal bd = bigDecimalValue();
-        if (bd.scale() <= bigIntegerScaleLimit) {
+        if (Math.abs(bd.scale()) <= bigIntegerScaleLimit) {
             return bd.toBigInteger();
         }
         throw new UnsupportedOperationException(
-                String.format(
-                        "Scale value %d of this BigInteger exceeded maximal allowed value of %d",
-                        bd.scale(), bigIntegerScaleLimit));
+                JsonMessages.NUMBER_SCALE_LIMIT_EXCEPTION(bd.scale(), bigIntegerScaleLimit));
     }
 
     @Override
     public BigInteger bigIntegerValueExact() {
         BigDecimal bd = bigDecimalValue();
-        if (bd.scale() <= bigIntegerScaleLimit) {
+        if (Math.abs(bd.scale()) <= bigIntegerScaleLimit) {
             return bd.toBigIntegerExact();
         }
         throw new UnsupportedOperationException(
-                String.format(
-                        "Scale value %d of this BigInteger exceeded maximal allowed value of %d",
-                        bd.scale(), bigIntegerScaleLimit));
+                JsonMessages.NUMBER_SCALE_LIMIT_EXCEPTION(bd.scale(), bigIntegerScaleLimit));
     }
 
     @Override
