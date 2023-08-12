@@ -177,8 +177,7 @@
                             osgi.extender;filter:="(&(osgi.extender=osgi.serviceloader.processor)
                               (version>=1.0.0)(!(version>=2.0.0)))";resolution:=optional,
                             osgi.serviceloader;
-                              filter:="(osgi.serviceloader=jakarta.json.spi.JsonProvider";
-                                osgi.serviceloader="jakarta.json.spi.JsonProvider";
+                              filter:="(osgi.serviceloader=jakarta.json.spi.JsonProvider)";
                                 cardinality:=multiple;resolution:=optional
                             ]]>
                                 </Require-Capability>
