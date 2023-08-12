@@ -23,14 +23,14 @@
     <parent>
         <groupId>org.eclipse.parsson</groupId>
         <artifactId>project</artifactId>
-        <version>1.0.5-SNAPSHOT</version>
+        <version>1.0.6-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <groupId>org.eclipse.parsson</groupId>
     <artifactId>parsson-media</artifactId>
     <packaging>jar</packaging>
-    <version>1.0.5-SNAPSHOT</version>
+    <version>1.0.6-SNAPSHOT</version>
     <name>Eclipse Parsson Media for Jakarta RESTful Web Services</name>
     <description>Jakarta RESTful Web Services MessageBodyReader and MessageBodyWriter to support JsonValue API of Jakarta JSON Processing</description>
 
