@@ -96,7 +96,7 @@
         <spotbugs.threshold>Low</spotbugs.threshold>
         <spotbugs.version>4.7.3.6</spotbugs.version>
 
-        <jakarta.json-api.version>2.1.2</jakarta.json-api.version>
+        <jakarta.json-api.version>2.1.3</jakarta.json-api.version>
 
         <jakarta.annotation-api.version>2.1.1</jakarta.annotation-api.version>
         <jakarta.xml.bind-api.version>4.0.1</jakarta.xml.bind-api.version>
