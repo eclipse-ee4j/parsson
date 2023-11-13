@@ -26,3 +26,4 @@ nbproject/
 *err_pid*.log
 /tck-impl/.gradle/
 /tck-impl/build/
+/.sdkmanrc

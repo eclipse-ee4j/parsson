@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2017, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -16,13 +16,13 @@
 
 package org.eclipse.parsson.tests;
 
-import java.io.StringReader;
 import jakarta.json.Json;
 import jakarta.json.stream.JsonParser;
 import junit.framework.TestCase;
-import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertFalse;
-import static junit.framework.TestCase.assertTrue;
+
+import static org.eclipse.parsson.JsonParserFixture.testWithCreateParserFromArray;
+import static org.eclipse.parsson.JsonParserFixture.testWithCreateParserFromObject;
+import static org.eclipse.parsson.JsonParserFixture.testWithCreateParserFromString;
 
 /**
  *
@@ -31,44 +31,70 @@ import static junit.framework.TestCase.assertTrue;
 public class JsonParserSkipTest extends TestCase {
 
     public void testSkipArrayReader() {
-        try (JsonParser parser = Json.createParser(new StringReader("[[],[[]]]"))) {
-            testSkipArray(parser);
-        }
+        testWithCreateParserFromString("[[],[[]]]", JsonParserSkipTest::testSkipArray);
     }
 
     public void testSkipArrayStructure() {
-        try (JsonParser parser = Json.createParserFactory(null).createParser(
-                Json.createArrayBuilder()
-                        .add(Json.createArrayBuilder())
-                        .add(Json.createArrayBuilder()
-                                .add(Json.createArrayBuilder()))
-                        .build())) {
-            testSkipArray(parser);
-        }
+        testWithCreateParserFromArray(Json.createArrayBuilder()
+                .add(Json.createArrayBuilder())
+                .add(Json.createArrayBuilder()
+                        .add(Json.createArrayBuilder()))
+                .build(), JsonParserSkipTest::testSkipArray);
     }
 
     private static void testSkipArray(JsonParser parser) {
         assertEquals(JsonParser.Event.START_ARRAY, parser.next());
         parser.skipArray();
-        assertEquals(false, parser.hasNext());
+		assertFalse(parser.hasNext());
+    }
+
+    public void testSkipInsideArrayReader() {
+        testWithCreateParserFromString("[\"test\"]", JsonParserSkipTest::testSkipInsideArray);
+    }
+
+    public void testSkipInsideArrayStructure() {
+        testWithCreateParserFromArray(Json.createArrayBuilder()
+                .add("test")
+                .build(), JsonParserSkipTest::testSkipInsideArray);
+    }
+
+    private static void testSkipInsideArray(JsonParser parser) {
+        assertEquals(JsonParser.Event.START_ARRAY, parser.next());
+        assertEquals(JsonParser.Event.VALUE_STRING, parser.next());
+        parser.skipArray();
+		assertFalse(parser.hasNext());
+    }
+
+    public void testNoSkipArrayReader() {
+        testWithCreateParserFromString("{\"key\":\"value\"}", JsonParserSkipTest::testNoSkipArray);
+    }
+
+    public void testNoSkipArrayStructure() {
+        testWithCreateParserFromObject(Json.createObjectBuilder()
+                .add("key","value")
+                .build(), JsonParserSkipTest::testNoSkipArray);
+    }
+
+    private static void testNoSkipArray(JsonParser parser) {
+        assertEquals(JsonParser.Event.START_OBJECT, parser.next());
+        assertEquals(JsonParser.Event.KEY_NAME, parser.next());
+        parser.skipArray();
+        assertEquals(JsonParser.Event.VALUE_STRING, parser.next());
+        assertEquals(JsonParser.Event.END_OBJECT, parser.next());
+        assertFalse(parser.hasNext());
     }
 
     public void testSkipArrayInObjectReader() {
-        try (JsonParser parser = Json.createParser(new StringReader("{\"array\":[[],[[]]],\"object\":\"value2\"}"))) {
-            testSkipArrayInObject(parser);
-        }
+        testWithCreateParserFromString("{\"array\":[[],[[]]],\"object\":\"value2\"}", JsonParserSkipTest::testSkipArrayInObject);
     }
 
     public void testSkipArrayInObjectStructure() {
-        try (JsonParser parser = Json.createParserFactory(null).createParser(
-                Json.createObjectBuilder().add("array", Json.createArrayBuilder()
+        testWithCreateParserFromObject(Json.createObjectBuilder().add("array", Json.createArrayBuilder()
                         .add(Json.createArrayBuilder())
                         .add(Json.createArrayBuilder()
                                 .add(Json.createArrayBuilder()))
                 ).add("object", "value2")
-                        .build())) {
-            testSkipArrayInObject(parser);
-        }
+                .build(), JsonParserSkipTest::testSkipArrayInObject);
     }
 
     private static void testSkipArrayInObject(JsonParser parser) {
@@ -84,20 +110,15 @@ public class JsonParserSkipTest extends TestCase {
     }
 
     public void testSkipObjectReader() {
-        try (JsonParser parser = Json.createParser(new StringReader("{\"array\":[],\"objectToSkip\":{\"huge key\":\"huge value\"},\"simple\":2}"))) {
-            testSkipObject(parser);
-        }
+        testWithCreateParserFromString("{\"array\":[],\"objectToSkip\":{\"huge key\":\"huge value\"},\"simple\":2}", JsonParserSkipTest::testSkipObject);
     }
 
     public void testSkipObjectStructure() {
-        try (JsonParser parser = Json.createParserFactory(null).createParser(
-                Json.createObjectBuilder()
-                        .add("array", Json.createArrayBuilder().build())
-                        .add("objectToSkip", Json.createObjectBuilder().add("huge key", "huge value"))
-                        .add("simple", 2)
-                        .build())) {
-            testSkipObject(parser);
-        }
+        testWithCreateParserFromObject(Json.createObjectBuilder()
+                .add("array", Json.createArrayBuilder().build())
+                .add("objectToSkip", Json.createObjectBuilder().add("huge key", "huge value"))
+                .add("simple", 2)
+                .build(), JsonParserSkipTest::testSkipObject);
     }
 
     private static void testSkipObject(JsonParser parser) {
@@ -111,6 +132,45 @@ public class JsonParserSkipTest extends TestCase {
         assertEquals(JsonParser.Event.KEY_NAME, parser.next());
         assertEquals(JsonParser.Event.VALUE_NUMBER, parser.next());
         assertEquals(JsonParser.Event.END_OBJECT, parser.next());
-        assertEquals(false, parser.hasNext());
+		assertFalse(parser.hasNext());
+    }
+
+    public void testSkipInsideObjectReader() {
+        testWithCreateParserFromString("{\"objectToSkip\":{\"huge key\":\"huge value\"},\"simple\":2}", JsonParserSkipTest::testSkipInsideObject);
+    }
+
+    public void testSkipInsideObjectStructure() {
+        testWithCreateParserFromObject(Json.createObjectBuilder()
+                .add("objectToSkip", Json.createObjectBuilder().add("huge key", "huge value"))
+                .add("simple", 2)
+                .build(), JsonParserSkipTest::testSkipInsideObject);
+    }
+
+    private static void testSkipInsideObject(JsonParser parser) {
+        assertEquals(JsonParser.Event.START_OBJECT, parser.next());
+        assertEquals(JsonParser.Event.KEY_NAME, parser.next());
+        assertEquals(JsonParser.Event.START_OBJECT, parser.next());
+        parser.skipObject();
+        assertEquals(JsonParser.Event.KEY_NAME, parser.next());
+        assertEquals(JsonParser.Event.VALUE_NUMBER, parser.next());
+        assertEquals(JsonParser.Event.END_OBJECT, parser.next());
+		assertFalse(parser.hasNext());
+    }
+
+    public void testNoSkipObjectReader() {
+        testWithCreateParserFromString("{\"key\":\"value\"}", JsonParserSkipTest::testNoSkipObject);
+    }
+
+    public void testNoSkipObjectStructure() {
+        testWithCreateParserFromObject(Json.createObjectBuilder()
+                .add("Key", "value")
+                .build(), JsonParserSkipTest::testNoSkipObject);
+    }
+
+    private static void testNoSkipObject(JsonParser parser) {
+        assertEquals(JsonParser.Event.START_OBJECT, parser.next());
+        assertEquals(JsonParser.Event.KEY_NAME, parser.next());
+        parser.skipObject();
+		assertFalse(parser.hasNext());
     }
 }
