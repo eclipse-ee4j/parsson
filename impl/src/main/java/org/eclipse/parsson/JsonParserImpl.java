@@ -44,15 +44,6 @@ import jakarta.json.stream.JsonParsingException;
 
 import org.eclipse.parsson.JsonTokenizer.JsonToken;
 
-import static org.eclipse.parsson.JsonTokenizer.JsonToken.COLON;
-import static org.eclipse.parsson.JsonTokenizer.JsonToken.COMMA;
-import static org.eclipse.parsson.JsonTokenizer.JsonToken.CURLYCLOSE;
-import static org.eclipse.parsson.JsonTokenizer.JsonToken.CURLYOPEN;
-import static org.eclipse.parsson.JsonTokenizer.JsonToken.EOF;
-import static org.eclipse.parsson.JsonTokenizer.JsonToken.SQUARECLOSE;
-import static org.eclipse.parsson.JsonTokenizer.JsonToken.SQUAREOPEN;
-import static org.eclipse.parsson.JsonTokenizer.JsonToken.STRING;
-
 /**
  * JSON parser implementation. NoneContext, ArrayContext, ObjectContext is used
  * to go to next parser state.
@@ -199,27 +190,27 @@ public class JsonParserImpl implements JsonParser {
                 JsonMessages.PARSER_GETARRAY_ERR(currentEvent));
         }
         Spliterator<JsonValue> spliterator =
-				new Spliterators.AbstractSpliterator<JsonValue>(Long.MAX_VALUE, Spliterator.ORDERED) {
-					@Override
-					public Spliterator<JsonValue> trySplit() {
-						return null;
-					}
+                new Spliterators.AbstractSpliterator<JsonValue>(Long.MAX_VALUE, Spliterator.ORDERED) {
+                    @Override
+                    public Spliterator<JsonValue> trySplit() {
+                        return null;
+                    }
 
-					@Override
-					public boolean tryAdvance(Consumer<? super JsonValue> action) {
-						if (action == null) {
-							throw new NullPointerException();
-						}
-						if (!hasNext()) {
-							return false;
-						}
-						if (next() == JsonParser.Event.END_ARRAY) {
-							return false;
-						}
-						action.accept(getValue());
-						return true;
-					}
-				};
+                    @Override
+                    public boolean tryAdvance(Consumer<? super JsonValue> action) {
+                        if (action == null) {
+                            throw new NullPointerException();
+                        }
+                        if (!hasNext()) {
+                            return false;
+                        }
+                        if (next() == JsonParser.Event.END_ARRAY) {
+                            return false;
+                        }
+                        action.accept(getValue());
+                        return true;
+                    }
+                };
         return StreamSupport.stream(spliterator, false);
     }
 
@@ -230,37 +221,37 @@ public class JsonParserImpl implements JsonParser {
                 JsonMessages.PARSER_GETOBJECT_ERR(currentEvent));
         }
         Spliterator<Map.Entry<String, JsonValue>> spliterator =
-				new Spliterators.AbstractSpliterator<Map.Entry<String, JsonValue>>(Long.MAX_VALUE, Spliterator.ORDERED) {
-					@Override
-					public Spliterator<Map.Entry<String, JsonValue>> trySplit() {
-						return null;
-					}
+                new Spliterators.AbstractSpliterator<Map.Entry<String, JsonValue>>(Long.MAX_VALUE, Spliterator.ORDERED) {
+                    @Override
+                    public Spliterator<Map.Entry<String, JsonValue>> trySplit() {
+                        return null;
+                    }
 
-					@Override
-					public boolean tryAdvance(Consumer<? super Map.Entry<String, JsonValue>> action) {
-						if (action == null) {
-							throw new NullPointerException();
-						}
-						if (!hasNext()) {
-							return false;
-						}
-						JsonParser.Event e = next();
-						if (e == JsonParser.Event.END_OBJECT) {
-							return false;
-						}
-						if (e != JsonParser.Event.KEY_NAME) {
-							throw new JsonException(JsonMessages.INTERNAL_ERROR());
-						}
-						String key = getString();
-						if (!hasNext()) {
-							throw new JsonException(JsonMessages.INTERNAL_ERROR());
-						}
-						next();
-						JsonValue value = getValue();
-						action.accept(new AbstractMap.SimpleImmutableEntry<>(key, value));
-						return true;
-					}
-				};
+                    @Override
+                    public boolean tryAdvance(Consumer<? super Map.Entry<String, JsonValue>> action) {
+                        if (action == null) {
+                            throw new NullPointerException();
+                        }
+                        if (!hasNext()) {
+                            return false;
+                        }
+                        JsonParser.Event e = next();
+                        if (e == JsonParser.Event.END_OBJECT) {
+                            return false;
+                        }
+                        if (e != JsonParser.Event.KEY_NAME) {
+                            throw new JsonException(JsonMessages.INTERNAL_ERROR());
+                        }
+                        String key = getString();
+                        if (!hasNext()) {
+                            throw new JsonException(JsonMessages.INTERNAL_ERROR());
+                        }
+                        next();
+                        JsonValue value = getValue();
+                        action.accept(new AbstractMap.SimpleImmutableEntry<>(key, value));
+                        return true;
+                    }
+                };
         return StreamSupport.stream(spliterator, false);
     }
 
@@ -271,25 +262,25 @@ public class JsonParserImpl implements JsonParser {
                 JsonMessages.PARSER_GETVALUESTREAM_ERR());
         }
         Spliterator<JsonValue> spliterator =
-				new Spliterators.AbstractSpliterator<JsonValue>(Long.MAX_VALUE, Spliterator.ORDERED) {
-					@Override
-					public Spliterator<JsonValue> trySplit() {
-						return null;
-					}
+                new Spliterators.AbstractSpliterator<JsonValue>(Long.MAX_VALUE, Spliterator.ORDERED) {
+                    @Override
+                    public Spliterator<JsonValue> trySplit() {
+                        return null;
+                    }
 
-					@Override
-					public boolean tryAdvance(Consumer<? super JsonValue> action) {
-						if (action == null) {
-							throw new NullPointerException();
-						}
-						if (!hasNext()) {
-							return false;
-						}
-						next();
-						action.accept(getValue());
-						return true;
-					}
-				};
+                    @Override
+                    public boolean tryAdvance(Consumer<? super JsonValue> action) {
+                        if (action == null) {
+                            throw new NullPointerException();
+                        }
+                        if (!hasNext()) {
+                            return false;
+                        }
+                        next();
+                        action.accept(getValue());
+                        return true;
+                    }
+                };
         return StreamSupport.stream(spliterator, false);
     }
 
@@ -319,7 +310,7 @@ public class JsonParserImpl implements JsonParser {
             }
             builder.add(getValue());
         }
-        throw parsingException(EOF, "[CURLYOPEN, SQUAREOPEN, STRING, NUMBER, TRUE, FALSE, NULL, SQUARECLOSE]");
+        throw parsingException(JsonToken.EOF, "[CURLYOPEN, SQUAREOPEN, STRING, NUMBER, TRUE, FALSE, NULL, SQUARECLOSE]");
     }
 
     private CharSequence getCharSequence() {
@@ -340,7 +331,7 @@ public class JsonParserImpl implements JsonParser {
             next();
             builder.add(key, getValue());
         }
-        throw parsingException(EOF, "[STRING, CURLYCLOSE]");
+        throw parsingException(JsonToken.EOF, "[STRING, CURLYCLOSE]");
     }
 
     @Override
@@ -356,7 +347,7 @@ public class JsonParserImpl implements JsonParser {
     public boolean hasNext() {
         if (stack.isEmpty() && (currentEvent != null && currentEvent.compareTo(Event.KEY_NAME) > 0)) {
             JsonToken token = tokenizer.nextToken();
-            if (token != EOF) {
+            if (token != JsonToken.EOF) {
                 throw new JsonParsingException(JsonMessages.PARSER_EXPECTED_EOF(token),
                         getLastCharLocation());
             }
@@ -439,11 +430,11 @@ public class JsonParserImpl implements JsonParser {
         protected Event nextEventIfValueOrObjectOrArrayStart(JsonToken token) {
             if (token.isValue()) {
                 return token.getEvent();
-            } else if (token == CURLYOPEN) {
+            } else if (token == JsonToken.CURLYOPEN) {
                 stack.push(currentContext);
                 currentContext = new ObjectContext();
                 return Event.START_OBJECT;
-            } else if (token == SQUAREOPEN) {
+            } else if (token == JsonToken.SQUAREOPEN) {
                 stack.push(currentContext);
                 currentContext = new ArrayContext();
                 return Event.START_ARRAY;
@@ -505,7 +496,7 @@ public class JsonParserImpl implements JsonParser {
         private boolean firstValue = true;
 
         private ObjectContext() {
-            super(CURLYOPEN, CURLYCLOSE);
+            super(JsonToken.CURLYOPEN, JsonToken.CURLYCLOSE);
         }
 
         /*
@@ -519,7 +510,7 @@ public class JsonParserImpl implements JsonParser {
         public Event getNextEvent() {
             // Handle 1. }   2. name:value   3. ,name:value
             JsonToken token = tokenizer.nextToken();
-            if (token == EOF) {
+            if (token == JsonToken.EOF) {
                 switch (currentEvent) {
                     case START_OBJECT:
                         throw parsingException(token, "[STRING, CURLYCLOSE]");
@@ -530,7 +521,7 @@ public class JsonParserImpl implements JsonParser {
                 }
             } else if (currentEvent == Event.KEY_NAME) {
                 // Handle 1. :value
-                if (token != COLON) {
+                if (token != JsonToken.COLON) {
                     throw parsingException(token, "[COLON]");
                 }
                 token = tokenizer.nextToken();
@@ -541,19 +532,19 @@ public class JsonParserImpl implements JsonParser {
                 throw parsingException(token, "[CURLYOPEN, SQUAREOPEN, STRING, NUMBER, TRUE, FALSE, NULL]");
             } else {
                 // Handle 1. }   2. name   3. ,name
-                if (token == CURLYCLOSE) {
+                if (token == JsonToken.CURLYCLOSE) {
                     currentContext = stack.pop();
                     return Event.END_OBJECT;
                 }
                 if (firstValue) {
                     firstValue = false;
                 } else {
-                    if (token != COMMA) {
+                    if (token != JsonToken.COMMA) {
                         throw parsingException(token, "[COMMA]");
                     }
                     token = tokenizer.nextToken();
                 }
-                if (token == STRING) {
+                if (token == JsonToken.STRING) {
                     return Event.KEY_NAME;
                 }
                 throw parsingException(token, "[STRING]");
@@ -565,14 +556,14 @@ public class JsonParserImpl implements JsonParser {
         private boolean firstValue = true;
 
         private ArrayContext() {
-            super(SQUAREOPEN, SQUARECLOSE);
+            super(JsonToken.SQUAREOPEN, JsonToken.SQUARECLOSE);
         }
 
         // Handle 1. ]   2. value   3. ,value
         @Override
         public Event getNextEvent() {
             JsonToken token = tokenizer.nextToken();
-            if (token == EOF) {
+            if (token == JsonToken.EOF) {
                 switch (currentEvent) {
                     case START_ARRAY:
                         throw parsingException(token, "[CURLYOPEN, SQUAREOPEN, STRING, NUMBER, TRUE, FALSE, NULL]");
@@ -580,14 +571,14 @@ public class JsonParserImpl implements JsonParser {
                         throw parsingException(token, "[COMMA, CURLYCLOSE]");
                 }
             }
-            if (token == SQUARECLOSE) {
+            if (token == JsonToken.SQUARECLOSE) {
                 currentContext = stack.pop();
                 return Event.END_ARRAY;
             }
             if (firstValue) {
                 firstValue = false;
             } else {
-                if (token != COMMA) {
+                if (token != JsonToken.COMMA) {
                     throw parsingException(token, "[COMMA]");
                 }
                 token = tokenizer.nextToken();
