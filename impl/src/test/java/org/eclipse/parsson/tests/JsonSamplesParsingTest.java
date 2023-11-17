@@ -16,23 +16,25 @@
 
 package org.eclipse.parsson.tests;
 
-import junit.framework.TestCase;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 
 import jakarta.json.Json;
 import jakarta.json.JsonException;
 import jakarta.json.stream.JsonParser;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.nio.charset.StandardCharsets;
+
+import org.junit.jupiter.api.Test;
 
 /**
  * JsonParser tests for sample files
  *
  * @author Jitendra Kotamraju
  */
-public class JsonSamplesParsingTest extends TestCase {
+public class JsonSamplesParsingTest {
 
-    public void testSampleFiles() {
+    @Test
+    void testSampleFiles() {
         String[] fileNames = {
                 "facebook.json", "facebook1.json", "facebook2.json",
                 "twitter.json"

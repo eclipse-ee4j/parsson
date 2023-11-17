@@ -17,30 +17,26 @@
 package org.eclipse.parsson.tests;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.util.Arrays;
 
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonPointer;
-import jakarta.json.JsonStructure;
 import jakarta.json.JsonValue;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+
 
 /**
  * 
  * @author Alex Soto
  *
  */
-@RunWith(Parameterized.class)
 public class JsonPointerRemoveOperationTest {
 
-    @Parameters(name = "{index}: ({0})={1}")
     public static Iterable<Object[]> data() throws Exception {
         return Arrays.asList(new Object[][] { 
                  {buildSimpleRemovePatch(), buildAddress(), buildExpectedRemovedAddress() },
@@ -49,20 +45,9 @@ public class JsonPointerRemoveOperationTest {
            });
     }
 
-    private JsonObject pathOperation;
-    private JsonStructure target;
-    private JsonValue expectedResult;
-
-    public JsonPointerRemoveOperationTest(JsonObject pathOperation,
-                                          JsonObject target, JsonValue expectedResult) {
-        super();
-        this.pathOperation = pathOperation;
-        this.target = target;
-        this.expectedResult = expectedResult;
-    }
-
-    @Test
-    public void shouldRemoveElementsToExistingJsonDocument() {
+    @MethodSource("data")
+    @ParameterizedTest(name = "{index}: ({0})={1}")
+    void shouldRemoveElementsToExistingJsonDocument(JsonObject pathOperation, JsonObject target, JsonValue expectedResult) {
         JsonPointer pointer = Json.createPointer(pathOperation.getString("path"));
         JsonObject modified = (JsonObject) pointer.remove(target);
         assertThat(modified, is(expectedResult));

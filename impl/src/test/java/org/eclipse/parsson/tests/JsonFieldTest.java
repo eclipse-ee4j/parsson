@@ -16,28 +16,31 @@
 
 package org.eclipse.parsson.tests;
 
-import junit.framework.TestCase;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
-import jakarta.json.Json;
-import jakarta.json.JsonBuilderFactory;
-import jakarta.json.JsonObject;
-import jakarta.json.JsonObjectBuilder;
-import jakarta.json.JsonValue;
-import jakarta.json.stream.JsonGenerationException;
-import jakarta.json.stream.JsonGenerator;
 import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.concurrent.Callable;
+
+import jakarta.json.Json;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonObjectBuilder;
+import jakarta.json.stream.JsonGenerationException;
+import jakarta.json.stream.JsonGenerator;
+
+import org.junit.jupiter.api.Test;
+
 
 /**
  * Test for writing json field names without values.
  *
  * @author Roman Grigoriadi
  */
-public class JsonFieldTest extends TestCase {
+public class JsonFieldTest {
 
-    public void testFieldAsOnlyMember() {
+    @Test
+    void testFieldAsOnlyMember() {
         StringWriter sw = new StringWriter();
         JsonGenerator generator = Json.createGenerator(sw);
 
@@ -50,7 +53,8 @@ public class JsonFieldTest extends TestCase {
         assertEquals("{\"fName\":\"fValue\"}", sw.toString());
     }
 
-    public void testFieldAsFirstMember() {
+    @Test
+    void testFieldAsFirstMember() {
         StringWriter sw = new StringWriter();
         JsonGenerator generator = Json.createGenerator(sw);
 
@@ -64,7 +68,8 @@ public class JsonFieldTest extends TestCase {
         assertEquals("{\"f1Name\":\"f1Value\",\"f2Name\":\"f2Value\"}", sw.toString());
     }
 
-    public void testFieldAsLastMember() {
+    @Test
+    void testFieldAsLastMember() {
         StringWriter sw = new StringWriter();
         JsonGenerator generator = Json.createGenerator(sw);
 
@@ -79,7 +84,8 @@ public class JsonFieldTest extends TestCase {
     }
 
 
-    public void testFieldObject() {
+    @Test
+    void testFieldObject() {
         StringWriter sw = new StringWriter();
         JsonGenerator generator = Json.createGenerator(sw);
 
@@ -95,7 +101,8 @@ public class JsonFieldTest extends TestCase {
         assertEquals("{\"f1Name\":{\"innerFieldName\":\"innerFieldValue\"},\"f2Name\":\"f2Value\"}", sw.toString());
     }
 
-    public void testFieldArray() {
+    @Test
+    void testFieldArray() {
         StringWriter sw = new StringWriter();
         JsonGenerator generator = Json.createGenerator(sw);
 
@@ -111,7 +118,8 @@ public class JsonFieldTest extends TestCase {
         assertEquals("{\"f1Name\":[\"arrayValue\"],\"f2Name\":\"f2Value\"}", sw.toString());
     }
 
-    public void testFailFieldInField() {
+    @Test
+    void testFailFieldInField() {
         StringWriter sw = new StringWriter();
         JsonGenerator generator = Json.createGenerator(sw);
 
@@ -127,7 +135,8 @@ public class JsonFieldTest extends TestCase {
     }
 
 
-    public void testFailFieldKeyInArray() {
+    @Test
+    void testFailFieldKeyInArray() {
         StringWriter sw = new StringWriter();
         JsonGenerator generator = Json.createGenerator(sw);
 
@@ -141,39 +150,48 @@ public class JsonFieldTest extends TestCase {
         }
     }
 
-    public void  testWriteString() {
+    @Test
+    void testWriteString() {
         assertEquals("{\"f1Name\":\"f1Value\"}", writeValue((gen)->gen.write("f1Value")));
     }
 
-    public void  testWriteBigDec() {
+    @Test
+    void testWriteBigDec() {
         assertEquals("{\"f1Name\":10}", writeValue((gen)->gen.write(BigDecimal.TEN)));
     }
 
-    public void  testWriteBigInt() {
+    @Test
+    void testWriteBigInt() {
         assertEquals("{\"f1Name\":10}", writeValue((gen)->gen.write(BigInteger.TEN)));
     }
 
-    public void  testWriteBool() {
+    @Test
+    void testWriteBool() {
         assertEquals("{\"f1Name\":true}", writeValue((gen)->gen.write(true)));
     }
 
-    public void  testWriteInt() {
+    @Test
+    void testWriteInt() {
         assertEquals("{\"f1Name\":10}", writeValue((gen)->gen.write(10)));
     }
 
-    public void  testWriteLong() {
+    @Test
+    void testWriteLong() {
         assertEquals("{\"f1Name\":10}", writeValue((gen)->gen.write(10L)));
     }
 
-    public void  testWriteDouble() {
+    @Test
+    void testWriteDouble() {
         assertEquals("{\"f1Name\":10.0}", writeValue((gen)->gen.write(10d)));
     }
 
-    public void  testWriteNull() {
+    @Test
+    void testWriteNull() {
         assertEquals("{\"f1Name\":null}", writeValue(JsonGenerator::writeNull));
     }
 
-    public void  testWriteJsonValue() {
+    @Test
+    void testWriteJsonValue() {
         JsonObjectBuilder builder = Json.createObjectBuilder();
         builder.add("first", "value");
         final JsonObject build = builder.build();

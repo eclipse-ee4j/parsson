@@ -16,11 +16,11 @@
 
 package org.eclipse.parsson.tests;
 
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
-import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -33,22 +33,18 @@ import jakarta.json.JsonPointer;
 import jakarta.json.JsonReader;
 import jakarta.json.JsonValue;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 /**
  * 
  * @author Alex Soto
  *
  */
-@RunWith(Parameterized.class)
 public class JsonPointerTest {
 
     private static JsonObject rfc6901Example;
 
-    @Parameters(name = "{index}: ({0})={1}")
     public static Iterable<Object[]> data() throws Exception {
         rfc6901Example = JsonPointerTest.readRfc6901Example();
         return Arrays.asList(new Object[][] { 
@@ -72,19 +68,9 @@ public class JsonPointerTest {
            });
     }
 
-    private JsonPointer pointer;
-    private JsonValue expected;
-    private Class<? extends Exception> expectedException;
-
-    public JsonPointerTest(JsonPointer pointer, JsonValue expected, Class<? extends Exception> expectedException) {
-        super();
-        this.pointer = pointer;
-        this.expected = expected;
-        this.expectedException = expectedException;
-    }
-
-    @Test
-    public void shouldEvaluateJsonPointerExpressions() {
+    @MethodSource("data")
+    @ParameterizedTest(name = "{index}: ({0})={1}")
+    void shouldEvaluateJsonPointerExpressions(JsonPointer pointer, JsonValue expected, Class<? extends Exception> expectedException) {
         try {
             JsonValue result = pointer.getValue(rfc6901Example);
             assertThat(result, is(expected));

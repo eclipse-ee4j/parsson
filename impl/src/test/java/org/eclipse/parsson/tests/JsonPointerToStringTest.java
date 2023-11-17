@@ -16,41 +16,32 @@
 
 package org.eclipse.parsson.tests;
 
-import static org.junit.Assert.assertThat;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.util.Arrays;
 
 import jakarta.json.Json;
 import jakarta.json.JsonPointer;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 /**
  * JSON pointer toString tests.
  *
  * @author leadpony
  */
-@RunWith(Parameterized.class)
 public class JsonPointerToStringTest {
 
-    @Parameters(name = "{index}: {0}")
     public static Iterable<Object> data() {
         return Arrays.asList("", "/", "/one/two/3", "/a~1b", "/m~0n");
     }
 
-    private final String expected;
-
-    public JsonPointerToStringTest(String expected) {
-        this.expected = expected;
-    }
-
-    @Test
-    public void shouldReturnOriginalEscapedString() {
+    @MethodSource("data")
+    @ParameterizedTest(name = "{index}: {0}")
+    void shouldReturnOriginalEscapedString(String expected) {
         JsonPointer pointer = Json.createPointer(expected);
         assertThat(pointer.toString(), is(equalTo(expected)));
     }

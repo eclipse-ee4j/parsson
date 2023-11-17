@@ -19,8 +19,8 @@ package org.eclipse.parsson.tests;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -33,20 +33,17 @@ import jakarta.json.JsonReader;
 import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+
 
 /**
  * 
  * @author Alex Soto
  *
  */
-@RunWith(Parameterized.class)
 public class JsonMergePatchDiffTest {
 
-    @Parameters(name = "{index}: ({0})={1}")
     public static Iterable<Object[]> data() throws Exception {
         List<Object[]> examples = new ArrayList<Object[]>();
         JsonArray data = loadData();
@@ -81,21 +78,9 @@ public class JsonMergePatchDiffTest {
         return data;
     }
 
-    private JsonValue original;
-    private JsonValue target;
-    private JsonValue expected;
-    private Class<? extends Exception> expectedException;
-
-    public JsonMergePatchDiffTest(JsonValue original, JsonValue target,
-            JsonValue expected, Class<? extends Exception> expectedException) {
-        super();
-        this.original = original;
-        this.target = target;
-        this.expected = expected;
-        this.expectedException = expectedException;
-    }
-    @Test
-    public void shouldExecuteJsonMergePatchDiffOperationsToJsonDocument() {
+    @MethodSource("data")
+    @ParameterizedTest(name = "{index}: ({0})={1}")
+    void shouldExecuteJsonMergePatchDiffOperationsToJsonDocument(JsonValue original, JsonValue target, JsonValue expected, Class<? extends Exception> expectedException) {
         try {
             JsonValue output = Json.createMergeDiff(original, target).toJsonValue();
             assertThat(output, is(expected));

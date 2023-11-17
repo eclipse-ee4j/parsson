@@ -16,15 +16,15 @@
 
 package org.eclipse.parsson.tests;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
 import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.eclipse.parsson.api.BufferPool;
-import org.eclipse.parsson.api.JsonConfig;
 
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
@@ -34,22 +34,26 @@ import jakarta.json.JsonObject;
 import jakarta.json.JsonReader;
 import jakarta.json.JsonReaderFactory;
 import jakarta.json.JsonValue;
-import junit.framework.TestCase;
+
+import org.eclipse.parsson.api.BufferPool;
+import org.eclipse.parsson.api.JsonConfig;
+
+import org.junit.jupiter.api.Test;
+
 
 /**
  * @author Jitendra Kotamraju
  */
-public class JsonReaderTest extends TestCase {
-    public JsonReaderTest(String testName) {
-        super(testName);
-    }
+public class JsonReaderTest {
 
-    public void testObject() throws Exception {
+    @Test
+    void testObject() throws Exception {
         JsonObject person = readPerson();
         JsonObjectTest.testPerson(person);
     }
 
-    public void testEscapedString() throws Exception {
+    @Test
+    void testEscapedString() throws Exception {
         // u00ff is escaped once, not escaped once
         JsonReader reader = Json.createReader(new StringReader("[\"\\u0000\\u00ff\u00ff\"]"));
         JsonArray array = reader.readArray();
@@ -58,7 +62,8 @@ public class JsonReaderTest extends TestCase {
         assertEquals("\u0000\u00ff\u00ff", str);
     }
 
-    public void testPrimitiveIntNumbers() {
+    @Test
+    void testPrimitiveIntNumbers() {
         String[] borderlineCases = new String[]{
                 "214748364",
                 Integer.toString(Integer.MAX_VALUE),
@@ -72,14 +77,15 @@ public class JsonReaderTest extends TestCase {
             try {
                 JsonArray array = reader.readArray();
                 JsonNumber value = (JsonNumber) array.get(0);
-                assertEquals("Fails for num="+num, new BigInteger(num).longValue(), value.longValue());
+                assertEquals(new BigInteger(num).longValue(), value.longValue(), "Fails for num="+num);
             } finally {
                 reader.close();
             }
         }
     }
-    
-    public void testPrimitiveLongNumbers() {
+
+    @Test
+    void testPrimitiveLongNumbers() {
         String[] borderlineCases = new String[]{
                 "922337203685477580",
                 Long.toString(Long.MAX_VALUE),
@@ -93,14 +99,15 @@ public class JsonReaderTest extends TestCase {
             try {
                 JsonArray array = reader.readArray();
                 JsonNumber value = (JsonNumber) array.get(0);
-                assertEquals("Fails for num="+num, new BigInteger(num), value.bigIntegerValueExact());
+                assertEquals(new BigInteger(num), value.bigIntegerValueExact(), "Fails for num="+num);
             } finally {
                 reader.close();
             }
         }
     }
 
-    public void testUnknownFeature() throws Exception {
+    @Test
+    void testUnknownFeature() throws Exception {
         Map<String, Object> config = new HashMap<>();
         config.put("foo", true);
         JsonReaderFactory factory = Json.createReaderFactory(config);
@@ -111,7 +118,8 @@ public class JsonReaderTest extends TestCase {
         }
     }
 
-    public void testIllegalStateExcepton() throws Exception {
+    @Test
+    void testIllegalStateExcepton() throws Exception {
         JsonReader reader = Json.createReader(new StringReader("{}"));
         reader.readObject();
         try {
@@ -149,7 +157,8 @@ public class JsonReaderTest extends TestCase {
     }
 
     // JSONP-23 cached empty string is not reset
-    public void testEmptyStringUsingStandardBuffer() throws Throwable {
+    @Test
+    void testEmptyStringUsingStandardBuffer() throws Throwable {
         JsonReaderFactory factory = Json.createReaderFactory(null);
         StringBuilder sb = new StringBuilder();
         for(int i=0; i < 40000; i++) {
@@ -173,7 +182,8 @@ public class JsonReaderTest extends TestCase {
         }
     }
 
-    public void testDuplicateKeysDefault() {
+    @Test
+    void testDuplicateKeysDefault() {
         Map<String, Object> config = new HashMap<>();
         JsonReaderFactory factory = Json.createReaderFactory(config);
         String json = "{\"val1\":\"A\",\"val1\":\"B\"}";
@@ -182,8 +192,9 @@ public class JsonReaderTest extends TestCase {
         reader.close();
         assertEquals("B", object.getString("val1"));
     }
-    
-    public void testDuplicateKeysStrict() {
+
+    @Test
+    void testDuplicateKeysStrict() {
         Map<String, Object> config = new HashMap<>();
         config.put(jakarta.json.JsonConfig.KEY_STRATEGY, jakarta.json.JsonConfig.KeyStrategy.NONE);
         JsonReaderFactory factory = Json.createReaderFactory(config);
@@ -195,7 +206,8 @@ public class JsonReaderTest extends TestCase {
         } catch (JsonException e) {}
     }
 
-    public void testDuplicateKeysStrictWithParssonConfig() {
+    @Test
+    void testDuplicateKeysStrictWithParssonConfig() {
         Map<String, Object> config = new HashMap<>();
         config.put(JsonConfig.REJECT_DUPLICATE_KEYS, "anything is valid here");
         JsonReaderFactory factory = Json.createReaderFactory(config);
@@ -207,7 +219,8 @@ public class JsonReaderTest extends TestCase {
         } catch (JsonException e) {}
     }
 
-    public void testDuplicateKeysFirst() {
+    @Test
+    void testDuplicateKeysFirst() {
         Map<String, Object> config = new HashMap<>();
         config.put(jakarta.json.JsonConfig.KEY_STRATEGY, jakarta.json.JsonConfig.KeyStrategy.FIRST);
         JsonReaderFactory factory = Json.createReaderFactory(config);
@@ -218,7 +231,8 @@ public class JsonReaderTest extends TestCase {
         assertEquals("A", object.getString("val1"));
     }
 
-    public void testDuplicateKeysFirstWithParssonConfig() {
+    @Test
+    void testDuplicateKeysFirstWithParssonConfig() {
         // JsonReader configuration rules over JsonConfig
         Map<String, Object> config = new HashMap<>();
         config.put(jakarta.json.JsonConfig.KEY_STRATEGY, jakarta.json.JsonConfig.KeyStrategy.FIRST);
@@ -231,7 +245,8 @@ public class JsonReaderTest extends TestCase {
         assertEquals("A", object.getString("val1"));
     }
 
-    public void testDuplicateKeysLast() {
+    @Test
+    void testDuplicateKeysLast() {
         Map<String, Object> config = new HashMap<>();
         config.put(jakarta.json.JsonConfig.KEY_STRATEGY, jakarta.json.JsonConfig.KeyStrategy.LAST);
         JsonReaderFactory factory = Json.createReaderFactory(config);
@@ -243,7 +258,8 @@ public class JsonReaderTest extends TestCase {
     }
 
     // JSONP-23 cached empty string is not reset
-    public void testEmptyStringUsingBuffers() throws Throwable {
+    @Test
+    void testEmptyStringUsingBuffers() throws Throwable {
         for(int size=20; size < 500; size++) {
             final JsonParserTest.MyBufferPool bufferPool = new JsonParserTest.MyBufferPool(size);
             Map<String, Object> config = new HashMap<String, Object>() {{

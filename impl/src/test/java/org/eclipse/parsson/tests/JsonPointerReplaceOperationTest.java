@@ -19,8 +19,8 @@ package org.eclipse.parsson.tests;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.Arrays;
 
@@ -31,20 +31,16 @@ import jakarta.json.JsonPointer;
 import jakarta.json.JsonStructure;
 import jakarta.json.JsonValue;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 /**
  * 
  * @author Alex Soto
  *
  */
-@RunWith(Parameterized.class)
 public class JsonPointerReplaceOperationTest {
 
-    @Parameters(name = "{index}: ({0})={1}")
     public static Iterable<Object[]> data() throws Exception {
         return Arrays.asList(new Object[][] { 
                  {buildSimpleReplacePatch(), buildAddress(), buildExpectedAddress(), null},
@@ -55,22 +51,9 @@ public class JsonPointerReplaceOperationTest {
            });
     }
 
-    private JsonObject pathOperation;
-    private JsonStructure target;
-    private JsonValue expectedResult;
-    private Class<? extends Exception> expectedException;
-
-    public JsonPointerReplaceOperationTest(JsonObject pathOperation,
-            JsonStructure target, JsonValue expectedResult, Class<? extends Exception> expectedException) {
-        super();
-        this.pathOperation = pathOperation;
-        this.target = target;
-        this.expectedResult = expectedResult;
-        this.expectedException = expectedException;
-    }
-
-    @Test
-    public void shouldReplaceElementsToExistingJsonDocument() {
+    @MethodSource("data")
+    @ParameterizedTest(name = "{index}: ({0})={1}")
+    void shouldReplaceElementsToExistingJsonDocument(JsonObject pathOperation, JsonStructure target, JsonValue expectedResult, Class<? extends Exception> expectedException) {
         try {
         JsonPointer pointer = Json.createPointer(pathOperation.getString("path"));
         JsonObject modified = (JsonObject) pointer.replace(target, pathOperation.get("value"));

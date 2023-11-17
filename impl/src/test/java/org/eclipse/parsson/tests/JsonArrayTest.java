@@ -16,23 +16,30 @@
 
 package org.eclipse.parsson.tests;
 
-import junit.framework.TestCase;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
-import jakarta.json.*;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
+import jakarta.json.Json;
+import jakarta.json.JsonArray;
+import jakarta.json.JsonNumber;
+import jakarta.json.JsonReader;
+import jakarta.json.JsonValue;
+import jakarta.json.JsonWriter;
+
+import org.junit.jupiter.api.Test;
+
 /**
  * @author Jitendra Kotamraju
  */
-public class JsonArrayTest extends TestCase {
-    public JsonArrayTest(String testName) {
-        super(testName);
-    }
-
-    public void testArrayEquals() throws Exception {
+public class JsonArrayTest {
+    @Test
+    void testArrayEquals() throws Exception {
         JsonArray expected = Json.createArrayBuilder()
                 .add(JsonValue.TRUE)
                 .add(JsonValue.FALSE)
@@ -59,7 +66,8 @@ public class JsonArrayTest extends TestCase {
         assertEquals(expected, actual);
     }
 
-    public void testArrayEqualsUsingCollection() {
+    @Test
+    void testArrayEqualsUsingCollection() {
         List<Object> list = new ArrayList<>();
         list.add(JsonValue.TRUE);
         list.add(JsonValue.FALSE);
@@ -87,21 +95,24 @@ public class JsonArrayTest extends TestCase {
         assertEquals(expected, actual);
     }
 
-    public void testStringValue() throws Exception {
+    @Test
+    void testStringValue() throws Exception {
         JsonArray array = Json.createArrayBuilder()
                 .add("John")
                 .build();
         assertEquals("John", array.getString(0));
     }
 
-    public void testIntValue() throws Exception {
+    @Test
+    void testIntValue() throws Exception {
         JsonArray array = Json.createArrayBuilder()
                 .add(20)
                 .build();
         assertEquals(20, array.getInt(0));
     }
 
-    public void testAdd() {
+    @Test
+    void testAdd() {
         JsonArray array = Json.createArrayBuilder().build();
         try {
             array.add(JsonValue.FALSE);
@@ -111,7 +122,8 @@ public class JsonArrayTest extends TestCase {
         }
     }
 
-    public void testRemove() {
+    @Test
+    void testRemove() {
         JsonArray array = Json.createArrayBuilder().build();
         try {
             array.remove(0);
@@ -121,7 +133,8 @@ public class JsonArrayTest extends TestCase {
         }
     }
 
-    public void testNumberView() throws Exception {
+    @Test
+    void testNumberView() throws Exception {
         JsonArray array = Json.createArrayBuilder().add(20).add(10).build();
 
         List<JsonNumber> numberList = array.getValuesAs(JsonNumber.class);
@@ -133,7 +146,8 @@ public class JsonArrayTest extends TestCase {
         assertEquals(10, array.getInt(1));
     }
 
-    public void testArrayBuilderNpe() {
+    @Test
+    void testArrayBuilderNpe() {
         try {
             JsonArray array = Json.createArrayBuilder().add((JsonValue)null).build();
             fail("JsonArrayBuilder#add(null) should throw NullPointerException");
@@ -142,7 +156,8 @@ public class JsonArrayTest extends TestCase {
         }
     }
 
-    public void testHashCode() {
+    @Test
+    void testHashCode() {
         JsonArray array1 = Json.createArrayBuilder().add(1).add(2).add(3).build();
         assertTrue(array1.hashCode() == array1.hashCode()); //1st call compute hashCode, 2nd call returns cached value
 

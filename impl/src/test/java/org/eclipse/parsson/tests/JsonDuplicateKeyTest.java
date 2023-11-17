@@ -16,15 +16,12 @@
 
 package org.eclipse.parsson.tests;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.StringReader;
 import java.util.Collections;
-
-import org.eclipse.parsson.api.JsonConfig;
-import org.junit.Test;
 
 import jakarta.json.Json;
 import jakarta.json.JsonBuilderFactory;
@@ -34,9 +31,14 @@ import jakarta.json.JsonReader;
 import jakarta.json.JsonReaderFactory;
 import jakarta.json.stream.JsonParsingException;
 
+import org.eclipse.parsson.api.JsonConfig;
+
+import org.junit.jupiter.api.Test;
+
+
 public class JsonDuplicateKeyTest {
     @Test
-    public void testJsonReaderDuplicateKey1() {
+    void testJsonReaderDuplicateKey1() {
         String json = "{\"a\":\"b\",\"a\":\"c\"}";
         JsonReader jsonReader = Json.createReader(new StringReader(json));
         JsonObject jsonObject = jsonReader.readObject();
@@ -44,7 +46,7 @@ public class JsonDuplicateKeyTest {
     }
 
     @Test
-    public void testJsonReaderDuplicateKey2() {
+    void testJsonReaderDuplicateKey2() {
         String json = "{\"a\":\"b\",\"a\":\"c\"}";
         JsonReaderFactory jsonReaderFactory = Json.createReaderFactory(Collections.singletonMap(JsonConfig.REJECT_DUPLICATE_KEYS, true));
         JsonReader jsonReader = jsonReaderFactory.createReader(new StringReader(json));
@@ -58,7 +60,7 @@ public class JsonDuplicateKeyTest {
     }
 
     @Test
-    public void testJsonReaderDuplicateKey3() {
+    void testJsonReaderDuplicateKey3() {
         String json = "{\"a\":\"b\",\"b\":{\"c\":\"d\",\"c\":\"e\"}}";
         JsonReader jsonReader = Json.createReader(new StringReader(json));
         JsonObject jsonObject = jsonReader.readObject();
@@ -66,7 +68,7 @@ public class JsonDuplicateKeyTest {
     }
 
     @Test
-    public void testJsonReaderDuplicateKey4() {
+    void testJsonReaderDuplicateKey4() {
         String json = "{\"a\":\"b\",\"b\":{\"c\":\"d\",\"c\":\"e\"}}";;
         JsonReaderFactory jsonReaderFactory = Json.createReaderFactory(Collections.singletonMap(JsonConfig.REJECT_DUPLICATE_KEYS, true));
         JsonReader jsonReader = jsonReaderFactory.createReader(new StringReader(json));
@@ -80,14 +82,14 @@ public class JsonDuplicateKeyTest {
     }
 
     @Test
-    public void testJsonObjectBuilderDuplcateKey1() {
+    void testJsonObjectBuilderDuplcateKey1() {
         JsonObjectBuilder objectBuilder = Json.createObjectBuilder();
         JsonObject jsonObject = objectBuilder.add("a", "b").add("a", "c").build();
         assertEquals(jsonObject.getString("a"), "c");
     }
 
     @Test
-    public void testJsonObjectBuilderDuplcateKey2() {
+    void testJsonObjectBuilderDuplcateKey2() {
         JsonBuilderFactory jsonBuilderFactory = Json.createBuilderFactory(Collections.singletonMap(JsonConfig.REJECT_DUPLICATE_KEYS, true));
         JsonObjectBuilder objectBuilder = jsonBuilderFactory.createObjectBuilder();
         try {

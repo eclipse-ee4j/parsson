@@ -25,7 +25,9 @@ import jakarta.json.JsonStructure;
 
 import java.io.StringReader;
 
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import org.junit.jupiter.api.Test;
 
 /**
  *
@@ -34,46 +36,50 @@ import org.junit.Test;
 public class JsonPatchBugsTest {
 
     // https://github.com/javaee/jsonp/issues/58
-    @Test(expected = JsonException.class)
-    public void applyThrowsJsonException() {
-        JsonArray array = Json.createArrayBuilder()
-                .add(Json.createObjectBuilder()
-                        .add("name", "Bob")
-                        .build())
-                .build();
-        JsonPatch patch = Json.createPatchBuilder()
-                .replace("/0/name", "Bobek")
-                .replace("/1/name", "Vila Amalka")
-                .build();
-        JsonArray result = patch.apply(array);
+    @Test
+    void applyThrowsJsonException() {
+        assertThrows(JsonException.class, () -> {
+            JsonArray array = Json.createArrayBuilder()
+                    .add(Json.createObjectBuilder()
+                            .add("name", "Bob")
+                            .build())
+                    .build();
+            JsonPatch patch = Json.createPatchBuilder()
+                    .replace("/0/name", "Bobek")
+                    .replace("/1/name", "Vila Amalka")
+                    .build();
+            JsonArray result = patch.apply(array);
+        });
     }
 
     // https://github.com/eclipse-ee4j/jsonp/issues/181
-    @Test(expected = JsonException.class)
-    public void applyThrowsJsonException2() {
-        // JSON document to be patched
-        String targetDocument
-                = "{\n"
-                + "  \"firstName\": \"John\",\n"
-                + "  \"lastName\": \"Doe\"\n"
-                + "}";
+    @Test
+    void applyThrowsJsonException2() {
+        assertThrows(JsonException.class, () -> {
+            // JSON document to be patched
+            String targetDocument
+                    = "{\n"
+                    + "  \"firstName\": \"John\",\n"
+                    + "  \"lastName\": \"Doe\"\n"
+                    + "}";
 
-        // JSON Patch document
-        // Instead of "op", we have "op_", which is invalid
-        String patchDocument
-                = "[\n"
-                + "  { \"op_\": \"replace\", \"path\": \"/firstName\", \"value\": \"Jane\" }\n"
-                + "]";
+            // JSON Patch document
+            // Instead of "op", we have "op_", which is invalid
+            String patchDocument
+                    = "[\n"
+                    + "  { \"op_\": \"replace\", \"path\": \"/firstName\", \"value\": \"Jane\" }\n"
+                    + "]";
 
-        try (JsonReader objectReader = Json.createReader(new StringReader(targetDocument));
+            try (JsonReader objectReader = Json.createReader(new StringReader(targetDocument));
                 JsonReader arrayReader = Json.createReader(new StringReader(patchDocument))) {
 
-            JsonStructure target = objectReader.read();
-            JsonPatch patch = Json.createPatch(arrayReader.readArray());
+                JsonStructure target = objectReader.read();
+                JsonPatch patch = Json.createPatch(arrayReader.readArray());
 
-            // Applies the patch
-            // It will throw a NullPointerException with no message
-            JsonStructure patched = patch.apply(target);
-        }
+                // Applies the patch
+                // It will throw a NullPointerException with no message
+                JsonStructure patched = patch.apply(target);
+            }
+        });
     }
 }

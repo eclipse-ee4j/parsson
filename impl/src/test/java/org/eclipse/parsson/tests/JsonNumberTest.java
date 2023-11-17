@@ -16,6 +16,10 @@
 
 package org.eclipse.parsson.tests;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.math.BigDecimal;
@@ -31,13 +35,15 @@ import jakarta.json.JsonObject;
 import jakarta.json.JsonReader;
 import jakarta.json.JsonValue;
 import jakarta.json.JsonWriter;
-import junit.framework.TestCase;
+
 import org.eclipse.parsson.api.JsonConfig;
+import org.junit.jupiter.api.Test;
+
 
 /**
  * @author Jitendra Kotamraju
  */
-public class JsonNumberTest extends TestCase {
+public class JsonNumberTest {
 
     // π as JsonNumber with 500 source characters
     static final String Π_500
@@ -64,12 +70,9 @@ public class JsonNumberTest extends TestCase {
 
     // Default maximum value of BigInteger scale value limit from JsonContext
     private static final int DEFAULT_MAX_BIGINTEGER_SCALE = 100000;
-
-    public JsonNumberTest(String testName) {
-        super(testName);
-    }
-
-    public void testFloating() throws Exception {
+    
+    @Test
+    void testFloating() throws Exception {
         JsonArray array1 = Json.createArrayBuilder().add(10.4).build();
         JsonReader reader = Json.createReader(new StringReader("[10.4]"));
         JsonArray array2 = reader.readArray();
@@ -78,7 +81,8 @@ public class JsonNumberTest extends TestCase {
         assertEquals(array1, array2);
     }
 
-    public void testBigDecimal() throws Exception {
+    @Test
+    void testBigDecimal() throws Exception {
         JsonArray array1 = Json.createArrayBuilder().add(new BigDecimal("10.4")).build();
         JsonReader reader = Json.createReader(new StringReader("[10.4]"));
         JsonArray array2 = reader.readArray();
@@ -87,7 +91,8 @@ public class JsonNumberTest extends TestCase {
         assertEquals(array1, array2);
     }
 
-    public void testIntNumberType() throws Exception {
+    @Test
+    void testIntNumberType() throws Exception {
         JsonArray array1 = Json.createArrayBuilder()
                 .add(Integer.MIN_VALUE)
                 .add(Integer.MAX_VALUE)
@@ -122,7 +127,8 @@ public class JsonNumberTest extends TestCase {
         }
     }
 
-    public void testLongNumberType() throws Exception {
+    @Test
+    void testLongNumberType() throws Exception {
         JsonArray array1 = Json.createArrayBuilder()
                 .add(Long.MIN_VALUE)
                 .add(Long.MAX_VALUE)
@@ -150,7 +156,7 @@ public class JsonNumberTest extends TestCase {
     }
 
 
-//    public void testBigIntegerNumberType() throws Exception {
+//    void testBigIntegerNumberType() throws Exception {
 //        JsonArray array1 = new JsonBuilder()
 //            .startArray()
 //                .add(new BigInteger("-9223372036854775809"))
@@ -173,7 +179,8 @@ public class JsonNumberTest extends TestCase {
 //        assertEquals(array1, array2);
 //    }
 
-    public void testBigDecimalNumberType() throws Exception {
+    @Test
+    void testBigDecimalNumberType() throws Exception {
         JsonArray array1 = Json.createArrayBuilder()
                 .add(12d)
                 .add(12.0d)
@@ -198,7 +205,8 @@ public class JsonNumberTest extends TestCase {
         assertEquals(array1, array2);
     }
 
-    public void testMinMax() throws Exception {
+    @Test
+    void testMinMax() throws Exception {
         JsonArray expected = Json.createArrayBuilder()
                 .add(Integer.MIN_VALUE)
                 .add(Integer.MAX_VALUE)
@@ -220,7 +228,8 @@ public class JsonNumberTest extends TestCase {
         assertEquals(expected, actual);
     }
 
-    public void testLeadingZeroes() {
+    @Test
+    void testLeadingZeroes() {
         JsonArray array = Json.createArrayBuilder()
                 .add(0012.1d)
                 .build();
@@ -233,7 +242,8 @@ public class JsonNumberTest extends TestCase {
         assertEquals("[12.1]", sw.toString());
     }
 
-    public void testBigIntegerExact() {
+    @Test
+    void testBigIntegerExact() {
         try {
             JsonArray array = Json.createArrayBuilder().add(12345.12345).build();
             array.getJsonNumber(0).bigIntegerValueExact();
@@ -243,7 +253,8 @@ public class JsonNumberTest extends TestCase {
         }
     }
 
-    public void testHashCode() {
+    @Test
+    void testHashCode() {
         JsonNumber jsonNumber1 = Json.createValue(1);
         assertTrue(jsonNumber1.hashCode() == jsonNumber1.bigDecimalValue().hashCode());
 
@@ -253,7 +264,8 @@ public class JsonNumberTest extends TestCase {
         assertTrue(jsonNumber1.hashCode() == jsonNumber2.hashCode());
     }
 
-    public void testNumber() {
+    @Test
+    void testNumber() {
         assertEquals(Json.createValue(1), Json.createValue(Byte.valueOf((byte) 1)));
         assertEquals(Json.createValue(1).toString(), Json.createValue(Byte.valueOf((byte) 1)).toString());
         assertEquals(Json.createValue(1), Json.createValue(Short.valueOf((short) 1)));
@@ -272,14 +284,16 @@ public class JsonNumberTest extends TestCase {
 
     // Test default BigInteger scale value limit using value bellow limit.
     // Call shall return value.
-    public void testDefaultBigIntegerScaleBellowLimit() {
+    @Test
+    void testDefaultBigIntegerScaleBellowLimit() {
         BigDecimal value = new BigDecimal("3.1415926535897932384626433");
         Json.createValue(value).bigIntegerValue();
     }
 
     // Test default BigInteger scale value limit using positive value above limit.
     // Call shall throw specific UnsupportedOperationException exception.
-    public void testDefaultBigIntegerScaleAboveLimit() {
+    @Test
+    void testDefaultBigIntegerScaleAboveLimit() {
         BigDecimal value = new BigDecimal("3.1415926535897932384626433")
                 .setScale(100001, RoundingMode.HALF_UP);
         try {
@@ -294,7 +308,8 @@ public class JsonNumberTest extends TestCase {
 
     // Test default BigInteger scale value limit using negative value above limit.
     // Call shall throw specific UnsupportedOperationException exception.
-    public void testDefaultBigIntegerNegScaleAboveLimit() {
+    @Test
+    void testDefaultBigIntegerNegScaleAboveLimit() {
         BigDecimal value = new BigDecimal("3.1415926535897932384626433")
                 .setScale(-100001, RoundingMode.HALF_UP);
         try {
@@ -312,7 +327,8 @@ public class JsonNumberTest extends TestCase {
     // Config Map limit is stored in target JsonObject and shall be present for later value manipulation.
     // Default value is 100000 and config Map property lowered it to 50000 so value with scale 50001
     // test shall fail with exception message matching modified limits.
-    public void testConfigBigIntegerScaleAboveLimit() {
+    @Test
+    void testConfigBigIntegerScaleAboveLimit() {
         BigDecimal value = new BigDecimal("3.1415926535897932384626433")
                 .setScale(50001, RoundingMode.HALF_UP);
         Map<String, ?> config = Map.of(JsonConfig.MAX_BIGINTEGER_SCALE, "50000");
@@ -335,7 +351,8 @@ public class JsonNumberTest extends TestCase {
     // Config Map limit is stored in target JsonObject and shall be present for later value manipulation.
     // Default value is 100000 and config Map property lowered it to 50000 so value with scale -50001
     // test shall fail with exception message matching modified limits.
-    public void testConfigBigIntegerNegScaleAboveLimit() {
+    @Test
+    void testConfigBigIntegerNegScaleAboveLimit() {
         BigDecimal value = new BigDecimal("3.1415926535897932384626433")
                 .setScale(-50001, RoundingMode.HALF_UP);
         Map<String, ?> config = Map.of(JsonConfig.MAX_BIGINTEGER_SCALE, "50000");
@@ -355,7 +372,8 @@ public class JsonNumberTest extends TestCase {
 
     // Test BigDecimal max source characters array length using length equal to default limit of 1100.
     // Parsing shall pass and return value equal to source String.
-    public void testLargeBigDecimalBellowLimit() {
+    @Test
+    void testLargeBigDecimalBellowLimit() {
         JsonReader reader = Json.createReader(new StringReader(Π_1100));
         JsonNumber check = Json.createValue(new BigDecimal(Π_1100));
         JsonValue value = reader.readValue();
@@ -365,7 +383,8 @@ public class JsonNumberTest extends TestCase {
 
     // Test BigDecimal max source characters array length using length above default limit of 1100.
     // Parsing shall throw specific UnsupportedOperationException exception.
-    public void testLargeBigDecimalAboveLimit() {
+    @Test
+    void testLargeBigDecimalAboveLimit() {
         JsonReader reader = Json.createReader(new StringReader(Π_1101));
         try {
             reader.readValue();
@@ -380,7 +399,8 @@ public class JsonNumberTest extends TestCase {
 
     // Test BigDecimal max source characters array length using length equal to custom limit of 500.
     // Parsing shall pass and return value equal to source String.
-    public void testLargeBigDecimalBellowCustomLimit() {
+    @Test
+    void testLargeBigDecimalBellowCustomLimit() {
         Map<String, ?> config = Map.of(JsonConfig.MAX_BIGDECIMAL_LEN, "500");
         JsonReader reader = Json.createReaderFactory(config).createReader(new StringReader(Π_500));
         JsonNumber check = Json.createValue(new BigDecimal(Π_500));
@@ -391,7 +411,8 @@ public class JsonNumberTest extends TestCase {
 
     // Test BigDecimal max source characters array length using length equal to custom limit of 200.
     // Parsing shall pass and return value equal to source String.
-    public void testLargeBigDecimalAboveCustomLimit() {
+    @Test
+    void testLargeBigDecimalAboveCustomLimit() {
         Map<String, ?> config = Map.of(JsonConfig.MAX_BIGDECIMAL_LEN, "500");
         JsonReader reader = Json.createReaderFactory(config).createReader(new StringReader(Π_501));
         try {
@@ -408,8 +429,8 @@ public class JsonNumberTest extends TestCase {
     static void assertExceptionMessageContainsNumber(Exception e, int number) {
         // Format the number as being written to message from messages bundle
         String numberString = MessageFormat.format("{0}", number);
-        assertTrue("Substring \"" + numberString + "\" was not found in \"" + e.getMessage() + "\"",
-                   e.getMessage().contains(numberString));
+        assertTrue(e.getMessage().contains(numberString),
+                   "Substring \"" + numberString + "\" was not found in \"" + e.getMessage() + "\"");
     }
 
     private static class CustomNumber extends Number {

@@ -16,22 +16,24 @@
 
 package org.eclipse.parsson.tests;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-import org.eclipse.parsson.TestUtils;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonMergePatch;
 import jakarta.json.JsonPatch;
 
+import org.eclipse.parsson.TestUtils;
+
+import org.junit.jupiter.api.Test;
+
+
 public class JsonMergePatch2Test {
 
     @Test
-    public void testToString() {
+    void testToString() {
         JsonArray jsonArray = Json.createArrayBuilder().add(Json.createValue(1)).build();
         JsonPatch jsonPatch = Json.createPatchBuilder(jsonArray).build();
         assertEquals("[1]", jsonPatch.toString());
@@ -40,7 +42,7 @@ public class JsonMergePatch2Test {
     }
 
     @Test
-    public void testEquals() {
+    void testEquals() {
         JsonMergePatch j1 = TestUtils.createJsonMergePatchImpl(Json.createValue("test"));
         JsonMergePatch j2 = TestUtils.createJsonMergePatchImpl(Json.createValue("test"));
         JsonMergePatch j3 = TestUtils.createJsonMergePatchImpl(j1.toJsonValue());

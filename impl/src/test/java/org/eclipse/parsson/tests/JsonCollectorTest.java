@@ -16,9 +16,7 @@
 
 package org.eclipse.parsson.tests;
 
-import org.eclipse.parsson.TestUtils;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
@@ -27,7 +25,9 @@ import jakarta.json.JsonPatchBuilder;
 import jakarta.json.JsonValue;
 import jakarta.json.stream.JsonCollectors;
 
-import static org.junit.Assert.assertEquals;
+import org.eclipse.parsson.TestUtils;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 /**
  * Some JSON query tests/examples, using Java stream operations, with JSON collectors.
@@ -37,8 +37,8 @@ public class JsonCollectorTest {
 
     static JsonArray contacts;
 
-    @BeforeClass
-    public static void setUpClass() {
+    @BeforeAll
+    static void setUpClass() {
         // The JSON source
         contacts = (JsonArray) TestUtils.toJson(
         "[                                 " +
@@ -61,7 +61,7 @@ public class JsonCollectorTest {
     }
 
     @Test
-    public void testToJsonArray() {
+    void testToJsonArray() {
         /*
          * Query: retrieve the names of female contacts
          * Returns a JsonArray of names
@@ -75,7 +75,7 @@ public class JsonCollectorTest {
     }
 
     @Test
-    public void testToJsonObject() {
+    void testToJsonObject() {
         /*
          * Query: retrieve the names and mobile phones of female contacts
          * Returns a JsonObject of name phones pairs
@@ -92,7 +92,7 @@ public class JsonCollectorTest {
     }
 
     @Test
-    public void testGroupBy() {
+    void testGroupBy() {
         /*
          * Query: group the contacts according to gender
          * Returns a JsonObject, with gender/constacts value pairs
@@ -127,8 +127,9 @@ public class JsonCollectorTest {
     }
 
     static int index; //for keeping track of the array index
+
     @Test
-    public void testQueryAndPatch() {
+    void testQueryAndPatch() {
         /*
          * Query and patch: Increment the ages of contacts with an age entry
          * PatchBuilder is used for building the necessary JsonPatch.

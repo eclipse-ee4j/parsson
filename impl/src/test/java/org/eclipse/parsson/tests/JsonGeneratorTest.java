@@ -16,28 +16,44 @@
 
 package org.eclipse.parsson.tests;
 
-import junit.framework.TestCase;
-import org.eclipse.parsson.api.BufferPool;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
-import jakarta.json.*;
-import jakarta.json.stream.*;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
+import jakarta.json.Json;
+import jakarta.json.JsonArray;
+import jakarta.json.JsonBuilderFactory;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonReader;
+import jakarta.json.JsonReaderFactory;
+import jakarta.json.JsonValue;
+import jakarta.json.stream.JsonGenerationException;
+import jakarta.json.stream.JsonGenerator;
+import jakarta.json.stream.JsonGeneratorFactory;
+
+import org.eclipse.parsson.api.BufferPool;
+
+import org.junit.jupiter.api.Test;
 /**
  * {@link JsonGenerator} tests
  *
  * @author Jitendra Kotamraju
  */
-public class JsonGeneratorTest extends TestCase {
-    public JsonGeneratorTest(String testName) {
-        super(testName);
-    }
+public class JsonGeneratorTest {
 
-    public void testObjectWriter() throws Exception {
+    @Test
+    void testObjectWriter() throws Exception {
         StringWriter writer = new StringWriter();
         JsonGenerator generator = Json.createGenerator(writer);
         testObject(generator);
@@ -49,7 +65,8 @@ public class JsonGeneratorTest extends TestCase {
         JsonObjectTest.testPerson(person);
     }
 
-    public void testObjectStream() throws Exception {
+    @Test
+    void testObjectStream() throws Exception {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         JsonGenerator generator = Json.createGenerator(out);
         testObject(generator);
@@ -89,7 +106,8 @@ public class JsonGeneratorTest extends TestCase {
                 .writeEnd();
     }
 
-    public void testArray() throws Exception {
+    @Test
+    void testArray() throws Exception {
         Writer sw = new StringWriter();
         JsonGenerator generator = Json.createGenerator(sw);
         generator
@@ -107,7 +125,8 @@ public class JsonGeneratorTest extends TestCase {
     }
 
     // tests JsonGenerator when JsonValue is used for generation
-    public void testJsonValue() throws Exception {
+    @Test
+    void testJsonValue() throws Exception {
         StringWriter writer = new StringWriter();
         JsonGenerator generator = Json.createGenerator(writer);
         generator
@@ -126,7 +145,8 @@ public class JsonGeneratorTest extends TestCase {
         JsonObjectTest.testPerson(person);
     }
 
-    public void testArrayString() throws Exception {
+    @Test
+    void testArrayString() throws Exception {
         StringWriter writer = new StringWriter();
         JsonGenerator generator = Json.createGenerator(writer);
         generator.writeStartArray().write("string").writeEnd();
@@ -136,7 +156,8 @@ public class JsonGeneratorTest extends TestCase {
         assertEquals("[\"string\"]", writer.toString());
     }
 
-    public void testEscapedString() throws Exception {
+    @Test
+    void testEscapedString() throws Exception {
         StringWriter writer = new StringWriter();
         JsonGenerator generator = Json.createGenerator(writer);
         generator.writeStartArray().write("\u0000").writeEnd();
@@ -146,7 +167,8 @@ public class JsonGeneratorTest extends TestCase {
         assertEquals("[\"\\u0000\"]", writer.toString());
     }
 
-    public void testEscapedString1() throws Exception {
+    @Test
+    void testEscapedString1() throws Exception {
         String expected = "\u0000\u00ff";
         StringWriter sw = new StringWriter();
         JsonGenerator generator = Json.createGenerator(sw);
@@ -162,7 +184,8 @@ public class JsonGeneratorTest extends TestCase {
         assertEquals(expected, got);
     }
 
-    public void testGeneratorEquals() throws Exception {
+    @Test
+    void testGeneratorEquals() throws Exception {
         StringWriter sw = new StringWriter();
         JsonGenerator generator = Json.createGenerator(sw);
         generator.writeStartArray()
@@ -197,7 +220,8 @@ public class JsonGeneratorTest extends TestCase {
         assertEquals(expected, actual);
     }
 
-    public void testPrettyObjectWriter() throws Exception {
+    @Test
+    void testPrettyObjectWriter() throws Exception {
         StringWriter writer = new StringWriter();
         Map<String, Object> config = new HashMap<>();
         config.put(JsonGenerator.PRETTY_PRINTING, true);
@@ -212,7 +236,8 @@ public class JsonGeneratorTest extends TestCase {
         JsonObjectTest.testPerson(person);
     }
 
-    public void testPrettyPrinting() throws Exception {
+    @Test
+    void testPrettyPrinting() throws Exception {
         String[][] lines = {{"firstName", "John"}, {"lastName", "Smith"}};
         StringWriter writer = new StringWriter();
         Map<String, Object> config = new HashMap<>();
@@ -238,7 +263,8 @@ public class JsonGeneratorTest extends TestCase {
         assertEquals(4, numberOfLines);
     }
 
-    public void testPrettyObjectStream() throws Exception {
+    @Test
+    void testPrettyObjectStream() throws Exception {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         Map<String, Object> config = new HashMap<>();
         config.put(JsonGenerator.PRETTY_PRINTING, true);
@@ -256,7 +282,8 @@ public class JsonGeneratorTest extends TestCase {
         in.close();
     }
 
-    public void testGenerationException1() throws Exception {
+    @Test
+    void testGenerationException1() throws Exception {
         StringWriter writer = new StringWriter();
         JsonGenerator generator = Json.createGenerator(writer);
         generator.writeStartObject();
@@ -268,7 +295,8 @@ public class JsonGeneratorTest extends TestCase {
         }
     }
 
-    public void testGenerationException2() throws Exception {
+    @Test
+    void testGenerationException2() throws Exception {
         StringWriter writer = new StringWriter();
         JsonGenerator generator = Json.createGenerator(writer);
         generator.writeStartObject();
@@ -280,7 +308,8 @@ public class JsonGeneratorTest extends TestCase {
         }
     }
 
-    public void testGenerationException3() throws Exception {
+    @Test
+    void testGenerationException3() throws Exception {
         StringWriter writer = new StringWriter();
         JsonGenerator generator = Json.createGenerator(writer);
         try {
@@ -291,7 +320,8 @@ public class JsonGeneratorTest extends TestCase {
         }
     }
 
-    public void testGenerationException4() throws Exception {
+    @Test
+    void testGenerationException4() throws Exception {
         StringWriter writer = new StringWriter();
         JsonGenerator generator = Json.createGenerator(writer);
         generator.writeStartArray();
@@ -303,7 +333,8 @@ public class JsonGeneratorTest extends TestCase {
         }
     }
 
-    public void testGenerationException5() throws Exception {
+    @Test
+    void testGenerationException5() throws Exception {
         StringWriter writer = new StringWriter();
         JsonGenerator generator = Json.createGenerator(writer);
         generator.writeStartObject();
@@ -315,7 +346,8 @@ public class JsonGeneratorTest extends TestCase {
         }
     }
 
-    public void testGenerationException6() throws Exception {
+    @Test
+    void testGenerationException6() throws Exception {
         StringWriter writer = new StringWriter();
         JsonGenerator generator = Json.createGenerator(writer);
         generator.writeStartObject().writeEnd();
@@ -327,7 +359,8 @@ public class JsonGeneratorTest extends TestCase {
         }
     }
 
-    public void testGenerationException7() throws Exception {
+    @Test
+    void testGenerationException7() throws Exception {
         StringWriter writer = new StringWriter();
         JsonGenerator generator = Json.createGenerator(writer);
         generator.writeStartArray().writeEnd();
@@ -340,7 +373,8 @@ public class JsonGeneratorTest extends TestCase {
     }
 
 
-    public void testGenerationException8() throws Exception {
+    @Test
+    void testGenerationException8() throws Exception {
         StringWriter sWriter = new StringWriter();
         JsonGenerator generator = Json.createGenerator(sWriter);
         generator.writeStartObject();
@@ -352,7 +386,8 @@ public class JsonGeneratorTest extends TestCase {
         }
     }
 
-    public void testGenerationException9() throws Exception {
+    @Test
+    void testGenerationException9() throws Exception {
         StringWriter sWriter = new StringWriter();
         JsonGenerator generator = Json.createGenerator(sWriter);
         generator.writeStartObject();
@@ -364,7 +399,8 @@ public class JsonGeneratorTest extends TestCase {
         }
     }
 
-    public void testGeneratorArrayDouble() throws Exception {
+    @Test
+    void testGeneratorArrayDouble() throws Exception {
         StringWriter writer = new StringWriter();
         JsonGenerator generator = Json.createGenerator(writer);
         generator.writeStartArray();
@@ -390,7 +426,8 @@ public class JsonGeneratorTest extends TestCase {
         generator.close();
     }
 
-    public void testGeneratorObjectDouble() throws Exception {
+    @Test
+    void testGeneratorObjectDouble() throws Exception {
         StringWriter writer = new StringWriter();
         JsonGenerator generator = Json.createGenerator(writer);
         generator.writeStartObject();
@@ -416,7 +453,8 @@ public class JsonGeneratorTest extends TestCase {
         generator.close();
     }
 
-    public void testIntGenerator() throws Exception {
+    @Test
+    void testIntGenerator() throws Exception {
         Random r = new Random(System.currentTimeMillis());
         JsonGeneratorFactory gf = Json.createGeneratorFactory(null);
         JsonReaderFactory rf = Json.createReaderFactory(null);
@@ -437,7 +475,8 @@ public class JsonGeneratorTest extends TestCase {
         }
     }
 
-    public void testGeneratorBuf() throws Exception {
+    @Test
+    void testGeneratorBuf() throws Exception {
         JsonGeneratorFactory gf = Json.createGeneratorFactory(null);
         JsonReaderFactory rf = Json.createReaderFactory(null);
         JsonBuilderFactory bf = Json.createBuilderFactory(null);
@@ -460,7 +499,8 @@ public class JsonGeneratorTest extends TestCase {
         }
     }
 
-    public void testBufferPoolFeature() {
+    @Test
+    void testBufferPoolFeature() {
         final JsonParserTest.MyBufferPool bufferPool = new JsonParserTest.MyBufferPool(1024);
         Map<String, Object> config = new HashMap<String, Object>() {{
             put(BufferPool.class.getName(), bufferPool);
@@ -475,7 +515,8 @@ public class JsonGeneratorTest extends TestCase {
         assertTrue(bufferPool.isRecycleCalled());
     }
 
-    public void testBufferSizes() {
+    @Test
+    void testBufferSizes() {
         JsonReaderFactory rf = Json.createReaderFactory(null);
         JsonBuilderFactory bf = Json.createBuilderFactory(null);
         for(int size=10; size < 1000; size++) {
@@ -506,7 +547,8 @@ public class JsonGeneratorTest extends TestCase {
         }
     }
 
-    public void testString() throws Exception {
+    @Test
+    void testString() throws Exception {
         escapedString("");
         escapedString("abc");
         escapedString("abc\f");
@@ -534,7 +576,8 @@ public class JsonGeneratorTest extends TestCase {
         assertEquals(expected, got);
     }
 
-    public void testFlush() throws Exception {
+    @Test
+    void testFlush() throws Exception {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         JsonGenerator gen = Json.createGenerator(baos);
         gen.writeStartObject().writeEnd();
@@ -543,7 +586,8 @@ public class JsonGeneratorTest extends TestCase {
         assertEquals("{}", baos.toString("UTF-8"));
     }
 
-    public void testClose() {
+    @Test
+    void testClose() {
         StringWriter sw = new StringWriter();
         JsonGeneratorFactory factory = Json.createGeneratorFactory(Collections.emptyMap());
         try (JsonGenerator generator = factory.createGenerator(sw)) {

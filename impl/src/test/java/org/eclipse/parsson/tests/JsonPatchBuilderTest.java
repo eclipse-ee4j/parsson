@@ -17,13 +17,13 @@
 package org.eclipse.parsson.tests;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonPatchBuilder;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * 
@@ -33,7 +33,7 @@ import org.junit.Test;
 public class JsonPatchBuilderTest {
 
     @Test
-    public void shouldBuildJsonPatchExpressionUsingJsonPatchBuilder() {
+    void shouldBuildJsonPatchExpressionUsingJsonPatchBuilder() {
         JsonPatchBuilder patchBuilder = Json.createPatchBuilder();
         JsonObject result = patchBuilder.add("/email", "john@example.com")
                     .replace("/age", 30)
