@@ -22,15 +22,10 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.math.BigDecimal;
 import java.nio.charset.Charset;
-import java.util.AbstractMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Objects;
-import java.util.Spliterator;
-import java.util.Spliterators;
-import java.util.function.Consumer;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 import jakarta.json.JsonArray;
 import jakarta.json.JsonArrayBuilder;
@@ -60,7 +55,7 @@ import static org.eclipse.parsson.JsonTokenizer.JsonToken.STRING;
  * @author Jitendra Kotamraju
  * @author Kin-man Chung
  */
-public class JsonParserImpl implements JsonParser {
+class JsonParserImpl implements JsonParser {
 
     private Context currentContext = new NoneContext();
     private Event currentEvent;
@@ -71,20 +66,24 @@ public class JsonParserImpl implements JsonParser {
 
     private final JsonContext jsonContext;
 
-    public JsonParserImpl(Reader reader, JsonContext jsonContext) {
+    private final JsonParserStreamCreator streamCreator = new JsonParserStreamCreator(this, true, () -> currentEvent,
+            () -> currentContext instanceof NoneContext);
+
+
+    JsonParserImpl(Reader reader, JsonContext jsonContext) {
         this.jsonContext = jsonContext;
         stack = new Stack(jsonContext.depthLimit());
         this.tokenizer = new JsonTokenizer(reader, jsonContext);
     }
 
-    public JsonParserImpl(InputStream in, JsonContext jsonContext) {
+    JsonParserImpl(InputStream in, JsonContext jsonContext) {
         this.jsonContext = jsonContext;
         stack = new Stack(jsonContext.depthLimit());
         UnicodeDetectingInputStream uin = new UnicodeDetectingInputStream(in);
         this.tokenizer = new JsonTokenizer(new InputStreamReader(uin, uin.getCharset()), jsonContext);
     }
 
-    public JsonParserImpl(InputStream in, Charset encoding, JsonContext jsonContext) {
+    JsonParserImpl(InputStream in, Charset encoding, JsonContext jsonContext) {
         this.jsonContext = jsonContext;
         stack = new Stack(jsonContext.depthLimit());
         this.tokenizer = new JsonTokenizer(new InputStreamReader(in, encoding), jsonContext);
@@ -194,103 +193,17 @@ public class JsonParserImpl implements JsonParser {
 
     @Override
     public Stream<JsonValue> getArrayStream() {
-        if (currentEvent != Event.START_ARRAY) {
-            throw new IllegalStateException(
-                JsonMessages.PARSER_GETARRAY_ERR(currentEvent));
-        }
-        Spliterator<JsonValue> spliterator =
-                new Spliterators.AbstractSpliterator<JsonValue>(Long.MAX_VALUE, Spliterator.ORDERED) {
-                    @Override
-                    public Spliterator<JsonValue> trySplit() {
-                        return null;
-                    }
-
-                    @Override
-                    public boolean tryAdvance(Consumer<? super JsonValue> action) {
-                        if (action == null) {
-                            throw new NullPointerException();
-                        }
-                        if (!hasNext()) {
-                            return false;
-                        }
-                        if (next() == JsonParser.Event.END_ARRAY) {
-                            return false;
-                        }
-                        action.accept(getValue());
-                        return true;
-                    }
-                };
-        return StreamSupport.stream(spliterator, false);
+        return streamCreator.getArrayStream();
     }
 
     @Override
     public Stream<Map.Entry<String, JsonValue>> getObjectStream() {
-        if (currentEvent != Event.START_OBJECT) {
-            throw new IllegalStateException(
-                JsonMessages.PARSER_GETOBJECT_ERR(currentEvent));
-        }
-        Spliterator<Map.Entry<String, JsonValue>> spliterator =
-                new Spliterators.AbstractSpliterator<Map.Entry<String, JsonValue>>(Long.MAX_VALUE, Spliterator.ORDERED) {
-                    @Override
-                    public Spliterator<Map.Entry<String, JsonValue>> trySplit() {
-                        return null;
-                    }
-
-                    @Override
-                    public boolean tryAdvance(Consumer<? super Map.Entry<String, JsonValue>> action) {
-                        if (action == null) {
-                            throw new NullPointerException();
-                        }
-                        if (!hasNext()) {
-                            return false;
-                        }
-                        JsonParser.Event e = next();
-                        if (e == JsonParser.Event.END_OBJECT) {
-                            return false;
-                        }
-                        if (e != JsonParser.Event.KEY_NAME) {
-                            throw new JsonException(JsonMessages.INTERNAL_ERROR());
-                        }
-                        String key = getString();
-                        if (!hasNext()) {
-                            throw new JsonException(JsonMessages.INTERNAL_ERROR());
-                        }
-                        next();
-                        JsonValue value = getValue();
-                        action.accept(new AbstractMap.SimpleImmutableEntry<>(key, value));
-                        return true;
-                    }
-                };
-        return StreamSupport.stream(spliterator, false);
+        return streamCreator.getObjectStream();
     }
 
     @Override
     public Stream<JsonValue> getValueStream() {
-        if (! (currentContext instanceof NoneContext)) {
-            throw new IllegalStateException(
-                JsonMessages.PARSER_GETVALUESTREAM_ERR());
-        }
-        Spliterator<JsonValue> spliterator =
-                new Spliterators.AbstractSpliterator<JsonValue>(Long.MAX_VALUE, Spliterator.ORDERED) {
-                    @Override
-                    public Spliterator<JsonValue> trySplit() {
-                        return null;
-                    }
-
-                    @Override
-                    public boolean tryAdvance(Consumer<? super JsonValue> action) {
-                        if (action == null) {
-                            throw new NullPointerException();
-                        }
-                        if (!hasNext()) {
-                            return false;
-                        }
-                        next();
-                        action.accept(getValue());
-                        return true;
-                    }
-                };
-        return StreamSupport.stream(spliterator, false);
+        return streamCreator.getValueStream();
     }
 
     @Override
