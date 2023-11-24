@@ -25,6 +25,7 @@ import java.util.Deque;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 /**
@@ -58,42 +59,37 @@ class JsonStructureParser implements JsonParser {
             case VALUE_STRING:
                 return ((JsonString)current.getJsonValue()).getString();
             case VALUE_NUMBER:
-                return ((JsonNumber)current.getJsonValue()).toString();
+                return current.getJsonValue().toString();
             default:
                 throw new IllegalStateException(JsonMessages.PARSER_GETSTRING_ERR(state));
         }
     }
 
+    private <T> T getNumberValue(Function<JsonNumber, T> numberFunction, Function<Event, String> exceptionMessageFunction) {
+        if (state == Event.VALUE_NUMBER) {
+            return numberFunction.apply((JsonNumber)current.getJsonValue());
+        }
+        throw new IllegalStateException(exceptionMessageFunction.apply(state));
+    }
+
     @Override
     public boolean isIntegralNumber() {
-        if (state == Event.VALUE_NUMBER) {
-            return ((JsonNumber)current.getJsonValue()).isIntegral();
-        }
-        throw new IllegalStateException(JsonMessages.PARSER_ISINTEGRALNUMBER_ERR(state));
+        return getNumberValue(JsonNumber::isIntegral, JsonMessages::PARSER_ISINTEGRALNUMBER_ERR);
     }
 
     @Override
     public int getInt() {
-        if (state == Event.VALUE_NUMBER) {
-            return ((JsonNumber)current.getJsonValue()).intValue();
-        }
-        throw new IllegalStateException(JsonMessages.PARSER_GETINT_ERR(state));
+        return getNumberValue(JsonNumber::intValue, JsonMessages::PARSER_GETINT_ERR);
     }
 
     @Override
     public long getLong() {
-        if (state == Event.VALUE_NUMBER) {
-            return ((JsonNumber)current.getJsonValue()).longValue();
-        }
-        throw new IllegalStateException(JsonMessages.PARSER_GETLONG_ERR(state));
+        return getNumberValue(JsonNumber::longValue, JsonMessages::PARSER_GETLONG_ERR);
     }
 
     @Override
     public BigDecimal getBigDecimal() {
-        if (state == Event.VALUE_NUMBER) {
-            return ((JsonNumber)current.getJsonValue()).bigDecimalValue();
-        }
-        throw new IllegalStateException(JsonMessages.PARSER_GETBIGDECIMAL_ERR(state));
+        return getNumberValue(JsonNumber::bigDecimalValue, JsonMessages::PARSER_GETBIGDECIMAL_ERR);
     }
 
     @Override
@@ -174,22 +170,14 @@ class JsonStructureParser implements JsonParser {
             if (current instanceof ArrayScope) {
                 if (current.hasNext()) {
                     current.next();
-                    state = getState(current.getJsonValue());
-                    if (state == Event.START_ARRAY || state == Event.START_OBJECT) {
-                        scopeStack.push(current);
-                        current = Scope.createScope(current.getJsonValue());
-                    }
+                    nextStateAndEndOfTheObjectOrArray();
                 } else {
                     state = Event.END_ARRAY;
                 }
             } else {
                 // ObjectScope
                 if (state == Event.KEY_NAME) {
-                    state = getState(current.getJsonValue());
-                    if (state == Event.START_ARRAY || state == Event.START_OBJECT) {
-                        scopeStack.push(current);
-                        current = Scope.createScope(current.getJsonValue());
-                    }
+                    nextStateAndEndOfTheObjectOrArray();
                 } else {
                     if (current.hasNext()) {
                         current.next();
@@ -199,6 +187,14 @@ class JsonStructureParser implements JsonParser {
                     }
                 }
             }
+        }
+    }
+
+    private void nextStateAndEndOfTheObjectOrArray() {
+        state = getState(current.getJsonValue());
+        if (state == Event.START_ARRAY || state == Event.START_OBJECT) {
+            scopeStack.push(current);
+            current = Scope.createScope(current.getJsonValue());
         }
     }
 

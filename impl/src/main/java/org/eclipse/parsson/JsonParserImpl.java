@@ -25,6 +25,7 @@ import java.nio.charset.Charset;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 import jakarta.json.JsonArray;
@@ -99,22 +100,22 @@ class JsonParserImpl implements JsonParser {
                 JsonMessages.PARSER_GETSTRING_ERR(currentEvent));
     }
 
-    @Override
-    public boolean isIntegralNumber() {
+    private <T> T getNumberValue(Function<JsonTokenizer, T> tokenizerFunction, Function<Event, String> exceptionMessageFunction) {
         if (currentEvent != Event.VALUE_NUMBER) {
             throw new IllegalStateException(
-                    JsonMessages.PARSER_ISINTEGRALNUMBER_ERR(currentEvent));
+                    exceptionMessageFunction.apply(currentEvent));
         }
-        return tokenizer.isIntegral();
+        return tokenizerFunction.apply(tokenizer);
+    }
+
+    @Override
+    public boolean isIntegralNumber() {
+        return getNumberValue(JsonTokenizer::isIntegral, JsonMessages::PARSER_ISINTEGRALNUMBER_ERR);
     }
 
     @Override
     public int getInt() {
-        if (currentEvent != Event.VALUE_NUMBER) {
-            throw new IllegalStateException(
-                    JsonMessages.PARSER_GETINT_ERR(currentEvent));
-        }
-        return tokenizer.getInt();
+        return getNumberValue(JsonTokenizer::getInt, JsonMessages::PARSER_GETINT_ERR);
     }
 
     boolean isDefinitelyInt() {
@@ -127,20 +128,12 @@ class JsonParserImpl implements JsonParser {
 
     @Override
     public long getLong() {
-        if (currentEvent != Event.VALUE_NUMBER) {
-            throw new IllegalStateException(
-                    JsonMessages.PARSER_GETLONG_ERR(currentEvent));
-        }
-        return tokenizer.getLong();
+        return getNumberValue(JsonTokenizer::getLong, JsonMessages::PARSER_GETLONG_ERR);
     }
 
     @Override
     public BigDecimal getBigDecimal() {
-        if (currentEvent != Event.VALUE_NUMBER) {
-            throw new IllegalStateException(
-                    JsonMessages.PARSER_GETBIGDECIMAL_ERR(currentEvent));
-        }
-        return tokenizer.getBigDecimal();
+        return getNumberValue(JsonTokenizer::getBigDecimal, JsonMessages::PARSER_GETBIGDECIMAL_ERR);
     }
 
     @Override
@@ -393,6 +386,8 @@ class JsonParserImpl implements JsonParser {
         private final JsonToken openToken;
         private final JsonToken closeToken;
 
+        private boolean firstValue = true;
+
         private SkippingContext(JsonToken openToken, JsonToken closeToken) {
             this.openToken = Objects.requireNonNull(openToken);
             this.closeToken = Objects.requireNonNull(closeToken);
@@ -412,11 +407,21 @@ class JsonParserImpl implements JsonParser {
                 }
             } while (!(token == closeToken && depth == 0));
         }
+
+        JsonToken firstValueOrJsonToken(JsonToken token) {
+            if (firstValue) {
+                firstValue = false;
+            } else {
+                if (token != COMMA) {
+                    throw parsingException(token, "[COMMA]");
+                }
+                token = tokenizer.nextToken();
+            }
+            return token;
+        }
     }
 
     private final class ObjectContext extends SkippingContext {
-        private boolean firstValue = true;
-
         private ObjectContext() {
             super(JsonToken.CURLYOPEN, JsonToken.CURLYCLOSE);
         }
@@ -458,14 +463,8 @@ class JsonParserImpl implements JsonParser {
                     currentContext = stack.pop();
                     return Event.END_OBJECT;
                 }
-                if (firstValue) {
-                    firstValue = false;
-                } else {
-                    if (token != COMMA) {
-                        throw parsingException(token, "[COMMA]");
-                    }
-                    token = tokenizer.nextToken();
-                }
+
+                token = firstValueOrJsonToken(token);
                 if (token == STRING) {
                     return Event.KEY_NAME;
                 }
@@ -475,7 +474,6 @@ class JsonParserImpl implements JsonParser {
     }
 
     private final class ArrayContext extends SkippingContext {
-        private boolean firstValue = true;
 
         private ArrayContext() {
             super(JsonToken.SQUAREOPEN, JsonToken.SQUARECLOSE);
@@ -486,25 +484,14 @@ class JsonParserImpl implements JsonParser {
         public Event getNextEvent() {
             JsonToken token = tokenizer.nextToken();
             if (token == EOF) {
-                switch (currentEvent) {
-                    case START_ARRAY:
-                        throw parsingException(token, "[CURLYOPEN, SQUAREOPEN, STRING, NUMBER, TRUE, FALSE, NULL]");
-                    default:
-                        throw parsingException(token, "[COMMA, CURLYCLOSE]");
-                }
-            }
+                throw parsingException(token, (Objects.requireNonNull(currentEvent) == Event.START_ARRAY) ?
+                        "[CURLYOPEN, SQUAREOPEN, STRING, NUMBER, TRUE, FALSE, NULL]" : "[COMMA, CURLYCLOSE]");
+			}
             if (token == SQUARECLOSE) {
                 currentContext = stack.pop();
                 return Event.END_ARRAY;
             }
-            if (firstValue) {
-                firstValue = false;
-            } else {
-                if (token != COMMA) {
-                    throw parsingException(token, "[COMMA]");
-                }
-                token = tokenizer.nextToken();
-            }
+            token = firstValueOrJsonToken(token);
 
             Event event = nextEventIfValueOrObjectOrArrayStart(token);
             if (event != null) {
