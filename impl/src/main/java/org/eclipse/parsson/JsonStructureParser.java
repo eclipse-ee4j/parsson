@@ -25,6 +25,7 @@ import java.util.Deque;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.stream.Stream;
 
 /**
  * {@link JsonParser} implementation on top of JsonArray/JsonObject
@@ -33,9 +34,13 @@ import java.util.NoSuchElementException;
  */
 class JsonStructureParser implements JsonParser {
 
-    private Scope current;
+    private Scope<?> current;
     private Event state;
-    private final Deque<Scope> scopeStack = new ArrayDeque<>();
+    private final Deque<Scope<?>> scopeStack = new ArrayDeque<>();
+
+    //JsonParserImpl delivers the whole object - so we have to call next() before creation of the stream
+    private final JsonParserStreamCreator streamCreator = new JsonParserStreamCreator(this, true, () -> state, scopeStack::isEmpty);
+
 
     JsonStructureParser(JsonArray array) {
         current = new ArrayScope(array);
@@ -97,6 +102,55 @@ class JsonStructureParser implements JsonParser {
     }
 
     @Override
+    public JsonObject getObject() {
+        if (state != Event.START_OBJECT) {
+            throw new IllegalStateException(
+                    JsonMessages.PARSER_GETOBJECT_ERR(state));
+        }
+        if (current == null) {
+            throw new NoSuchElementException(JsonMessages.INTERNAL_ERROR());
+        }
+        state = Event.END_OBJECT;
+        return current.getJsonValue().asJsonObject();
+
+    }
+
+    @Override
+    public JsonValue getValue() {
+        if (current == null) {
+            throw new IllegalStateException(JsonMessages.INTERNAL_ERROR());
+        }
+
+        switch (state) {
+            case START_OBJECT:
+                return getObject();
+            case START_ARRAY:
+                return getArray();
+            case KEY_NAME:
+                return Json.createValue(((ObjectScope)current).key);
+            case END_OBJECT:
+            case END_ARRAY:
+                throw new IllegalStateException(JsonMessages.INTERNAL_ERROR());
+            default:
+                return current.getJsonValue();
+        }
+    }
+
+    @Override
+    public JsonArray getArray() {
+        if (state != Event.START_ARRAY) {
+            throw new IllegalStateException(
+                    JsonMessages.PARSER_GETARRAY_ERR(state));
+        }
+        Scope<?> topOfTheStack = scopeStack.isEmpty() ? current : scopeStack.pop();
+        if (topOfTheStack == null) {
+            throw new NoSuchElementException(JsonMessages.INTERNAL_ERROR());
+        }
+        state = Event.END_ARRAY;
+        return topOfTheStack.getJsonValue().asJsonArray();
+    }
+
+    @Override
     public boolean hasNext() {
         return !((state == Event.END_OBJECT || state == Event.END_ARRAY) && scopeStack.isEmpty());
     }
@@ -154,58 +208,36 @@ class JsonStructureParser implements JsonParser {
     }
 
     @Override
+    public Event currentEvent() {
+        return state;
+    }
+
+    @Override
+    public Stream<JsonValue> getArrayStream() {
+        return streamCreator.getArrayStream();
+    }
+
+    @Override
+    public Stream<Map.Entry<String, JsonValue>> getObjectStream() {
+        return streamCreator.getObjectStream();
+    }
+
+    @Override
+    public Stream<JsonValue> getValueStream() {
+        return streamCreator.getValueStream();
+    }
+
+    @Override
     public void skipObject() {
         if (current instanceof ObjectScope) {
-            int depth = 1;
-            do {
-                if (state == Event.KEY_NAME) {
-                    state = getState(current.getJsonValue());
-                    switch (state) {
-                        case START_OBJECT:
-                            depth++;
-                            break;
-                        case END_OBJECT:
-                            depth--;
-                            break;
-                        default:
-                            //no-op
-                    }
-                } else {
-                    if (current.hasNext()) {
-                        current.next();
-                        state = Event.KEY_NAME;
-                    } else {
-                        state = Event.END_OBJECT;
-                        depth--;
-                    }
-                }
-            } while (state != Event.END_OBJECT && depth > 0);
+            state = Event.END_OBJECT;
         }
     }
 
     @Override
     public void skipArray() {
         if (current instanceof ArrayScope) {
-            int depth = 1;
-            do {
-                if (current.hasNext()) {
-                    current.next();
-                    state = getState(current.getJsonValue());
-                    switch (state) {
-                        case START_ARRAY:
-                            depth++;
-                            break;
-                        case END_ARRAY:
-                            depth--;
-                            break;
-                        default:
-                            //no-op
-                    }
-                } else {
-                    state = Event.END_ARRAY;
-                    depth--;
-                }
-            } while (!(state == Event.END_ARRAY && depth == 0));
+            state = Event.END_ARRAY;
         }
     }
 
@@ -230,10 +262,13 @@ class JsonStructureParser implements JsonParser {
         }
     }
 
-    private static abstract class Scope implements Iterator {
+    private static abstract class Scope<T> implements Iterator<T> {
+        @Override
+        public final void remove() {throw new UnsupportedOperationException(); }
+
         abstract JsonValue getJsonValue();
 
-        static Scope createScope(JsonValue value) {
+        static Scope<?> createScope(JsonValue value) {
             if (value instanceof JsonArray) {
                 return new ArrayScope((JsonArray)value);
             } else if (value instanceof JsonObject) {
@@ -243,7 +278,7 @@ class JsonStructureParser implements JsonParser {
         }
     }
 
-    private static class ArrayScope extends Scope {
+    private static class ArrayScope extends Scope<JsonValue> {
         private final Iterator<JsonValue> it;
         private JsonValue value;
 
@@ -263,23 +298,20 @@ class JsonStructureParser implements JsonParser {
         }
 
         @Override
-        public void remove() {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
         JsonValue getJsonValue() {
             return value;
         }
 
     }
 
-    private static class ObjectScope extends Scope {
+    private static class ObjectScope extends Scope<Map.Entry<String, JsonValue>> {
+        private final JsonObject object;
         private final Iterator<Map.Entry<String, JsonValue>> it;
         private JsonValue value;
         private String key;
 
         ObjectScope(JsonObject object) {
+            this.object = object;
             this.it = object.entrySet().iterator();
         }
 
@@ -297,13 +329,8 @@ class JsonStructureParser implements JsonParser {
         }
 
         @Override
-        public void remove() {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
         JsonValue getJsonValue() {
-            return value;
+            return value == null ? object : value;
         }
 
     }
