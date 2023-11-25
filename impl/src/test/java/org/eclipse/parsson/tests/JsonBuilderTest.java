@@ -39,7 +39,7 @@ import org.junit.jupiter.api.Test;
 public class JsonBuilderTest {
     
     @Test
-    void testEmptyObject() throws Exception {
+    void testEmptyObject() {
         JsonObject empty = Json.createObjectBuilder()
                 .build();
 
@@ -47,7 +47,7 @@ public class JsonBuilderTest {
     }
 
     @Test
-    void testEmptyArray() throws Exception {
+    void testEmptyArray() {
         JsonArray empty = Json.createArrayBuilder()
                 .build();
 
@@ -55,13 +55,13 @@ public class JsonBuilderTest {
     }
 
     @Test
-    void testObject() throws Exception {
+    void testObject() {
         JsonObject person = buildPerson();
         JsonObjectTest.testPerson(person);
     }
 
     @Test
-    void testNumber() throws Exception {
+    void testNumber() {
         JsonObject person = buildPerson();
         JsonNumber number = person.getJsonNumber("age");
         assertEquals(25, number.intValueExact());

@@ -72,7 +72,7 @@ public class JsonNumberTest {
     private static final int DEFAULT_MAX_BIGINTEGER_SCALE = 100000;
     
     @Test
-    void testFloating() throws Exception {
+    void testFloating() {
         JsonArray array1 = Json.createArrayBuilder().add(10.4).build();
         JsonReader reader = Json.createReader(new StringReader("[10.4]"));
         JsonArray array2 = reader.readArray();
@@ -82,7 +82,7 @@ public class JsonNumberTest {
     }
 
     @Test
-    void testBigDecimal() throws Exception {
+    void testBigDecimal() {
         JsonArray array1 = Json.createArrayBuilder().add(new BigDecimal("10.4")).build();
         JsonReader reader = Json.createReader(new StringReader("[10.4]"));
         JsonArray array2 = reader.readArray();
@@ -92,14 +92,14 @@ public class JsonNumberTest {
     }
 
     @Test
-    void testIntNumberType() throws Exception {
+    void testIntNumberType() {
         JsonArray array1 = Json.createArrayBuilder()
                 .add(Integer.MIN_VALUE)
                 .add(Integer.MAX_VALUE)
                 .add(Integer.MIN_VALUE + 1)
                 .add(Integer.MAX_VALUE - 1)
                 .add(12)
-                .add(12l)
+                .add(12L)
                 .add(new BigInteger("0"))
                 .build();
         testNumberType(array1, true);
@@ -128,7 +128,7 @@ public class JsonNumberTest {
     }
 
     @Test
-    void testLongNumberType() throws Exception {
+    void testLongNumberType() {
         JsonArray array1 = Json.createArrayBuilder()
                 .add(Long.MIN_VALUE)
                 .add(Long.MAX_VALUE)
@@ -180,7 +180,7 @@ public class JsonNumberTest {
 //    }
 
     @Test
-    void testBigDecimalNumberType() throws Exception {
+    void testBigDecimalNumberType() {
         JsonArray array1 = Json.createArrayBuilder()
                 .add(12d)
                 .add(12.0d)
@@ -206,7 +206,7 @@ public class JsonNumberTest {
     }
 
     @Test
-    void testMinMax() throws Exception {
+    void testMinMax() {
         JsonArray expected = Json.createArrayBuilder()
                 .add(Integer.MIN_VALUE)
                 .add(Integer.MAX_VALUE)

@@ -39,7 +39,7 @@ import org.junit.jupiter.api.Test;
  */
 public class JsonArrayTest {
     @Test
-    void testArrayEquals() throws Exception {
+    void testArrayEquals() {
         JsonArray expected = Json.createArrayBuilder()
                 .add(JsonValue.TRUE)
                 .add(JsonValue.FALSE)
@@ -96,7 +96,7 @@ public class JsonArrayTest {
     }
 
     @Test
-    void testStringValue() throws Exception {
+    void testStringValue() {
         JsonArray array = Json.createArrayBuilder()
                 .add("John")
                 .build();
@@ -104,7 +104,7 @@ public class JsonArrayTest {
     }
 
     @Test
-    void testIntValue() throws Exception {
+    void testIntValue() {
         JsonArray array = Json.createArrayBuilder()
                 .add(20)
                 .build();
@@ -134,7 +134,7 @@ public class JsonArrayTest {
     }
 
     @Test
-    void testNumberView() throws Exception {
+    void testNumberView() {
         JsonArray array = Json.createArrayBuilder().add(20).add(10).build();
 
         List<JsonNumber> numberList = array.getValuesAs(JsonNumber.class);
@@ -149,7 +149,7 @@ public class JsonArrayTest {
     @Test
     void testArrayBuilderNpe() {
         try {
-            JsonArray array = Json.createArrayBuilder().add((JsonValue)null).build();
+            Json.createArrayBuilder().add((JsonValue)null).build();
             fail("JsonArrayBuilder#add(null) should throw NullPointerException");
         } catch(NullPointerException e) {
             // Expected

@@ -25,6 +25,7 @@ import java.io.StringReader;
 import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
@@ -33,7 +34,6 @@ import jakarta.json.JsonNumber;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonReader;
 import jakarta.json.JsonReaderFactory;
-import jakarta.json.JsonValue;
 
 import org.eclipse.parsson.api.BufferPool;
 import org.eclipse.parsson.api.JsonConfig;
@@ -47,13 +47,13 @@ import org.junit.jupiter.api.Test;
 public class JsonReaderTest {
 
     @Test
-    void testObject() throws Exception {
+    void testObject() {
         JsonObject person = readPerson();
         JsonObjectTest.testPerson(person);
     }
 
     @Test
-    void testEscapedString() throws Exception {
+    void testEscapedString() {
         // u00ff is escaped once, not escaped once
         JsonReader reader = Json.createReader(new StringReader("[\"\\u0000\\u00ff\u00ff\"]"));
         JsonArray array = reader.readArray();
@@ -73,14 +73,11 @@ public class JsonReaderTest {
                 Long.toString(Integer.MIN_VALUE - 1L)
         };
         for (String num : borderlineCases) {
-            JsonReader reader = Json.createReader(new StringReader("["+num+"]"));
-            try {
-                JsonArray array = reader.readArray();
-                JsonNumber value = (JsonNumber) array.get(0);
-                assertEquals(new BigInteger(num).longValue(), value.longValue(), "Fails for num="+num);
-            } finally {
-                reader.close();
-            }
+			try (JsonReader reader = Json.createReader(new StringReader("[" + num + "]"))) {
+				JsonArray array = reader.readArray();
+				JsonNumber value = (JsonNumber) array.get(0);
+				assertEquals(new BigInteger(num).longValue(), value.longValue(), "Fails for num=" + num);
+			}
         }
     }
 
@@ -95,31 +92,28 @@ public class JsonReaderTest {
                 new BigInteger(Long.toString(Long.MIN_VALUE)).subtract(BigInteger.ONE).toString()
         };
         for (String num : borderlineCases) {
-            JsonReader reader = Json.createReader(new StringReader("["+num+"]"));
-            try {
-                JsonArray array = reader.readArray();
-                JsonNumber value = (JsonNumber) array.get(0);
-                assertEquals(new BigInteger(num), value.bigIntegerValueExact(), "Fails for num="+num);
-            } finally {
-                reader.close();
-            }
+			try (JsonReader reader = Json.createReader(new StringReader("[" + num + "]"))) {
+				JsonArray array = reader.readArray();
+				JsonNumber value = (JsonNumber) array.get(0);
+				assertEquals(new BigInteger(num), value.bigIntegerValueExact(), "Fails for num=" + num);
+			}
         }
     }
 
     @Test
-    void testUnknownFeature() throws Exception {
+    void testUnknownFeature() {
         Map<String, Object> config = new HashMap<>();
         config.put("foo", true);
         JsonReaderFactory factory = Json.createReaderFactory(config);
         factory.createReader(new StringReader("{}"));
         Map<String, ?> config1 = factory.getConfigInUse();
-        if (config1.size() > 0) {
+        if (!config1.isEmpty()) {
             fail("Shouldn't have any config in use");
         }
     }
 
     @Test
-    void testIllegalStateExcepton() throws Exception {
+    void testIllegalStateExcepton() {
         JsonReader reader = Json.createReader(new StringReader("{}"));
         reader.readObject();
         try {
@@ -148,12 +142,12 @@ public class JsonReaderTest {
         reader.close();
     }
 
-    static JsonObject readPerson() throws Exception {
-        Reader wikiReader = new InputStreamReader(JsonReaderTest.class.getResourceAsStream("/wiki.json"));
+    static JsonObject readPerson() {
+        Reader wikiReader = new InputStreamReader(Objects.requireNonNull(JsonReaderTest.class.getResourceAsStream("/wiki.json")));
         JsonReader reader = Json.createReader(wikiReader);
-        JsonValue value = reader.readObject();
+        JsonObject value = reader.readObject();
         reader.close();
-        return (JsonObject) value;
+        return value;
     }
 
     // JSONP-23 cached empty string is not reset
@@ -203,20 +197,20 @@ public class JsonReaderTest {
         try {
             reader.readObject();
             fail("It is expected a JsonException");
-        } catch (JsonException e) {}
+        } catch (JsonException ignored) {}
     }
 
     @Test
     void testDuplicateKeysStrictWithParssonConfig() {
         Map<String, Object> config = new HashMap<>();
-        config.put(JsonConfig.REJECT_DUPLICATE_KEYS, "anything is valid here");
+        config.put(jakarta.json.JsonConfig.KEY_STRATEGY, jakarta.json.JsonConfig.KeyStrategy.NONE);
         JsonReaderFactory factory = Json.createReaderFactory(config);
         String json = "{\"val1\":\"A\",\"val1\":\"B\"}";
         JsonReader reader = factory.createReader(new StringReader(json));
         try {
             reader.readObject();
             fail("It is expected a JsonException");
-        } catch (JsonException e) {}
+        } catch (JsonException ignored) {}
     }
 
     @Test

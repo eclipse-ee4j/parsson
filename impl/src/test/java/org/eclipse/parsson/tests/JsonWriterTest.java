@@ -158,7 +158,7 @@ public class JsonWriterTest {
     }
 
     @Test
-    void testIllegalStateExcepton() throws Exception {
+    void testIllegalStateExcepton() {
         JsonObject obj = Json.createObjectBuilder().build();
         JsonArray array = Json.createArrayBuilder().build();
 
@@ -200,7 +200,7 @@ public class JsonWriterTest {
     }
 
     @Test
-    void testNoCloseWriteObjectToWriter() throws Exception {
+    void testNoCloseWriteObjectToWriter() {
         StringWriter sw = new StringWriter();
         JsonWriter writer = Json.createWriter(sw);
         writer.write(Json.createObjectBuilder().build());
@@ -218,7 +218,7 @@ public class JsonWriterTest {
     }
 
     @Test
-    void testNoCloseWriteArrayToWriter() throws Exception {
+    void testNoCloseWriteArrayToWriter() {
         StringWriter sw = new StringWriter();
         JsonWriter writer = Json.createWriter(sw);
         writer.write(Json.createArrayBuilder().build());

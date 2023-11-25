@@ -44,8 +44,6 @@ public class JsonPatchOperationTest {
 
     @Test
     void fromInvalidOperationName() {
-        assertThrows(JsonException.class, () -> {
-            Operation.fromOperationName("undef");
-        });
+        assertThrows(JsonException.class, () -> Operation.fromOperationName("undef"));
     }
 }
