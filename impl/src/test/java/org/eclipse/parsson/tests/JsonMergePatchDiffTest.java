@@ -61,6 +61,7 @@ public class JsonMergePatchDiffTest {
         return examples;
     }
 
+    @SuppressWarnings("unchecked")
     private static Class<? extends Exception> createExceptionClass(
             JsonString exceptionClassName) throws ClassNotFoundException {
         if (exceptionClassName != null) {
@@ -74,8 +75,7 @@ public class JsonMergePatchDiffTest {
         InputStream testData = JsonPatchTest.class
                 .getResourceAsStream("/jsonmergepatchdiff.json");
         JsonReader reader = Json.createReader(testData);
-        JsonArray data = (JsonArray) reader.read();
-        return data;
+		return (JsonArray) reader.read();
     }
 
     @MethodSource("data")

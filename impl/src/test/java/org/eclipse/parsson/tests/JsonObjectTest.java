@@ -45,7 +45,7 @@ public class JsonObjectTest {
     }
 
     @Test
-    void testEmptyObjectEquals() throws Exception {
+    void testEmptyObjectEquals() {
         JsonObject empty1 = Json.createObjectBuilder()
                 .build();
 
@@ -56,7 +56,7 @@ public class JsonObjectTest {
     }
 
     @Test
-    void testPersonObjectEquals() throws Exception {
+    void testPersonObjectEquals() {
         JsonObject person1 = JsonBuilderTest.buildPerson();
         JsonObject person2 = JsonReaderTest.readPerson();
 
@@ -64,7 +64,7 @@ public class JsonObjectTest {
     }
 
     @Test
-    void testGetStringOrDefault() throws Exception {
+    void testGetStringOrDefault() {
         JsonObject object = Json.createObjectBuilder()
                 .add("string", "value")
                 .add("number", 25)
@@ -76,7 +76,7 @@ public class JsonObjectTest {
     }
 
     @Test
-    void testGetIntOrDefault() throws Exception {
+    void testGetIntOrDefault() {
         JsonObject object = Json.createObjectBuilder()
                 .add("string", "value")
                 .add("number", 25)
@@ -88,7 +88,7 @@ public class JsonObjectTest {
     }
 
     @Test
-    void testGetBooleanOrDefault() throws Exception {
+    void testGetBooleanOrDefault() {
         JsonObject object = Json.createObjectBuilder()
                 .add("string", "value")
                 .add("number", 25)
@@ -227,7 +227,7 @@ public class JsonObjectTest {
     @Test
     void testObjectBuilderNpe() {
         try {
-            JsonObject obj = Json.createObjectBuilder().add(null, 1).build();
+            Json.createObjectBuilder().add(null, 1).build();
             fail("JsonObjectBuilder#add(null, 1) should throw NullPointerException");
         } catch(NullPointerException e) {
             // Expected
@@ -264,7 +264,7 @@ public class JsonObjectTest {
         m.put("floatArray", floatArr);
         JsonObject object = Json.createObjectBuilder(m).build();
         assertEquals("b", object.get("stringArray").asJsonArray().getString(1));
-        assertEquals(false, object.get("booleanArray").asJsonArray().getBoolean(1));
+		assertFalse(object.get("booleanArray").asJsonArray().getBoolean(1));
         assertEquals(2, object.get("intArray").asJsonArray().getInt(1));
         assertEquals('b', object.get("charArray").asJsonArray().getInt(1));
         assertEquals(2.0, object.get("floatArray").asJsonArray().getJsonNumber(1).doubleValue());

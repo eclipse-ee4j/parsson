@@ -25,13 +25,12 @@ import java.util.Collections;
 
 import jakarta.json.Json;
 import jakarta.json.JsonBuilderFactory;
+import jakarta.json.JsonConfig;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
 import jakarta.json.JsonReader;
 import jakarta.json.JsonReaderFactory;
 import jakarta.json.stream.JsonParsingException;
-
-import org.eclipse.parsson.api.JsonConfig;
 
 import org.junit.jupiter.api.Test;
 
@@ -48,7 +47,7 @@ public class JsonDuplicateKeyTest {
     @Test
     void testJsonReaderDuplicateKey2() {
         String json = "{\"a\":\"b\",\"a\":\"c\"}";
-        JsonReaderFactory jsonReaderFactory = Json.createReaderFactory(Collections.singletonMap(JsonConfig.REJECT_DUPLICATE_KEYS, true));
+        JsonReaderFactory jsonReaderFactory = Json.createReaderFactory(Collections.singletonMap(JsonConfig.KEY_STRATEGY, JsonConfig.KeyStrategy.NONE));
         JsonReader jsonReader = jsonReaderFactory.createReader(new StringReader(json));
         try {
             jsonReader.readObject();
@@ -69,8 +68,8 @@ public class JsonDuplicateKeyTest {
 
     @Test
     void testJsonReaderDuplicateKey4() {
-        String json = "{\"a\":\"b\",\"b\":{\"c\":\"d\",\"c\":\"e\"}}";;
-        JsonReaderFactory jsonReaderFactory = Json.createReaderFactory(Collections.singletonMap(JsonConfig.REJECT_DUPLICATE_KEYS, true));
+        String json = "{\"a\":\"b\",\"b\":{\"c\":\"d\",\"c\":\"e\"}}";
+        JsonReaderFactory jsonReaderFactory = Json.createReaderFactory(Collections.singletonMap(JsonConfig.KEY_STRATEGY, JsonConfig.KeyStrategy.NONE));
         JsonReader jsonReader = jsonReaderFactory.createReader(new StringReader(json));
         try {
             jsonReader.readObject();
@@ -90,7 +89,7 @@ public class JsonDuplicateKeyTest {
 
     @Test
     void testJsonObjectBuilderDuplcateKey2() {
-        JsonBuilderFactory jsonBuilderFactory = Json.createBuilderFactory(Collections.singletonMap(JsonConfig.REJECT_DUPLICATE_KEYS, true));
+        JsonBuilderFactory jsonBuilderFactory = Json.createBuilderFactory(Collections.singletonMap(JsonConfig.KEY_STRATEGY, JsonConfig.KeyStrategy.NONE));
         JsonObjectBuilder objectBuilder = jsonBuilderFactory.createObjectBuilder();
         try {
             objectBuilder.add("a", "b").add("a", "c").build();

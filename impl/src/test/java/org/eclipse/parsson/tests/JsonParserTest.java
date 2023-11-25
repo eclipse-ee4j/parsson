@@ -211,20 +211,20 @@ public class JsonParserTest {
     }
 
     static void testEmptyArrayIterator(JsonParser parser) {
-        assertEquals(true, parser.hasNext());
-        assertEquals(true, parser.hasNext());
+		assertTrue(parser.hasNext());
+		assertTrue(parser.hasNext());
         assertEquals(Event.START_ARRAY, parser.next());
 
-        assertEquals(true, parser.hasNext());
-        assertEquals(true, parser.hasNext());
+		assertTrue(parser.hasNext());
+		assertTrue(parser.hasNext());
         assertEquals(Event.END_ARRAY, parser.next());
 
-        assertEquals(false, parser.hasNext());
-        assertEquals(false, parser.hasNext());
+		assertFalse(parser.hasNext());
+		assertFalse(parser.hasNext());
         try {
             parser.next();
             fail("Should have thrown a NoSuchElementException");
-        } catch (NoSuchElementException ne) {
+        } catch (NoSuchElementException ignored) {
         }
     }
 
@@ -250,7 +250,7 @@ public class JsonParserTest {
         try {
             parser.next();
             fail("Should have thrown a NoSuchElementException");
-        } catch (NoSuchElementException ne) {
+        } catch (NoSuchElementException ignored) {
         }
     }
 
@@ -272,11 +272,11 @@ public class JsonParserTest {
     static void testEmptyArrayIterator3(JsonParser parser) {
         assertEquals(Event.START_ARRAY, parser.next());
         assertEquals(Event.END_ARRAY, parser.next());
-        assertEquals(false, parser.hasNext());
+		assertFalse(parser.hasNext());
         try {
             parser.next();
             fail("Should have thrown a NoSuchElementException");
-        } catch (NoSuchElementException ne) {
+        } catch (NoSuchElementException ignored) {
         }
     }
 
@@ -338,20 +338,20 @@ public class JsonParserTest {
     }
 
     static void testEmptyObjectIterator(JsonParser parser) {
-        assertEquals(true, parser.hasNext());
-        assertEquals(true, parser.hasNext());
+		assertTrue(parser.hasNext());
+		assertTrue(parser.hasNext());
         assertEquals(Event.START_OBJECT, parser.next());
 
-        assertEquals(true, parser.hasNext());
-        assertEquals(true, parser.hasNext());
+		assertTrue(parser.hasNext());
+		assertTrue(parser.hasNext());
         assertEquals(Event.END_OBJECT, parser.next());
 
-        assertEquals(false, parser.hasNext());
-        assertEquals(false, parser.hasNext());
+		assertFalse(parser.hasNext());
+		assertFalse(parser.hasNext());
         try {
             parser.next();
             fail("Should have thrown a NoSuchElementException");
-        } catch (NoSuchElementException ne) {
+        } catch (NoSuchElementException ignored) {
         }
     }
 
@@ -377,7 +377,7 @@ public class JsonParserTest {
         try {
             parser.next();
             fail("Should have thrown a NoSuchElementException");
-        } catch (NoSuchElementException ne) {
+        } catch (NoSuchElementException ignored) {
         }
     }
 
@@ -400,7 +400,7 @@ public class JsonParserTest {
     static void testEmptyObjectIterator3(JsonParser parser) {
         assertEquals(Event.START_OBJECT, parser.next());
         assertEquals(Event.END_OBJECT, parser.next());
-        assertEquals(false, parser.hasNext());
+		assertFalse(parser.hasNext());
         try {
             parser.next();
             fail("Should have thrown a NoSuchElementException");
@@ -411,14 +411,14 @@ public class JsonParserTest {
 
 
     @Test
-    void testWikiIteratorReader() throws Exception {
+    void testWikiIteratorReader() {
         try (JsonParser parser = Json.createParser(wikiReader())) {
             testWikiIterator(parser);
         }
     }
 
     @Test
-    void testWikiIteratorStructure() throws Exception {
+    void testWikiIteratorStructure() {
         try (JsonParser parser = Json.createParserFactory(null).createParser(
                 JsonBuilderTest.buildPerson())) {
             testWikiIterator(parser);
@@ -426,21 +426,21 @@ public class JsonParserTest {
     }
 
     @SuppressWarnings("UnusedDeclaration")
-    static void testWikiIterator(JsonParser parser) throws Exception {
+    static void testWikiIterator(JsonParser parser) {
         while (parser.hasNext()) {
             parser.next();
         }
     }
 
     @Test
-    void testWikiInputStream() throws Exception {
+    void testWikiInputStream() {
         try (JsonParser parser = Json.createParser(wikiStream())) {
             testWiki(parser);
         }
     }
 
     @Test
-    void testWikiInputStreamUTF16LE() throws Exception {
+    void testWikiInputStreamUTF16LE() {
         ByteArrayInputStream bin = new ByteArrayInputStream(wikiString()
                 .getBytes(StandardCharsets.UTF_16LE));
         try (JsonParser parser = Json.createParser(bin)) {
@@ -449,14 +449,14 @@ public class JsonParserTest {
     }
 
     @Test
-    void testWikiReader() throws Exception {
+    void testWikiReader() {
         try (JsonParser parser = Json.createParser(wikiReader())) {
             testWiki(parser);
         }
     }
 
     @Test
-    void testWikiStructure() throws Exception {
+    void testWikiStructure() {
         try (JsonParser parser = Json.createParserFactory(null).createParser(
                 JsonBuilderTest.buildPerson())) {
             testWiki(parser);
@@ -562,19 +562,19 @@ public class JsonParserTest {
         assertEquals(Event.END_ARRAY, parser.next());
         assertEquals(Event.END_ARRAY, parser.next());
         assertEquals(Event.END_ARRAY, parser.next());
-        assertEquals(false, parser.hasNext());
-        assertEquals(false, parser.hasNext());
+		assertFalse(parser.hasNext());
+		assertFalse(parser.hasNext());
     }
 
     @Test
-    void testExceptionsReader() throws Exception {
+    void testExceptionsReader() {
         try (JsonParser parser = Json.createParser(wikiReader())) {
             testExceptions(parser);
         }
     }
 
     @Test
-    void testExceptionsStructure() throws Exception {
+    void testExceptionsStructure() {
         try (JsonParser parser = Json.createParserFactory(null).createParser(
                 JsonBuilderTest.buildPerson())) {
             testExceptions(parser);
@@ -833,8 +833,8 @@ public class JsonParserTest {
                     parser.next();
                     assertEquals(name, parser.getString(), "value fails for buffer size=" + size + " name length=" + i);
                     location = parser.getLocation();
-                    assertEquals(2 * name.length() + 6, location.getStreamOffset(), "Stream offset fails for buffer size=" + size + " name length=" + i);
-                    assertEquals(2 * name.length() + 7, location.getColumnNumber(), "Column value fails for buffer size=" + size + " name length=" + i);
+                    assertEquals(2L * name.length() + 6, location.getStreamOffset(), "Stream offset fails for buffer size=" + size + " name length=" + i);
+                    assertEquals(2L * name.length() + 7, location.getColumnNumber(), "Column value fails for buffer size=" + size + " name length=" + i);
                     assertEquals(1, location.getLineNumber(), "Line value fails for buffer size=" + size + " name length=" + i);
                 } catch (Throwable e) {
                     throw new Throwable("Failed for buffer size=" + size + " name length=" + i, e);

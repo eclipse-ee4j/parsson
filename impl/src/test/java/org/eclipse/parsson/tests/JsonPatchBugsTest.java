@@ -48,7 +48,7 @@ public class JsonPatchBugsTest {
                     .replace("/0/name", "Bobek")
                     .replace("/1/name", "Vila Amalka")
                     .build();
-            JsonArray result = patch.apply(array);
+            patch.apply(array);
         });
     }
 
@@ -78,7 +78,7 @@ public class JsonPatchBugsTest {
 
                 // Applies the patch
                 // It will throw a NullPointerException with no message
-                JsonStructure patched = patch.apply(target);
+                patch.apply(target);
             }
         });
     }

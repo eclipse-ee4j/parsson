@@ -49,7 +49,7 @@ public class JsonPointerRemoveOperationTest {
     @ParameterizedTest(name = "{index}: ({0})={1}")
     void shouldRemoveElementsToExistingJsonDocument(JsonObject pathOperation, JsonObject target, JsonValue expectedResult) {
         JsonPointer pointer = Json.createPointer(pathOperation.getString("path"));
-        JsonObject modified = (JsonObject) pointer.remove(target);
+        JsonObject modified = pointer.remove(target);
         assertThat(modified, is(expectedResult));
     }
 
