@@ -81,7 +81,7 @@ public class JsonGeneratorTest {
         in.close();
     }
 
-    static void testObject(JsonGenerator generator) throws Exception {
+    static void testObject(JsonGenerator generator) {
         generator
                 .writeStartObject()
                 .write("firstName", "John")
@@ -107,7 +107,7 @@ public class JsonGeneratorTest {
     }
 
     @Test
-    void testArray() throws Exception {
+    void testArray() {
         Writer sw = new StringWriter();
         JsonGenerator generator = Json.createGenerator(sw);
         generator
@@ -185,7 +185,7 @@ public class JsonGeneratorTest {
     }
 
     @Test
-    void testGeneratorEquals() throws Exception {
+    void testGeneratorEquals() {
         StringWriter sw = new StringWriter();
         JsonGenerator generator = Json.createGenerator(sw);
         generator.writeStartArray()
@@ -283,7 +283,7 @@ public class JsonGeneratorTest {
     }
 
     @Test
-    void testGenerationException1() throws Exception {
+    void testGenerationException1() {
         StringWriter writer = new StringWriter();
         JsonGenerator generator = Json.createGenerator(writer);
         generator.writeStartObject();
@@ -296,7 +296,7 @@ public class JsonGeneratorTest {
     }
 
     @Test
-    void testGenerationException2() throws Exception {
+    void testGenerationException2() {
         StringWriter writer = new StringWriter();
         JsonGenerator generator = Json.createGenerator(writer);
         generator.writeStartObject();
@@ -309,7 +309,7 @@ public class JsonGeneratorTest {
     }
 
     @Test
-    void testGenerationException3() throws Exception {
+    void testGenerationException3() {
         StringWriter writer = new StringWriter();
         JsonGenerator generator = Json.createGenerator(writer);
         try {
@@ -321,7 +321,7 @@ public class JsonGeneratorTest {
     }
 
     @Test
-    void testGenerationException4() throws Exception {
+    void testGenerationException4() {
         StringWriter writer = new StringWriter();
         JsonGenerator generator = Json.createGenerator(writer);
         generator.writeStartArray();
@@ -334,7 +334,7 @@ public class JsonGeneratorTest {
     }
 
     @Test
-    void testGenerationException5() throws Exception {
+    void testGenerationException5() {
         StringWriter writer = new StringWriter();
         JsonGenerator generator = Json.createGenerator(writer);
         generator.writeStartObject();
@@ -347,7 +347,7 @@ public class JsonGeneratorTest {
     }
 
     @Test
-    void testGenerationException6() throws Exception {
+    void testGenerationException6() {
         StringWriter writer = new StringWriter();
         JsonGenerator generator = Json.createGenerator(writer);
         generator.writeStartObject().writeEnd();
@@ -360,7 +360,7 @@ public class JsonGeneratorTest {
     }
 
     @Test
-    void testGenerationException7() throws Exception {
+    void testGenerationException7() {
         StringWriter writer = new StringWriter();
         JsonGenerator generator = Json.createGenerator(writer);
         generator.writeStartArray().writeEnd();
@@ -374,7 +374,7 @@ public class JsonGeneratorTest {
 
 
     @Test
-    void testGenerationException8() throws Exception {
+    void testGenerationException8() {
         StringWriter sWriter = new StringWriter();
         JsonGenerator generator = Json.createGenerator(sWriter);
         generator.writeStartObject();
@@ -387,7 +387,7 @@ public class JsonGeneratorTest {
     }
 
     @Test
-    void testGenerationException9() throws Exception {
+    void testGenerationException9() {
         StringWriter sWriter = new StringWriter();
         JsonGenerator generator = Json.createGenerator(sWriter);
         generator.writeStartObject();
@@ -400,7 +400,7 @@ public class JsonGeneratorTest {
     }
 
     @Test
-    void testGeneratorArrayDouble() throws Exception {
+    void testGeneratorArrayDouble() {
         StringWriter writer = new StringWriter();
         JsonGenerator generator = Json.createGenerator(writer);
         generator.writeStartArray();
@@ -427,7 +427,7 @@ public class JsonGeneratorTest {
     }
 
     @Test
-    void testGeneratorObjectDouble() throws Exception {
+    void testGeneratorObjectDouble() {
         StringWriter writer = new StringWriter();
         JsonGenerator generator = Json.createGenerator(writer);
         generator.writeStartObject();
@@ -454,7 +454,7 @@ public class JsonGeneratorTest {
     }
 
     @Test
-    void testIntGenerator() throws Exception {
+    void testIntGenerator() {
         Random r = new Random(System.currentTimeMillis());
         JsonGeneratorFactory gf = Json.createGeneratorFactory(null);
         JsonReaderFactory rf = Json.createReaderFactory(null);
@@ -476,7 +476,7 @@ public class JsonGeneratorTest {
     }
 
     @Test
-    void testGeneratorBuf() throws Exception {
+    void testGeneratorBuf() {
         JsonGeneratorFactory gf = Json.createGeneratorFactory(null);
         JsonReaderFactory rf = Json.createReaderFactory(null);
         JsonBuilderFactory bf = Json.createBuilderFactory(null);

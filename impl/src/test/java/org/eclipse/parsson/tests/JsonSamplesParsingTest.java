@@ -19,6 +19,7 @@ package org.eclipse.parsson.tests;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 
 import jakarta.json.Json;
 import jakarta.json.JsonException;
@@ -50,18 +51,12 @@ public class JsonSamplesParsingTest {
 
     private void testSampleFile(String fileName) {
         Reader reader = new InputStreamReader(
-                JsonSamplesParsingTest.class.getResourceAsStream("/"+fileName), StandardCharsets.UTF_8);
-        JsonParser parser = null;
-        try {
-            parser = Json.createParser(reader);
-            while(parser.hasNext()) {
-                parser.next();
-            }
-        } finally {
-            if (parser != null) {
-                parser.close();
-            }
-        }
+				Objects.requireNonNull(JsonSamplesParsingTest.class.getResourceAsStream("/" + fileName)), StandardCharsets.UTF_8);
+		try (JsonParser parser = Json.createParser(reader)) {
+			while (parser.hasNext()) {
+				parser.next();
+			}
+		}
     }
 
 }

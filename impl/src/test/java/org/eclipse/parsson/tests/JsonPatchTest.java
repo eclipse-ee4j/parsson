@@ -62,6 +62,7 @@ public class JsonPatchTest {
         return examples;
     }
 
+    @SuppressWarnings("unchecked")
     private static Class<? extends Exception> createExceptionClass(
             JsonString exceptionClassName) throws ClassNotFoundException {
         if (exceptionClassName != null) {

@@ -35,7 +35,7 @@ public class JsonStringTest {
 
     // tests JsonString#toString()
     @Test
-    void testToString() throws Exception {
+    void testToString() {
         escapedString("");
         escapedString("abc");
         escapedString("abc\f");
@@ -52,7 +52,7 @@ public class JsonStringTest {
 
     @Test
     void testHashCode() {
-        String string1 = new String("a");
+        String string1 = "a";
         JsonString jsonString1 = Json.createValue(string1);
         assertTrue(jsonString1.hashCode() == jsonString1.getString().hashCode());
 
@@ -63,7 +63,7 @@ public class JsonStringTest {
         assertTrue(jsonString1.hashCode() == jsonString2.hashCode());
     }
 
-    void escapedString(String str) throws Exception {
+    void escapedString(String str) {
         JsonArray exp = Json.createArrayBuilder().add(str).build();
         String parseStr = "["+exp.get(0).toString()+"]";
         JsonReader jr = Json.createReader(new StringReader(parseStr));

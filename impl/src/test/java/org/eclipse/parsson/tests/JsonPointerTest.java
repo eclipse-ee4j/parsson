@@ -25,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.Arrays;
+import java.util.Objects;
 
 import jakarta.json.Json;
 import jakarta.json.JsonException;
@@ -84,11 +85,11 @@ public class JsonPointerTest {
         }
     }
 
-    static JsonObject readRfc6901Example() throws Exception {
-        Reader rfc6901Reader = new InputStreamReader(JsonReaderTest.class.getResourceAsStream("/rfc6901.json"));
+    static JsonObject readRfc6901Example() {
+        Reader rfc6901Reader = new InputStreamReader(Objects.requireNonNull(JsonReaderTest.class.getResourceAsStream("/rfc6901.json")));
         JsonReader reader = Json.createReader(rfc6901Reader);
-        JsonValue value = reader.readObject();
+        JsonObject value = reader.readObject();
         reader.close();
-        return (JsonObject) value;
+        return value;
     }
 }
