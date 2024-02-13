@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -30,16 +30,15 @@ import java.nio.charset.StandardCharsets;
  * @author Jitendra Kotamraju
  */
 class UnicodeDetectingInputStream extends FilterInputStream {
-
-    private static final Charset UTF_32LE = Charset.forName("UTF-32LE");
-    private static final Charset UTF_32BE = Charset.forName("UTF-32BE");
-
     private static final byte FF = (byte)0xFF;
     private static final byte FE = (byte)0xFE;
     private static final byte EF = (byte)0xEF;
     private static final byte BB = (byte)0xBB;
     private static final byte BF = (byte)0xBF;
     private static final byte NUL = (byte)0x00;
+
+    private static Charset utf32Le;
+    private static Charset utf32Be;
 
     private final byte[] buf = new byte[4];
     private int bufLen;
@@ -108,10 +107,10 @@ class UnicodeDetectingInputStream extends FilterInputStream {
             // Use BOM to detect encoding
             if (buf[0] == NUL && buf[1] == NUL && buf[2] == FE && buf[3] == FF) {
                 curIndex = 4;
-                return UTF_32BE;
+                return getUtf32be();
             } else if (buf[0] == FF && buf[1] == FE && buf[2] == NUL && buf[3] == NUL) {
                 curIndex = 4;
-                return UTF_32LE;
+                return getUtf32le();
             } else if (buf[0] == FE && buf[1] == FF) {
                 curIndex = 2;
                 return StandardCharsets.UTF_16BE;
@@ -124,16 +123,30 @@ class UnicodeDetectingInputStream extends FilterInputStream {
             }
             // No BOM, just use JSON RFC's encoding algo to auto-detect
             if (buf[0] == NUL && buf[1] == NUL && buf[2] == NUL) {
-                return UTF_32BE;
+                return getUtf32be();
             } else if (buf[0] == NUL && buf[2] == NUL) {
                 return StandardCharsets.UTF_16BE;
             } else if (buf[1] == NUL && buf[2] == NUL && buf[3] == NUL) {
-                return UTF_32LE;
+                return getUtf32le();
             } else if (buf[1] == NUL && buf[3] == NUL) {
                 return StandardCharsets.UTF_16LE;
             }
         }
         return StandardCharsets.UTF_8;
+    }
+
+    private static Charset getUtf32be() {
+        if (utf32Be == null) {
+            utf32Be = Charset.forName("UTF-32BE");
+        }
+        return utf32Be;
+    }
+
+    private static Charset getUtf32le() {
+        if (utf32Le == null) {
+            utf32Le = Charset.forName("UTF-32LE");
+        }
+        return utf32Le;
     }
 
     @Override
