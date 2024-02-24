@@ -16,13 +16,12 @@
 
 package org.eclipse.parsson.tests;
 
+import jakarta.json.spi.JsonProvider;
 import junit.framework.TestCase;
 
 import jakarta.json.Json;
-import jakarta.json.JsonBuilderFactory;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
-import jakarta.json.JsonValue;
 import jakarta.json.stream.JsonGenerationException;
 import jakarta.json.stream.JsonGenerator;
 import java.io.StringWriter;
@@ -36,6 +35,46 @@ import java.util.concurrent.Callable;
  * @author Roman Grigoriadi
  */
 public class JsonFieldTest extends TestCase {
+
+    public void testKeyFieldObject() {
+        StringWriter sw = new StringWriter();
+        JsonProvider provider = JsonProvider.provider();
+
+        JsonGenerator.Key f1Name = provider.createGeneratorKey("f1Name");
+        JsonGenerator.Key innerFieldName = provider.createGeneratorKey("innerFieldName");
+        JsonGenerator.Key f2Name = provider.createGeneratorKey("f2Name");
+
+        JsonGenerator generator = provider.createGenerator(sw);
+
+        generator.writeStartObject();
+        generator.writeKey(f1Name);
+        generator.writeStartObject();
+        generator.writeKey(innerFieldName).write("innerFieldValue");
+        generator.writeEnd();
+        generator.writeKey(f2Name).write("f2Value");
+        generator.writeEnd();
+
+        generator.close();
+        assertEquals("{\"f1Name\":{\"innerFieldName\":\"innerFieldValue\"},\"f2Name\":\"f2Value\"}", sw.toString());
+    }
+
+    public void testKeyFieldEscaped() {
+        StringWriter sw = new StringWriter();
+        JsonProvider provider = JsonProvider.provider();
+
+        JsonGenerator.Key f1Name = provider.createGeneratorKey("\"f1Name\"");
+        JsonGenerator.Key f2Name = provider.createGeneratorKey("f2-name");
+
+        JsonGenerator generator = provider.createGenerator(sw);
+
+        generator.writeStartObject();
+        generator.writeKey(f1Name).write("a");
+        generator.writeKey(f2Name).write("b");
+        generator.writeEnd();
+
+        generator.close();
+        assertEquals("{\"\\\"f1Name\\\"\":\"a\",\"f2-name\":\"b\"}", sw.toString());
+    }
 
     public void testFieldAsOnlyMember() {
         StringWriter sw = new StringWriter();
