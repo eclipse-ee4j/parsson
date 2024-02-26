@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2023, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -16,20 +16,19 @@
 
 package org.eclipse.parsson.tests;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
 import java.io.StringReader;
 
 import jakarta.json.Json;
 import jakarta.json.stream.JsonParser;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 public class JsonNestingTest {
 
     @Test
     void testArrayNestingException() {
-        assertThrows(RuntimeException.class, () -> {
+        Assertions.assertThrows(RuntimeException.class, () -> {
             String json = createDeepNestedDoc(500);
             try (JsonParser parser = Json.createParser(new StringReader(json))) {
                 while (parser.hasNext()) {
@@ -57,7 +56,7 @@ public class JsonNestingTest {
 
     @Test
     void testObjectNestingException() {
-        assertThrows(RuntimeException.class, () -> {
+        Assertions.assertThrows(RuntimeException.class, () -> {
             String json = createDeepNestedDoc(500);
             try (JsonParser parser = Json.createParser(new StringReader(json))) {
                 while (parser.hasNext()) {

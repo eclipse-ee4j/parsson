@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -16,11 +16,6 @@
 
 package org.eclipse.parsson.tests;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
-
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.HashMap;
@@ -33,6 +28,7 @@ import jakarta.json.JsonReader;
 import jakarta.json.JsonValue;
 import jakarta.json.JsonWriter;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -52,7 +48,7 @@ public class JsonObjectTest {
         JsonObject empty2 = Json.createObjectBuilder()
                 .build();
 
-        assertEquals(empty1, empty2);
+        Assertions.assertEquals(empty1, empty2);
     }
 
     @Test
@@ -60,7 +56,7 @@ public class JsonObjectTest {
         JsonObject person1 = JsonBuilderTest.buildPerson();
         JsonObject person2 = JsonReaderTest.readPerson();
 
-        assertEquals(person1, person2);
+        Assertions.assertEquals(person1, person2);
     }
 
     @Test
@@ -70,9 +66,9 @@ public class JsonObjectTest {
                 .add("number", 25)
                 .add("boolean", false)
                 .build();
-        assertEquals("value", object.getString("string", "default"));
-        assertEquals("default", object.getString("missing", "default"));
-        assertEquals("default", object.getString("number", "default"));
+        Assertions.assertEquals("value", object.getString("string", "default"));
+        Assertions.assertEquals("default", object.getString("missing", "default"));
+        Assertions.assertEquals("default", object.getString("number", "default"));
     }
 
     @Test
@@ -82,9 +78,9 @@ public class JsonObjectTest {
                 .add("number", 25)
                 .add("boolean", false)
                 .build();
-        assertEquals(25, object.getInt("number", 10));
-        assertEquals(10, object.getInt("missing", 10));
-        assertEquals(10, object.getInt("string", 10));
+        Assertions.assertEquals(25, object.getInt("number", 10));
+        Assertions.assertEquals(10, object.getInt("missing", 10));
+        Assertions.assertEquals(10, object.getInt("string", 10));
     }
 
     @Test
@@ -94,43 +90,43 @@ public class JsonObjectTest {
                 .add("number", 25)
                 .add("boolean", false)
                 .build();
-        assertFalse(object.getBoolean("boolean", true));
-        assertTrue(object.getBoolean("missing", true));
-        assertTrue(object.getBoolean("string", true));
+        Assertions.assertFalse(object.getBoolean("boolean", true));
+        Assertions.assertTrue(object.getBoolean("missing", true));
+        Assertions.assertTrue(object.getBoolean("string", true));
     }
 
     static void testPerson(JsonObject person) {
-        assertEquals(5, person.size());
-        assertEquals("John", person.getString("firstName"));
-        assertEquals("Smith", person.getString("lastName"));
-        assertEquals(25, person.getJsonNumber("age").intValue());
-        assertEquals(25, person.getInt("age"));
+        Assertions.assertEquals(5, person.size());
+        Assertions.assertEquals("John", person.getString("firstName"));
+        Assertions.assertEquals("Smith", person.getString("lastName"));
+        Assertions.assertEquals(25, person.getJsonNumber("age").intValue());
+        Assertions.assertEquals(25, person.getInt("age"));
 
         JsonObject address = person.getJsonObject("address");
-        assertEquals(4, address.size());
-        assertEquals("21 2nd Street", address.getString("streetAddress"));
-        assertEquals("New York", address.getString("city"));
-        assertEquals("NY", address.getString("state"));
-        assertEquals("10021", address.getString("postalCode"));
+        Assertions.assertEquals(4, address.size());
+        Assertions.assertEquals("21 2nd Street", address.getString("streetAddress"));
+        Assertions.assertEquals("New York", address.getString("city"));
+        Assertions.assertEquals("NY", address.getString("state"));
+        Assertions.assertEquals("10021", address.getString("postalCode"));
 
         JsonArray phoneNumber = person.getJsonArray("phoneNumber");
-        assertEquals(2, phoneNumber.size());
+        Assertions.assertEquals(2, phoneNumber.size());
         JsonObject home = phoneNumber.getJsonObject(0);
-        assertEquals(2, home.size());
-        assertEquals("home", home.getString("type"));
-        assertEquals("212 555-1234", home.getString("number"));
-        assertEquals("212 555-1234", home.getString("number"));
+        Assertions.assertEquals(2, home.size());
+        Assertions.assertEquals("home", home.getString("type"));
+        Assertions.assertEquals("212 555-1234", home.getString("number"));
+        Assertions.assertEquals("212 555-1234", home.getString("number"));
 
         JsonObject fax = phoneNumber.getJsonObject(1);
-        assertEquals(2, fax.size());
-        assertEquals("fax", fax.getString("type"));
-        assertEquals("646 555-4567", fax.getString("number"));
+        Assertions.assertEquals(2, fax.size());
+        Assertions.assertEquals("fax", fax.getString("type"));
+        Assertions.assertEquals("646 555-4567", fax.getString("number"));
 
-        assertEquals("\"646 555-4567\"", fax.getJsonString("number").toString());
+        Assertions.assertEquals("\"646 555-4567\"", fax.getJsonString("number").toString());
     }
 
     static void testEmpty(JsonObject empty) {
-        assertTrue(empty.isEmpty());
+        Assertions.assertTrue(empty.isEmpty());
     }
 
     @Test
@@ -139,7 +135,7 @@ public class JsonObjectTest {
                 .add("foo", JsonValue.FALSE).build();
         try {
             obj.getJsonNumber("foo");
-            fail("Expected ClassCastException for casting JsonValue.FALSE to JsonNumber");
+            Assertions.fail("Expected ClassCastException for casting JsonValue.FALSE to JsonNumber");
         } catch (ClassCastException ce) {
             // Expected
         }
@@ -150,7 +146,7 @@ public class JsonObjectTest {
         JsonObject obj = Json.createObjectBuilder().add("foo", 1).build();
         try {
             obj.put("bar", JsonValue.FALSE);
-            fail("JsonObject#put() should throw UnsupportedOperationException");
+            Assertions.fail("JsonObject#put() should throw UnsupportedOperationException");
         } catch(UnsupportedOperationException e) {
             // Expected
         }
@@ -161,7 +157,7 @@ public class JsonObjectTest {
         JsonObject obj = Json.createObjectBuilder().add("foo", 1).build();
         try {
             obj.remove("foo");
-            fail("JsonObject#remove() should throw UnsupportedOperationException");
+            Assertions.fail("JsonObject#remove() should throw UnsupportedOperationException");
         } catch(UnsupportedOperationException e) {
             // Expected
         }
@@ -192,7 +188,7 @@ public class JsonObjectTest {
         JsonObject actual = reader.readObject();
         reader.close();
 
-        assertEquals(expected, actual);
+        Assertions.assertEquals(expected, actual);
     }
 
     @Test
@@ -221,14 +217,14 @@ public class JsonObjectTest {
         JsonObject actual = reader.readObject();
         reader.close();
 
-        assertEquals(expected, actual);
+        Assertions.assertEquals(expected, actual);
     }
 
     @Test
     void testObjectBuilderNpe() {
         try {
             Json.createObjectBuilder().add(null, 1).build();
-            fail("JsonObjectBuilder#add(null, 1) should throw NullPointerException");
+            Assertions.fail("JsonObjectBuilder#add(null, 1) should throw NullPointerException");
         } catch(NullPointerException e) {
             // Expected
         }
@@ -237,16 +233,16 @@ public class JsonObjectTest {
     @Test
     void testHashCode() {
         JsonObject object1 = Json.createObjectBuilder().add("a", 1).add("b", 2).add("c", 3).build();
-        assertTrue(object1.hashCode() == object1.hashCode()); //1st call compute hashCode, 2nd call returns cached value
+        Assertions.assertTrue(object1.hashCode() == object1.hashCode()); //1st call compute hashCode, 2nd call returns cached value
 
         JsonObject object2 = Json.createObjectBuilder().add("a", 1).add("b", 2).add("c", 3).build();
-        assertTrue(object1.hashCode() == object2.hashCode());
+        Assertions.assertTrue(object1.hashCode() == object2.hashCode());
 
         JsonObject object3 = Json.createObjectBuilder().build(); //org.eclipse.parsson.JsonArrayBuilderImpl.JsonArrayImpl
         JsonObject object4 = JsonValue.EMPTY_JSON_OBJECT; //jakarta.json.EmptyObject
 
-        assertTrue(object3.equals(object4));
-        assertTrue(object3.hashCode() == object4.hashCode()); //equal instances have same hashCode
+        Assertions.assertTrue(object3.equals(object4));
+        Assertions.assertTrue(object3.hashCode() == object4.hashCode()); //equal instances have same hashCode
     }
 
     @Test
@@ -263,10 +259,10 @@ public class JsonObjectTest {
         m.put("charArray", charArr);
         m.put("floatArray", floatArr);
         JsonObject object = Json.createObjectBuilder(m).build();
-        assertEquals("b", object.get("stringArray").asJsonArray().getString(1));
-		assertFalse(object.get("booleanArray").asJsonArray().getBoolean(1));
-        assertEquals(2, object.get("intArray").asJsonArray().getInt(1));
-        assertEquals('b', object.get("charArray").asJsonArray().getInt(1));
-        assertEquals(2.0, object.get("floatArray").asJsonArray().getJsonNumber(1).doubleValue());
+        Assertions.assertEquals("b", object.get("stringArray").asJsonArray().getString(1));
+		Assertions.assertFalse(object.get("booleanArray").asJsonArray().getBoolean(1));
+        Assertions.assertEquals(2, object.get("intArray").asJsonArray().getInt(1));
+        Assertions.assertEquals('b', object.get("charArray").asJsonArray().getInt(1));
+        Assertions.assertEquals(2.0, object.get("floatArray").asJsonArray().getJsonNumber(1).doubleValue());
     }
 }

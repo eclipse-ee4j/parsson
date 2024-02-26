@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -15,17 +15,6 @@
  */
 
 package org.eclipse.parsson.tests;
-
-import static org.eclipse.parsson.JsonParserFixture.testWithCreateParserFromObject;
-import static org.eclipse.parsson.JsonParserFixture.testWithCreateParserFromString;
-import static org.hamcrest.Matchers.contains;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
-
-import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -57,10 +46,13 @@ import java.util.stream.Collectors;
 
 import jakarta.json.stream.JsonParsingException;
 
+import org.eclipse.parsson.JsonParserFixture;
 import org.eclipse.parsson.api.BufferPool;
 import org.hamcrest.Matcher;
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
@@ -211,19 +203,19 @@ public class JsonParserTest {
     }
 
     static void testEmptyArrayIterator(JsonParser parser) {
-		assertTrue(parser.hasNext());
-		assertTrue(parser.hasNext());
-        assertEquals(Event.START_ARRAY, parser.next());
+		Assertions.assertTrue(parser.hasNext());
+		Assertions.assertTrue(parser.hasNext());
+        Assertions.assertEquals(Event.START_ARRAY, parser.next());
 
-		assertTrue(parser.hasNext());
-		assertTrue(parser.hasNext());
-        assertEquals(Event.END_ARRAY, parser.next());
+		Assertions.assertTrue(parser.hasNext());
+		Assertions.assertTrue(parser.hasNext());
+        Assertions.assertEquals(Event.END_ARRAY, parser.next());
 
-		assertFalse(parser.hasNext());
-		assertFalse(parser.hasNext());
+		Assertions.assertFalse(parser.hasNext());
+		Assertions.assertFalse(parser.hasNext());
         try {
             parser.next();
-            fail("Should have thrown a NoSuchElementException");
+            Assertions.fail("Should have thrown a NoSuchElementException");
         } catch (NoSuchElementException ignored) {
         }
     }
@@ -245,11 +237,11 @@ public class JsonParserTest {
     }
 
     static void testEmptyArrayIterator2(JsonParser parser) {
-        assertEquals(Event.START_ARRAY, parser.next());
-        assertEquals(Event.END_ARRAY, parser.next());
+        Assertions.assertEquals(Event.START_ARRAY, parser.next());
+        Assertions.assertEquals(Event.END_ARRAY, parser.next());
         try {
             parser.next();
-            fail("Should have thrown a NoSuchElementException");
+            Assertions.fail("Should have thrown a NoSuchElementException");
         } catch (NoSuchElementException ignored) {
         }
     }
@@ -270,12 +262,12 @@ public class JsonParserTest {
     }
 
     static void testEmptyArrayIterator3(JsonParser parser) {
-        assertEquals(Event.START_ARRAY, parser.next());
-        assertEquals(Event.END_ARRAY, parser.next());
-		assertFalse(parser.hasNext());
+        Assertions.assertEquals(Event.START_ARRAY, parser.next());
+        Assertions.assertEquals(Event.END_ARRAY, parser.next());
+		Assertions.assertFalse(parser.hasNext());
         try {
             parser.next();
-            fail("Should have thrown a NoSuchElementException");
+            Assertions.fail("Should have thrown a NoSuchElementException");
         } catch (NoSuchElementException ignored) {
         }
     }
@@ -338,19 +330,19 @@ public class JsonParserTest {
     }
 
     static void testEmptyObjectIterator(JsonParser parser) {
-		assertTrue(parser.hasNext());
-		assertTrue(parser.hasNext());
-        assertEquals(Event.START_OBJECT, parser.next());
+		Assertions.assertTrue(parser.hasNext());
+		Assertions.assertTrue(parser.hasNext());
+        Assertions.assertEquals(Event.START_OBJECT, parser.next());
 
-		assertTrue(parser.hasNext());
-		assertTrue(parser.hasNext());
-        assertEquals(Event.END_OBJECT, parser.next());
+		Assertions.assertTrue(parser.hasNext());
+		Assertions.assertTrue(parser.hasNext());
+        Assertions.assertEquals(Event.END_OBJECT, parser.next());
 
-		assertFalse(parser.hasNext());
-		assertFalse(parser.hasNext());
+		Assertions.assertFalse(parser.hasNext());
+		Assertions.assertFalse(parser.hasNext());
         try {
             parser.next();
-            fail("Should have thrown a NoSuchElementException");
+            Assertions.fail("Should have thrown a NoSuchElementException");
         } catch (NoSuchElementException ignored) {
         }
     }
@@ -372,11 +364,11 @@ public class JsonParserTest {
     }
 
     static void testEmptyObjectIterator2(JsonParser parser) {
-        assertEquals(Event.START_OBJECT, parser.next());
-        assertEquals(Event.END_OBJECT, parser.next());
+        Assertions.assertEquals(Event.START_OBJECT, parser.next());
+        Assertions.assertEquals(Event.END_OBJECT, parser.next());
         try {
             parser.next();
-            fail("Should have thrown a NoSuchElementException");
+            Assertions.fail("Should have thrown a NoSuchElementException");
         } catch (NoSuchElementException ignored) {
         }
     }
@@ -398,12 +390,12 @@ public class JsonParserTest {
     }
 
     static void testEmptyObjectIterator3(JsonParser parser) {
-        assertEquals(Event.START_OBJECT, parser.next());
-        assertEquals(Event.END_OBJECT, parser.next());
-		assertFalse(parser.hasNext());
+        Assertions.assertEquals(Event.START_OBJECT, parser.next());
+        Assertions.assertEquals(Event.END_OBJECT, parser.next());
+		Assertions.assertFalse(parser.hasNext());
         try {
             parser.next();
-            fail("Should have thrown a NoSuchElementException");
+            Assertions.fail("Should have thrown a NoSuchElementException");
         } catch (NoSuchElementException ne) {
             // expected
         }
@@ -466,28 +458,28 @@ public class JsonParserTest {
     static void testWiki(JsonParser parser) {
 
         Event event = parser.next();
-        assertEquals(Event.START_OBJECT, event);
+        Assertions.assertEquals(Event.START_OBJECT, event);
 
         testObjectStringValue(parser, "firstName", "John");
         testObjectStringValue(parser, "lastName", "Smith");
 
         event = parser.next();
-        assertEquals(Event.KEY_NAME, event);
-        assertEquals("age", parser.getString());
+        Assertions.assertEquals(Event.KEY_NAME, event);
+        Assertions.assertEquals("age", parser.getString());
 
         event = parser.next();
-        assertEquals(Event.VALUE_NUMBER, event);
-        assertEquals(25, parser.getInt());
-        assertEquals(25, parser.getLong());
-        assertEquals(25, parser.getBigDecimal().intValue());
-        assertTrue( parser.isIntegralNumber());
+        Assertions.assertEquals(Event.VALUE_NUMBER, event);
+        Assertions.assertEquals(25, parser.getInt());
+        Assertions.assertEquals(25, parser.getLong());
+        Assertions.assertEquals(25, parser.getBigDecimal().intValue());
+        Assertions.assertTrue( parser.isIntegralNumber());
 
         event = parser.next();
-        assertEquals(Event.KEY_NAME, event);
-        assertEquals("address", parser.getString());
+        Assertions.assertEquals(Event.KEY_NAME, event);
+        Assertions.assertEquals("address", parser.getString());
 
         event = parser.next();
-        assertEquals(Event.START_OBJECT, event);
+        Assertions.assertEquals(Event.START_OBJECT, event);
 
 
         testObjectStringValue(parser, "streetAddress", "21 2nd Street");
@@ -496,42 +488,42 @@ public class JsonParserTest {
         testObjectStringValue(parser, "postalCode", "10021");
 
         event = parser.next();
-        assertEquals(Event.END_OBJECT, event);
+        Assertions.assertEquals(Event.END_OBJECT, event);
 
         event = parser.next();
-        assertEquals(Event.KEY_NAME, event);
-        assertEquals("phoneNumber", parser.getString());
+        Assertions.assertEquals(Event.KEY_NAME, event);
+        Assertions.assertEquals("phoneNumber", parser.getString());
 
         event = parser.next();
-        assertEquals(Event.START_ARRAY, event);
+        Assertions.assertEquals(Event.START_ARRAY, event);
         event = parser.next();
-        assertEquals(Event.START_OBJECT, event);
+        Assertions.assertEquals(Event.START_OBJECT, event);
         testObjectStringValue(parser, "type", "home");
         testObjectStringValue(parser, "number", "212 555-1234");
         event = parser.next();
-        assertEquals(Event.END_OBJECT, event);
+        Assertions.assertEquals(Event.END_OBJECT, event);
 
         event = parser.next();
-        assertEquals(Event.START_OBJECT, event);
+        Assertions.assertEquals(Event.START_OBJECT, event);
         testObjectStringValue(parser, "type", "fax");
         testObjectStringValue(parser, "number", "646 555-4567");
         event = parser.next();
-        assertEquals(Event.END_OBJECT, event);
+        Assertions.assertEquals(Event.END_OBJECT, event);
         event = parser.next();
-        assertEquals(Event.END_ARRAY, event);
+        Assertions.assertEquals(Event.END_ARRAY, event);
 
         event = parser.next();
-        assertEquals(Event.END_OBJECT, event);
+        Assertions.assertEquals(Event.END_OBJECT, event);
     }
 
     static void testObjectStringValue(JsonParser parser, String name, String value) {
         Event event = parser.next();
-        assertEquals(Event.KEY_NAME, event);
-        assertEquals(name, parser.getString());
+        Assertions.assertEquals(Event.KEY_NAME, event);
+        Assertions.assertEquals(name, parser.getString());
 
         event = parser.next();
-        assertEquals(Event.VALUE_STRING, event);
-        assertEquals(value, parser.getString());
+        Assertions.assertEquals(Event.VALUE_STRING, event);
+        Assertions.assertEquals(value, parser.getString());
     }
 
     @Test
@@ -554,16 +546,16 @@ public class JsonParserTest {
     }
 
     static void testNestedArray(JsonParser parser) {
-        assertEquals(Event.START_ARRAY, parser.next());
-        assertEquals(Event.START_ARRAY, parser.next());
-        assertEquals(Event.END_ARRAY, parser.next());
-        assertEquals(Event.START_ARRAY, parser.next());
-        assertEquals(Event.START_ARRAY, parser.next());
-        assertEquals(Event.END_ARRAY, parser.next());
-        assertEquals(Event.END_ARRAY, parser.next());
-        assertEquals(Event.END_ARRAY, parser.next());
-		assertFalse(parser.hasNext());
-		assertFalse(parser.hasNext());
+        Assertions.assertEquals(Event.START_ARRAY, parser.next());
+        Assertions.assertEquals(Event.START_ARRAY, parser.next());
+        Assertions.assertEquals(Event.END_ARRAY, parser.next());
+        Assertions.assertEquals(Event.START_ARRAY, parser.next());
+        Assertions.assertEquals(Event.START_ARRAY, parser.next());
+        Assertions.assertEquals(Event.END_ARRAY, parser.next());
+        Assertions.assertEquals(Event.END_ARRAY, parser.next());
+        Assertions.assertEquals(Event.END_ARRAY, parser.next());
+		Assertions.assertFalse(parser.hasNext());
+		Assertions.assertFalse(parser.hasNext());
     }
 
     @Test
@@ -584,39 +576,39 @@ public class JsonParserTest {
     static void testExceptions(JsonParser parser) {
 
         Event event = parser.next();
-        assertEquals(Event.START_OBJECT, event);
+        Assertions.assertEquals(Event.START_OBJECT, event);
 
         try {
             parser.getString();
-            fail("JsonParser#getString() should have thrown exception in START_OBJECT state");
+            Assertions.fail("JsonParser#getString() should have thrown exception in START_OBJECT state");
         } catch (IllegalStateException expected) {
             // no-op
         }
 
         try {
             parser.isIntegralNumber();
-            fail("JsonParser#getNumberType() should have thrown exception in START_OBJECT state");
+            Assertions.fail("JsonParser#getNumberType() should have thrown exception in START_OBJECT state");
         } catch (IllegalStateException expected) {
             // no-op
         }
 
         try {
             parser.getInt();
-            fail("JsonParser#getInt() should have thrown exception in START_OBJECT state");
+            Assertions.fail("JsonParser#getInt() should have thrown exception in START_OBJECT state");
         } catch (IllegalStateException expected) {
             // no-op
         }
 
         try {
             parser.getLong();
-            fail("JsonParser#getLong() should have thrown exception in START_OBJECT state");
+            Assertions.fail("JsonParser#getLong() should have thrown exception in START_OBJECT state");
         } catch (IllegalStateException expected) {
             // no-op
         }
 
         try {
             parser.getBigDecimal();
-            fail("JsonParser#getBigDecimal() should have thrown exception in START_OBJECT state");
+            Assertions.fail("JsonParser#getBigDecimal() should have thrown exception in START_OBJECT state");
         } catch (IllegalStateException expected) {
             // no-op
         }
@@ -651,7 +643,7 @@ public class JsonParserTest {
             try (JsonParser parser = factory.createParser(new StringReader("["+num+"]"))) {
                 parser.next();
                 parser.next();
-                assertEquals(new BigDecimal(num).intValue(), parser.getInt(), "Fails for num="+num);
+                Assertions.assertEquals(new BigDecimal(num).intValue(), parser.getInt(), "Fails for num="+num);
             }
         }
 
@@ -665,7 +657,7 @@ public class JsonParserTest {
             parser.next();
             parser.next();
             parser.next();
-            assertEquals("1", parser.getString(), "Fails for BigDecimal=1");
+            Assertions.assertEquals("1", parser.getString(), "Fails for BigDecimal=1");
         }
     }
 
@@ -677,7 +669,7 @@ public class JsonParserTest {
             parser.next();
             parser.next();
             parser.next();
-            assertEquals("5", parser.getString(), "Fails for int=5");
+            Assertions.assertEquals("5", parser.getString(), "Fails for int=5");
         }
     }
 
@@ -722,8 +714,8 @@ public class JsonParserTest {
             parser.next();
             parser.next();
         }
-        assertTrue(bufferPool.isTakeCalled());
-        assertTrue(bufferPool.isRecycleCalled());
+        Assertions.assertTrue(bufferPool.isTakeCalled());
+        Assertions.assertTrue(bufferPool.isRecycleCalled());
     }
 
     @Test
@@ -745,10 +737,10 @@ public class JsonParserTest {
                 try (JsonParser parser = factory.createParser(new StringReader(str))) {
                     parser.next();
                     parser.next();
-                    assertEquals(name, parser.getString(), "Fails for " + str);
+                    Assertions.assertEquals(name, parser.getString(), "Fails for " + str);
                     parser.next();
                     parser.next();
-                    assertEquals(new BigDecimal(num).intValue(), parser.getInt(), "Fails for "+str);
+                    Assertions.assertEquals(new BigDecimal(num).intValue(), parser.getInt(), "Fails for "+str);
                 }
             }
         }
@@ -770,9 +762,9 @@ public class JsonParserTest {
             try (JsonParser parser = factory.createParser(new StringReader(str))) {
                 parser.next();
                 parser.next();
-                assertEquals(name, parser.getString(), "Fails for size=" + i);
+                Assertions.assertEquals(name, parser.getString(), "Fails for size=" + i);
                 parser.next();
-                assertEquals(name, parser.getString(), "Fails for size=" + i);
+                Assertions.assertEquals(name, parser.getString(), "Fails for size=" + i);
             } catch (Throwable e) {
                 throw new Throwable("Failed for size=" + i, e);
             }
@@ -797,9 +789,9 @@ public class JsonParserTest {
             try (JsonParser parser = factory.createParser(new StringReader(str))) {
                 parser.next();
                 parser.next();
-                assertEquals(name, parser.getString(), "Fails for size=" + i);
+                Assertions.assertEquals(name, parser.getString(), "Fails for size=" + i);
                 parser.next();
-                assertEquals(num, parser.getInt(), "Fails for size=" + i);
+                Assertions.assertEquals(num, parser.getInt(), "Fails for size=" + i);
             } catch (Throwable e) {
                 throw new Throwable("Failed for size=" + i, e);
             }
@@ -824,18 +816,18 @@ public class JsonParserTest {
                 try (JsonParser parser = factory.createParser(new StringReader(str))) {
                     parser.next();
                     parser.next();
-                    assertEquals(name, parser.getString(), "name fails for buffer size=" + size + " name length=" + i);
+                    Assertions.assertEquals(name, parser.getString(), "name fails for buffer size=" + size + " name length=" + i);
                     location = parser.getLocation();
-                    assertEquals(name.length() + 3, location.getStreamOffset(), "Stream offset fails for buffer size=" + size + " name length=" + i);
-                    assertEquals(name.length() + 4, location.getColumnNumber(), "Column value fails for buffer size=" + size + " name length=" + i);
-                    assertEquals(1, location.getLineNumber(), "Line value fails for buffer size=" + size + " name length=" + i);
+                    Assertions.assertEquals(name.length() + 3, location.getStreamOffset(), "Stream offset fails for buffer size=" + size + " name length=" + i);
+                    Assertions.assertEquals(name.length() + 4, location.getColumnNumber(), "Column value fails for buffer size=" + size + " name length=" + i);
+                    Assertions.assertEquals(1, location.getLineNumber(), "Line value fails for buffer size=" + size + " name length=" + i);
 
                     parser.next();
-                    assertEquals(name, parser.getString(), "value fails for buffer size=" + size + " name length=" + i);
+                    Assertions.assertEquals(name, parser.getString(), "value fails for buffer size=" + size + " name length=" + i);
                     location = parser.getLocation();
-                    assertEquals(2L * name.length() + 6, location.getStreamOffset(), "Stream offset fails for buffer size=" + size + " name length=" + i);
-                    assertEquals(2L * name.length() + 7, location.getColumnNumber(), "Column value fails for buffer size=" + size + " name length=" + i);
-                    assertEquals(1, location.getLineNumber(), "Line value fails for buffer size=" + size + " name length=" + i);
+                    Assertions.assertEquals(2L * name.length() + 6, location.getStreamOffset(), "Stream offset fails for buffer size=" + size + " name length=" + i);
+                    Assertions.assertEquals(2L * name.length() + 7, location.getColumnNumber(), "Column value fails for buffer size=" + size + " name length=" + i);
+                    Assertions.assertEquals(1, location.getLineNumber(), "Line value fails for buffer size=" + size + " name length=" + i);
                 } catch (Throwable e) {
                     throw new Throwable("Failed for buffer size=" + size + " name length=" + i, e);
                 }
@@ -882,7 +874,7 @@ public class JsonParserTest {
                     try {
                         parser.next();
                     } catch (Throwable t1) {
-                        fail("Exception should occur from hasNext() for '" + input + "'");
+                        Assertions.fail("Exception should occur from hasNext() for '" + input + "'");
                     }
                 }
             } catch (JsonParsingException t) {
@@ -890,7 +882,7 @@ public class JsonParserTest {
                 return;
             }
         }
-        fail();
+        Assertions.fail();
     }
 
     private void checkExceptionFromNext(String input) {
@@ -904,14 +896,14 @@ public class JsonParserTest {
                 }
             }
         }
-        fail();
+        Assertions.fail();
     }
 
     @Nested
     public class DirectParserTests {
         @Test
         void testNumbersStructure() {
-            testWithCreateParserFromObject(Json.createObjectBuilder()
+            JsonParserFixture.testWithCreateParserFromObject(Json.createObjectBuilder()
                     .add("int", 1)
                     .add("long", 1L)
                     .add("double", 1d)
@@ -922,7 +914,7 @@ public class JsonParserTest {
 
         @Test
         void testNumbersString() {
-            testWithCreateParserFromString("{\"int\":1,\"long\":1,\"double\":1.0,\"BigInteger\":10,\"BigDecimal\":10}", this::testNumbers);
+            JsonParserFixture.testWithCreateParserFromString("{\"int\":1,\"long\":1,\"double\":1.0,\"BigInteger\":10,\"BigDecimal\":10}", this::testNumbers);
         }
 
         private void testNumbers(JsonParser parser) {
@@ -930,42 +922,42 @@ public class JsonParserTest {
             parser.next();
             parser.getString();
             parser.next();
-            assertTrue(parser.isIntegralNumber());
-            assertEquals(1, parser.getInt());
+            Assertions.assertTrue(parser.isIntegralNumber());
+            Assertions.assertEquals(1, parser.getInt());
 
             parser.next();
             parser.getString();
             parser.next();
-            assertTrue(parser.isIntegralNumber());
-            assertEquals(1L, parser.getLong());
+            Assertions.assertTrue(parser.isIntegralNumber());
+            Assertions.assertEquals(1L, parser.getLong());
 
             parser.next();
             parser.getString();
             parser.next();
-            assertFalse(parser.isIntegralNumber());
-            assertEquals(BigDecimal.valueOf(1d), parser.getBigDecimal());
+            Assertions.assertFalse(parser.isIntegralNumber());
+            Assertions.assertEquals(BigDecimal.valueOf(1d), parser.getBigDecimal());
 
             parser.next();
             parser.getString();
             parser.next();
-            assertTrue(parser.isIntegralNumber());
-            assertEquals(BigDecimal.TEN, parser.getBigDecimal());
+            Assertions.assertTrue(parser.isIntegralNumber());
+            Assertions.assertEquals(BigDecimal.TEN, parser.getBigDecimal());
 
             parser.next();
             parser.getString();
             parser.next();
-            assertTrue(parser.isIntegralNumber());
-            assertEquals(BigDecimal.TEN, parser.getBigDecimal());
+            Assertions.assertTrue(parser.isIntegralNumber());
+            Assertions.assertEquals(BigDecimal.TEN, parser.getBigDecimal());
         }
 
         @Test
         void testParser_getStringStructure(){
-            testWithCreateParserFromObject(TestData.createFamilyPerson(), this::testParser_getString);
+            JsonParserFixture.testWithCreateParserFromObject(TestData.createFamilyPerson(), this::testParser_getString);
         }
 
         @Test
         void testParser_getStringString(){
-            testWithCreateParserFromString(TestData.JSON_FAMILY_STRING, this::testParser_getString);
+            JsonParserFixture.testWithCreateParserFromString(TestData.JSON_FAMILY_STRING, this::testParser_getString);
         }
 
         private void testParser_getString(JsonParser parser) {
@@ -979,17 +971,17 @@ public class JsonParserTest {
                 }
             }
 
-            assertThat(values,TestData.FAMILY_MATCHER_WITH_NO_QUOTATION);
+            MatcherAssert.assertThat(values,TestData.FAMILY_MATCHER_WITH_NO_QUOTATION);
         }
 
         @Test
         void testParser_getValueStructure(){
-            testWithCreateParserFromObject(TestData.createFamilyPerson(), this::testParser_getValue);
+            JsonParserFixture.testWithCreateParserFromObject(TestData.createFamilyPerson(), this::testParser_getValue);
         }
 
         @Test
         void testParser_getValueString(){
-            testWithCreateParserFromString(TestData.JSON_FAMILY_STRING, this::testParser_getValue);
+            JsonParserFixture.testWithCreateParserFromString(TestData.JSON_FAMILY_STRING, this::testParser_getValue);
         }
 
         private void testParser_getValue(JsonParser parser) {
@@ -1003,17 +995,17 @@ public class JsonParserTest {
                 }
             }
 
-            assertThat(values, TestData.FAMILY_MATCHER_KEYS_WITH_QUOTATION);
+            MatcherAssert.assertThat(values, TestData.FAMILY_MATCHER_KEYS_WITH_QUOTATION);
         }
 
         @Test
         void testSkipArrayStructure() {
-            testWithCreateParserFromObject(TestData.createObjectWithArrays(), this::testSkipArray);
+            JsonParserFixture.testWithCreateParserFromObject(TestData.createObjectWithArrays(), this::testSkipArray);
         }
 
         @Test
         void testSkipArrayString() {
-            testWithCreateParserFromString(TestData.JSON_OBJECT_WITH_ARRAYS, this::testSkipArray);
+            JsonParserFixture.testWithCreateParserFromString(TestData.JSON_OBJECT_WITH_ARRAYS, this::testSkipArray);
         }
 
         private void testSkipArray(JsonParser parser) {
@@ -1025,17 +1017,17 @@ public class JsonParserTest {
             parser.next();
             String key = parser.getString();
 
-            assertEquals("secondElement", key);
+            Assertions.assertEquals("secondElement", key);
         }
 
         @Test
         void testSkipObjectStructure() {
-            testWithCreateParserFromObject(TestData.createJsonObject(), this::testSkipObject);
+            JsonParserFixture.testWithCreateParserFromObject(TestData.createJsonObject(), this::testSkipObject);
         }
 
         @Test
         void testSkipObjectString() {
-            testWithCreateParserFromString(TestData.JSON_OBJECT_WITH_OBJECTS, this::testSkipObject);
+            JsonParserFixture.testWithCreateParserFromString(TestData.JSON_OBJECT_WITH_OBJECTS, this::testSkipObject);
         }
 
         private void testSkipObject(JsonParser parser) {
@@ -1047,31 +1039,31 @@ public class JsonParserTest {
             parser.next();
             String key = parser.getString();
 
-            assertEquals("secondPerson", key);
+            Assertions.assertEquals("secondPerson", key);
         }
 
         private void assertThrowsIllegalStateException(Executable executable) {
-            assertThrows(IllegalStateException.class, executable);
+            Assertions.assertThrows(IllegalStateException.class, executable);
         }
 
         @Test
         void testErrorGetObjectStructure() {
-            assertThrowsIllegalStateException(() -> testWithCreateParserFromObject(TestData.createJsonObject(), JsonParser::getObject));
+            assertThrowsIllegalStateException(() -> JsonParserFixture.testWithCreateParserFromObject(TestData.createJsonObject(), JsonParser::getObject));
         }
 
         @Test
         void testErrorGetObjectString() {
-            assertThrowsIllegalStateException(() -> testWithCreateParserFromString(TestData.JSON_OBJECT_WITH_OBJECTS, JsonParser::getObject));
+            assertThrowsIllegalStateException(() -> JsonParserFixture.testWithCreateParserFromString(TestData.JSON_OBJECT_WITH_OBJECTS, JsonParser::getObject));
         }
 
         @Test
         void testErrorGetArrayStructure() {
-            assertThrowsIllegalStateException(() -> testWithCreateParserFromObject(TestData.createJsonObject(), this::testErrorGetArray));
+            assertThrowsIllegalStateException(() -> JsonParserFixture.testWithCreateParserFromObject(TestData.createJsonObject(), this::testErrorGetArray));
         }
 
         @Test
         void testErrorGetArrayString() {
-            assertThrowsIllegalStateException(() -> testWithCreateParserFromString(TestData.JSON_OBJECT_WITH_OBJECTS, this::testErrorGetArray));
+            assertThrowsIllegalStateException(() -> JsonParserFixture.testWithCreateParserFromString(TestData.JSON_OBJECT_WITH_OBJECTS, this::testErrorGetArray));
         }
 
         private void testErrorGetArray(JsonParser parser) {
@@ -1081,12 +1073,12 @@ public class JsonParserTest {
 
         @Test
         void testErrorGetValueEndOfObjectStructure() {
-            assertThrowsIllegalStateException(() -> testWithCreateParserFromObject(TestData.createJsonObject(), this::testErrorGetValueEndOfObject));
+            assertThrowsIllegalStateException(() -> JsonParserFixture.testWithCreateParserFromObject(TestData.createJsonObject(), this::testErrorGetValueEndOfObject));
         }
 
         @Test
         void testErrorGetValueEndOfObjectString() {
-            assertThrowsIllegalStateException(() -> testWithCreateParserFromString(TestData.JSON_OBJECT_WITH_OBJECTS, this::testErrorGetValueEndOfObject));
+            assertThrowsIllegalStateException(() -> JsonParserFixture.testWithCreateParserFromString(TestData.JSON_OBJECT_WITH_OBJECTS, this::testErrorGetValueEndOfObject));
         }
 
         private void testErrorGetValueEndOfObject(JsonParser parser) {
@@ -1097,12 +1089,12 @@ public class JsonParserTest {
 
         @Test
         void testErrorGetValueEndOfArrayStructure() {
-            assertThrowsIllegalStateException(() -> testWithCreateParserFromObject(TestData.createObjectWithArrays(), this::testErrorGetValueEndOfArray));
+            assertThrowsIllegalStateException(() -> JsonParserFixture.testWithCreateParserFromObject(TestData.createObjectWithArrays(), this::testErrorGetValueEndOfArray));
         }
 
         @Test
         void testErrorGetValueEndOfArrayString() {
-            assertThrowsIllegalStateException(() -> testWithCreateParserFromString(TestData.JSON_OBJECT_WITH_ARRAYS, this::testErrorGetValueEndOfArray));
+            assertThrowsIllegalStateException(() -> JsonParserFixture.testWithCreateParserFromString(TestData.JSON_OBJECT_WITH_ARRAYS, this::testErrorGetValueEndOfArray));
         }
 
         private void testErrorGetValueEndOfArray(JsonParser parser) {
@@ -1116,7 +1108,7 @@ public class JsonParserTest {
 
         @Test
         void testBooleanNullandCurrentEventStructure() {
-            testWithCreateParserFromObject(Json.createObjectBuilder()
+            JsonParserFixture.testWithCreateParserFromObject(Json.createObjectBuilder()
                     .add("true", true)
                     .add("false", false)
                     .addNull("null")
@@ -1125,7 +1117,7 @@ public class JsonParserTest {
 
         @Test
         void testBooleanNullandCurrentEventString() {
-            testWithCreateParserFromString("{\"true\":true,\"false\":false,\"null\":null}", this::testBooleanNullandCurrentEvent);
+            JsonParserFixture.testWithCreateParserFromString("{\"true\":true,\"false\":false,\"null\":null}", this::testBooleanNullandCurrentEvent);
         }
 
         private void testBooleanNullandCurrentEvent(JsonParser parser) {
@@ -1133,21 +1125,21 @@ public class JsonParserTest {
             parser.next();
             parser.getValue();
             parser.next();
-            assertEquals(JsonValue.ValueType.TRUE, parser.getValue().getValueType());
+            Assertions.assertEquals(JsonValue.ValueType.TRUE, parser.getValue().getValueType());
             parser.next();
             parser.getValue();
             parser.next();
-            assertEquals(JsonValue.ValueType.FALSE, parser.getValue().getValueType());
+            Assertions.assertEquals(JsonValue.ValueType.FALSE, parser.getValue().getValueType());
             parser.next();
             parser.getValue();
             parser.next();
-            assertEquals(JsonValue.ValueType.NULL, parser.getValue().getValueType());
-            assertEquals(Event.VALUE_NULL, parser.currentEvent());
+            Assertions.assertEquals(JsonValue.ValueType.NULL, parser.getValue().getValueType());
+            Assertions.assertEquals(Event.VALUE_NULL, parser.currentEvent());
         }
 
         @Test
         void testBigLongAndDecimalsStructure() {
-            testWithCreateParserFromObject(Json.createObjectBuilder()
+            JsonParserFixture.testWithCreateParserFromObject(Json.createObjectBuilder()
                     .add("long", 12345678901234567L)
                     .add("longer", 1234567890123456789L)
                     .build(), this::testBigLongAndDecimals);
@@ -1155,7 +1147,7 @@ public class JsonParserTest {
 
         @Test
         void testBigLongAndDecimalsString() {
-            testWithCreateParserFromString("{\"long\":12345678901234567,\"longer\":1234567890123456789}", this::testBigLongAndDecimals);
+            JsonParserFixture.testWithCreateParserFromString("{\"long\":12345678901234567,\"longer\":1234567890123456789}", this::testBigLongAndDecimals);
         }
 
         private void testBigLongAndDecimals(JsonParser parser) {
@@ -1163,20 +1155,20 @@ public class JsonParserTest {
             parser.next();
             parser.getString();
             parser.next();
-            assertEquals("12345678901234567", parser.getValue().toString());
+            Assertions.assertEquals("12345678901234567", parser.getValue().toString());
             parser.next();
             parser.getString();
             parser.next();
-            assertEquals("1234567890123456789", parser.getValue().toString());
+            Assertions.assertEquals("1234567890123456789", parser.getValue().toString());
         }
 
         private void assertThrowsJsonParsingException(Executable executable) {
-            assertThrows(JsonParsingException.class, executable);
+            Assertions.assertThrows(JsonParsingException.class, executable);
         }
 
         @Test
         void testWrongValueAndEndOfObjectInArray() {//509 ArrayContext.getNextEvent, no coma
-            assertThrowsJsonParsingException(() -> testWithCreateParserFromString("{\"a\":[5 }]}", parser -> {
+            assertThrowsJsonParsingException(() -> JsonParserFixture.testWithCreateParserFromString("{\"a\":[5 }]}", parser -> {
                 parser.next();
                 parser.next();
                 parser.getString();
@@ -1187,7 +1179,7 @@ public class JsonParserTest {
 
         @Test
         void testWrongEndOfObjectInArray() {//518 ArrayContext.getNextEvent, at the end
-            assertThrowsJsonParsingException(() -> testWithCreateParserFromString("{\"a\":[}, 3]}", parser -> {
+            assertThrowsJsonParsingException(() -> JsonParserFixture.testWithCreateParserFromString("{\"a\":[}, 3]}", parser -> {
                 parser.next();
                 parser.next();
                 parser.getString();
@@ -1198,7 +1190,7 @@ public class JsonParserTest {
 
         @Test
         void testWrongKey() {//477 ObjectContext.getNextEvent, at the end
-            assertThrowsJsonParsingException(() -> testWithCreateParserFromString("{\"a\":1, 5}", parser -> {
+            assertThrowsJsonParsingException(() -> JsonParserFixture.testWithCreateParserFromString("{\"a\":1, 5}", parser -> {
                 parser.next();
                 parser.next();
                 parser.getString();
@@ -1210,7 +1202,7 @@ public class JsonParserTest {
 
         @Test
         void testErrorInTheValue() {//470 ObjectContext.getNextEvent, no coma
-            assertThrowsJsonParsingException(() -> testWithCreateParserFromString("{\"a\":1:}", parser -> {
+            assertThrowsJsonParsingException(() -> JsonParserFixture.testWithCreateParserFromString("{\"a\":1:}", parser -> {
                 parser.next();
                 parser.next();
                 parser.getString();
@@ -1222,7 +1214,7 @@ public class JsonParserTest {
 
         @Test
         void testNoValueAfterKey() {//452 ObjectContext.getNextEvent, no colon
-            assertThrowsJsonParsingException(() -> testWithCreateParserFromString("{\"a\"}", parser -> {
+            assertThrowsJsonParsingException(() -> JsonParserFixture.testWithCreateParserFromString("{\"a\"}", parser -> {
                 parser.next();
                 parser.next();
                 parser.getString();
@@ -1232,12 +1224,12 @@ public class JsonParserTest {
 
         @Test
         void testNoJSONAtAll() {//382 NoneContext.getNextEvent, at the end
-            assertThrowsJsonParsingException(() -> testWithCreateParserFromString("", JsonParser::next));
+            assertThrowsJsonParsingException(() -> JsonParserFixture.testWithCreateParserFromString("", JsonParser::next));
         }
 
         @Test
         void testWrongArrayEndWithComa() {//518 ArrayContext.getNextEvent, at the end
-            assertThrowsJsonParsingException(() -> testWithCreateParserFromString("[,", parser -> {
+            assertThrowsJsonParsingException(() -> JsonParserFixture.testWithCreateParserFromString("[,", parser -> {
                 parser.next();
                 parser.getArray();
             }));
@@ -1248,12 +1240,12 @@ public class JsonParserTest {
     class StreamTests {
         @Test
         void testGetValueStream_GetOneElement_Structure() {
-            testWithCreateParserFromObject(TestData.createFamilyPerson(), this::testGetValueStream_GetOneElement);
+            JsonParserFixture.testWithCreateParserFromObject(TestData.createFamilyPerson(), this::testGetValueStream_GetOneElement);
         }
 
         @Test
         void testGetValueStream_GetOneElement_String() {
-            testWithCreateParserFromString(TestData.JSON_FAMILY_STRING, this::testGetValueStream_GetOneElement);
+            JsonParserFixture.testWithCreateParserFromString(TestData.JSON_FAMILY_STRING, this::testGetValueStream_GetOneElement);
         }
 
         private void testGetValueStream_GetOneElement(JsonParser parser) {
@@ -1267,33 +1259,33 @@ public class JsonParserTest {
                     .findFirst()
                     .orElseThrow(() -> new RuntimeException("Name not found"));
 
-            assertEquals("John", name.getString());
+            Assertions.assertEquals("John", name.getString());
         }
 
         @Test
         void testGetValueStream_GetListStructure() {
-            testWithCreateParserFromObject(TestData.createFamilyPerson(), this::testGetValueStream_GetList);
+            JsonParserFixture.testWithCreateParserFromObject(TestData.createFamilyPerson(), this::testGetValueStream_GetList);
         }
 
         @Test
         void testGetValueStream_GetListString() {
-            testWithCreateParserFromString(TestData.JSON_FAMILY_STRING, this::testGetValueStream_GetList);
+            JsonParserFixture.testWithCreateParserFromString(TestData.JSON_FAMILY_STRING, this::testGetValueStream_GetList);
         }
 
         private void testGetValueStream_GetList(JsonParser parser) {
             List<String> values = parser.getValueStream().map(value -> Objects.toString(value, "null")).collect(Collectors.toList());
 
-            assertThat(values, contains(TestData.JSON_FAMILY_STRING));
+            MatcherAssert.assertThat(values, Matchers.contains(TestData.JSON_FAMILY_STRING));
         }
 
         @Test
         void testGetArrayStream_GetOneElementStructure() {
-            testWithCreateParserFromObject(TestData.createObjectWithArrays(), this::testGetArrayStream_GetOneElement);
+            JsonParserFixture.testWithCreateParserFromObject(TestData.createObjectWithArrays(), this::testGetArrayStream_GetOneElement);
         }
 
         @Test
         void testGetArrayStream_GetOneElementString() {
-            testWithCreateParserFromString(TestData.JSON_OBJECT_WITH_ARRAYS, this::testGetArrayStream_GetOneElement);
+            JsonParserFixture.testWithCreateParserFromString(TestData.JSON_OBJECT_WITH_ARRAYS, this::testGetArrayStream_GetOneElement);
         }
 
         private void testGetArrayStream_GetOneElement(JsonParser parser) {
@@ -1305,18 +1297,18 @@ public class JsonParserTest {
                     .findFirst()
                     .orElseThrow(() -> new RuntimeException("Element not found"));
 
-            assertEquals("first", element.getString());
-            assertEquals("firstElement", key);
+            Assertions.assertEquals("first", element.getString());
+            Assertions.assertEquals("firstElement", key);
         }
 
         @Test
         void testGetArrayStream_GetListStructure() {
-            testWithCreateParserFromObject(TestData.createObjectWithArrays(), this::testGetArrayStream_GetList);
+            JsonParserFixture.testWithCreateParserFromObject(TestData.createObjectWithArrays(), this::testGetArrayStream_GetList);
         }
 
         @Test
         void testGetArrayStream_GetListString() {
-            testWithCreateParserFromString(TestData.JSON_OBJECT_WITH_ARRAYS, this::testGetArrayStream_GetList);
+            JsonParserFixture.testWithCreateParserFromString(TestData.JSON_OBJECT_WITH_ARRAYS, this::testGetArrayStream_GetList);
         }
 
         private void testGetArrayStream_GetList(JsonParser parser) {
@@ -1326,18 +1318,18 @@ public class JsonParserTest {
             parser.next();
             List<String> values = parser.getArrayStream().map(value -> Objects.toString(value, "null")).collect(Collectors.toList());
 
-            assertThat(values, TestData.ARRAY_STREAM_MATCHER);
-            assertEquals("firstElement", key);
+            MatcherAssert.assertThat(values, TestData.ARRAY_STREAM_MATCHER);
+            Assertions.assertEquals("firstElement", key);
         }
 
         @Test
         void testGetObjectStream_GetOneElementStructure() {
-            testWithCreateParserFromObject(TestData.createJsonObject(), this::testGetObjectStream_GetOneElement);
+            JsonParserFixture.testWithCreateParserFromObject(TestData.createJsonObject(), this::testGetObjectStream_GetOneElement);
         }
 
         @Test
         void testGetObjectStream_GetOneElementString() {
-            testWithCreateParserFromString(TestData.JSON_OBJECT_WITH_OBJECTS, this::testGetObjectStream_GetOneElement);
+            JsonParserFixture.testWithCreateParserFromString(TestData.JSON_OBJECT_WITH_OBJECTS, this::testGetObjectStream_GetOneElement);
         }
 
         private void testGetObjectStream_GetOneElement(JsonParser parser) {
@@ -1349,24 +1341,24 @@ public class JsonParserTest {
                     .findFirst()
                     .orElseThrow(() -> new RuntimeException("Surname not found"));
 
-            assertEquals("Smith", surname);
+            Assertions.assertEquals("Smith", surname);
         }
 
         @Test
         void testGetObjectStream_GetListStructure() {
-            testWithCreateParserFromObject(TestData.createFamilyPerson(), this::testGetObjectStream_GetList);
+            JsonParserFixture.testWithCreateParserFromObject(TestData.createFamilyPerson(), this::testGetObjectStream_GetList);
         }
 
         @Test
         void testGetObjectStream_GetListString() {
-            testWithCreateParserFromString(TestData.JSON_FAMILY_STRING, this::testGetObjectStream_GetList);
+            JsonParserFixture.testWithCreateParserFromString(TestData.JSON_FAMILY_STRING, this::testGetObjectStream_GetList);
         }
 
         private void testGetObjectStream_GetList(JsonParser parser) {
             parser.next();
             List<String> values = parser.getObjectStream().collect(MAP_TO_LIST_COLLECTOR);
 
-            assertThat(values, TestData.FAMILY_MATCHER_KEYS_WITHOUT_QUOTATION);
+            MatcherAssert.assertThat(values, TestData.FAMILY_MATCHER_KEYS_WITHOUT_QUOTATION);
         }
     }
 
@@ -1374,28 +1366,28 @@ public class JsonParserTest {
     public class JSONPStandardParserTests {
         @Test
         void testStandardStructureParser_getValueStream() {
-            testWithCreateParserFromObject(TestData.createFamilyPerson(), this::test_getValueStream);
+            JsonParserFixture.testWithCreateParserFromObject(TestData.createFamilyPerson(), this::test_getValueStream);
         }
 
         @Test
         void testStandardStringParser_getValueStream() {
-            testWithCreateParserFromString(TestData.JSON_FAMILY_STRING, this::test_getValueStream);
+            JsonParserFixture.testWithCreateParserFromString(TestData.JSON_FAMILY_STRING, this::test_getValueStream);
         }
 
         private void test_getValueStream(JsonParser parser) {
             List<String> values = parser.getValueStream().map(value -> Objects.toString(value, "null")).collect(Collectors.toList());
 
-            assertThat(values, contains(TestData.JSON_FAMILY_STRING));
+            MatcherAssert.assertThat(values, Matchers.contains(TestData.JSON_FAMILY_STRING));
         }
 
         @Test
         void testStandardStructureParser_getArrayStream() {
-            testWithCreateParserFromObject(TestData.createObjectWithArrays(), this::test_getArrayStream);
+            JsonParserFixture.testWithCreateParserFromObject(TestData.createObjectWithArrays(), this::test_getArrayStream);
         }
 
         @Test
         void testStandardStringParser_getArrayStream() {
-            testWithCreateParserFromString(TestData.JSON_OBJECT_WITH_ARRAYS, this::test_getArrayStream);
+            JsonParserFixture.testWithCreateParserFromString(TestData.JSON_OBJECT_WITH_ARRAYS, this::test_getArrayStream);
         }
 
         private void test_getArrayStream(JsonParser parser) {
@@ -1405,35 +1397,35 @@ public class JsonParserTest {
             parser.next();
             List<String> values = parser.getArrayStream().map(value -> Objects.toString(value, "null")).collect(Collectors.toList());
 
-            assertThat(values, TestData.ARRAY_STREAM_MATCHER);
-            assertEquals("firstElement", key);
+            MatcherAssert.assertThat(values, TestData.ARRAY_STREAM_MATCHER);
+            Assertions.assertEquals("firstElement", key);
         }
 
         @Test
         void testStandardStructureParser_getObjectStream() {
-            testWithCreateParserFromObject(TestData.createFamilyPerson(), this::test_getObjectStream);
+            JsonParserFixture.testWithCreateParserFromObject(TestData.createFamilyPerson(), this::test_getObjectStream);
         }
 
         @Test
         void testStandardStringParser_getObjectStream() {
-            testWithCreateParserFromString(TestData.JSON_FAMILY_STRING, this::test_getObjectStream);
+            JsonParserFixture.testWithCreateParserFromString(TestData.JSON_FAMILY_STRING, this::test_getObjectStream);
         }
 
         private void test_getObjectStream(JsonParser parser) {
             parser.next();
             List<String> values = parser.getObjectStream().collect(MAP_TO_LIST_COLLECTOR);
 
-            assertThat(values, TestData.FAMILY_MATCHER_KEYS_WITHOUT_QUOTATION);
+            MatcherAssert.assertThat(values, TestData.FAMILY_MATCHER_KEYS_WITHOUT_QUOTATION);
         }
 
         @Test
         void testStandardStructureParser_getValue() {
-            testWithCreateParserFromObject(TestData.createFamilyPerson(), this::test_getValue);
+            JsonParserFixture.testWithCreateParserFromObject(TestData.createFamilyPerson(), this::test_getValue);
         }
 
         @Test
         void testStandardStringParser_getValue() {
-            testWithCreateParserFromString(TestData.JSON_FAMILY_STRING, this::test_getValue);
+            JsonParserFixture.testWithCreateParserFromString(TestData.JSON_FAMILY_STRING, this::test_getValue);
         }
 
         private void test_getValue(JsonParser parser) {
@@ -1447,17 +1439,17 @@ public class JsonParserTest {
                 }
             }
 
-            assertThat(values, TestData.FAMILY_MATCHER_KEYS_WITH_QUOTATION);
+            MatcherAssert.assertThat(values, TestData.FAMILY_MATCHER_KEYS_WITH_QUOTATION);
         }
 
         @Test
         void testStandardStructureParser_getString() {
-            testWithCreateParserFromObject(TestData.createFamilyPerson(), this::test_getString);
+            JsonParserFixture.testWithCreateParserFromObject(TestData.createFamilyPerson(), this::test_getString);
         }
 
         @Test
         void testStandardStringParser_getString() {
-            testWithCreateParserFromString(TestData.JSON_FAMILY_STRING, this::test_getString);
+            JsonParserFixture.testWithCreateParserFromString(TestData.JSON_FAMILY_STRING, this::test_getString);
         }
 
         private void test_getString(JsonParser parser) {
@@ -1471,7 +1463,7 @@ public class JsonParserTest {
                 }
             }
 
-            assertThat(values, TestData.FAMILY_MATCHER_WITH_NO_QUOTATION);
+            MatcherAssert.assertThat(values, TestData.FAMILY_MATCHER_WITH_NO_QUOTATION);
         }
     }
 

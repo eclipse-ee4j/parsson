@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -15,9 +15,6 @@
  */
 
 package org.eclipse.parsson.tests;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -38,6 +35,7 @@ import jakarta.json.JsonReaderFactory;
 import org.eclipse.parsson.api.BufferPool;
 import org.eclipse.parsson.api.JsonConfig;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 
@@ -59,7 +57,7 @@ public class JsonReaderTest {
         JsonArray array = reader.readArray();
         reader.close();
         String str = array.getString(0);
-        assertEquals("\u0000\u00ff\u00ff", str);
+        Assertions.assertEquals("\u0000\u00ff\u00ff", str);
     }
 
     @Test
@@ -76,7 +74,7 @@ public class JsonReaderTest {
 			try (JsonReader reader = Json.createReader(new StringReader("[" + num + "]"))) {
 				JsonArray array = reader.readArray();
 				JsonNumber value = (JsonNumber) array.get(0);
-				assertEquals(new BigInteger(num).longValue(), value.longValue(), "Fails for num=" + num);
+				Assertions.assertEquals(new BigInteger(num).longValue(), value.longValue(), "Fails for num=" + num);
 			}
         }
     }
@@ -95,7 +93,7 @@ public class JsonReaderTest {
 			try (JsonReader reader = Json.createReader(new StringReader("[" + num + "]"))) {
 				JsonArray array = reader.readArray();
 				JsonNumber value = (JsonNumber) array.get(0);
-				assertEquals(new BigInteger(num), value.bigIntegerValueExact(), "Fails for num=" + num);
+				Assertions.assertEquals(new BigInteger(num), value.bigIntegerValueExact(), "Fails for num=" + num);
 			}
         }
     }
@@ -108,7 +106,7 @@ public class JsonReaderTest {
         factory.createReader(new StringReader("{}"));
         Map<String, ?> config1 = factory.getConfigInUse();
         if (!config1.isEmpty()) {
-            fail("Shouldn't have any config in use");
+            Assertions.fail("Shouldn't have any config in use");
         }
     }
 
@@ -162,13 +160,13 @@ public class JsonReaderTest {
             try {
                 JsonReader reader = factory.createReader(new StringReader(str));
                 JsonArray array = reader.readArray();
-                assertEquals(1, array.getInt(0));
-                assertEquals("", array.getString(1));
-                assertEquals(name, array.getString(2));
-                assertEquals("", array.getString(3));
-                assertEquals(name, array.getString(4));
-                assertEquals("", array.getString(5));
-                assertEquals(100, array.getInt(6));
+                Assertions.assertEquals(1, array.getInt(0));
+                Assertions.assertEquals("", array.getString(1));
+                Assertions.assertEquals(name, array.getString(2));
+                Assertions.assertEquals("", array.getString(3));
+                Assertions.assertEquals(name, array.getString(4));
+                Assertions.assertEquals("", array.getString(5));
+                Assertions.assertEquals(100, array.getInt(6));
                 reader.close();
             } catch (Throwable t) {
                 throw new Throwable("Failed for name length="+i, t);
@@ -184,7 +182,7 @@ public class JsonReaderTest {
         JsonReader reader = factory.createReader(new StringReader(json));
         JsonObject object = reader.readObject();
         reader.close();
-        assertEquals("B", object.getString("val1"));
+        Assertions.assertEquals("B", object.getString("val1"));
     }
 
     @Test
@@ -196,7 +194,7 @@ public class JsonReaderTest {
         JsonReader reader = factory.createReader(new StringReader(json));
         try {
             reader.readObject();
-            fail("It is expected a JsonException");
+            Assertions.fail("It is expected a JsonException");
         } catch (JsonException ignored) {}
     }
 
@@ -209,7 +207,7 @@ public class JsonReaderTest {
         JsonReader reader = factory.createReader(new StringReader(json));
         try {
             reader.readObject();
-            fail("It is expected a JsonException");
+            Assertions.fail("It is expected a JsonException");
         } catch (JsonException ignored) {}
     }
 
@@ -222,7 +220,7 @@ public class JsonReaderTest {
         JsonReader reader = factory.createReader(new StringReader(json));
         JsonObject object = reader.readObject();
         reader.close();
-        assertEquals("A", object.getString("val1"));
+        Assertions.assertEquals("A", object.getString("val1"));
     }
 
     @Test
@@ -236,7 +234,7 @@ public class JsonReaderTest {
         JsonReader reader = factory.createReader(new StringReader(json));
         JsonObject object = reader.readObject();
         reader.close();
-        assertEquals("A", object.getString("val1"));
+        Assertions.assertEquals("A", object.getString("val1"));
     }
 
     @Test
@@ -248,7 +246,7 @@ public class JsonReaderTest {
         JsonReader reader = factory.createReader(new StringReader(json));
         JsonObject object = reader.readObject();
         reader.close();
-        assertEquals("B", object.getString("val1"));
+        Assertions.assertEquals("B", object.getString("val1"));
     }
 
     // JSONP-23 cached empty string is not reset
@@ -269,13 +267,13 @@ public class JsonReaderTest {
                 try {
                     JsonReader reader = factory.createReader(new StringReader(str));
                     JsonArray array = reader.readArray();
-                    assertEquals(1, array.getInt(0));
-                    assertEquals("", array.getString(1));
-                    assertEquals(name, array.getString(2));
-                    assertEquals("", array.getString(3));
-                    assertEquals(name, array.getString(4));
-                    assertEquals("", array.getString(5));
-                    assertEquals(100, array.getInt(6));
+                    Assertions.assertEquals(1, array.getInt(0));
+                    Assertions.assertEquals("", array.getString(1));
+                    Assertions.assertEquals(name, array.getString(2));
+                    Assertions.assertEquals("", array.getString(3));
+                    Assertions.assertEquals(name, array.getString(4));
+                    Assertions.assertEquals("", array.getString(5));
+                    Assertions.assertEquals(100, array.getInt(6));
                     reader.close();
                 } catch (Throwable t) {
                     throw new Throwable("Failed for buffer size="+size+" name length="+i, t);

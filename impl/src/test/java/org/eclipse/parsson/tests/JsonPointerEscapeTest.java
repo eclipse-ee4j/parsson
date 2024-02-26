@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2017, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -16,11 +16,10 @@
 
 package org.eclipse.parsson.tests;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 
 import jakarta.json.Json;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -32,13 +31,13 @@ public class JsonPointerEscapeTest {
 
     @Test
     void escapeTest() {
-        assertEquals("a~1b", Json.encodePointer("a/b"));
-        assertEquals("a~0b~1c", Json.encodePointer("a~b/c"));
+        Assertions.assertEquals("a~1b", Json.encodePointer("a/b"));
+        Assertions.assertEquals("a~0b~1c", Json.encodePointer("a~b/c"));
     }
 
     @Test
     void unescapeTest() {
-        assertEquals("/a/b", Json.decodePointer("/a~1b"));
-        assertEquals("/~1", Json.decodePointer("/~01"));
+        Assertions.assertEquals("/a/b", Json.decodePointer("/a~1b"));
+        Assertions.assertEquals("/~1", Json.decodePointer("/~01"));
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2017, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -25,8 +25,7 @@ import jakarta.json.JsonStructure;
 
 import java.io.StringReader;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -38,7 +37,7 @@ public class JsonPatchBugsTest {
     // https://github.com/javaee/jsonp/issues/58
     @Test
     void applyThrowsJsonException() {
-        assertThrows(JsonException.class, () -> {
+        Assertions.assertThrows(JsonException.class, () -> {
             JsonArray array = Json.createArrayBuilder()
                     .add(Json.createObjectBuilder()
                             .add("name", "Bob")
@@ -55,7 +54,7 @@ public class JsonPatchBugsTest {
     // https://github.com/eclipse-ee4j/jsonp/issues/181
     @Test
     void applyThrowsJsonException2() {
-        assertThrows(JsonException.class, () -> {
+        Assertions.assertThrows(JsonException.class, () -> {
             // JSON document to be patched
             String targetDocument
                     = "{\n"

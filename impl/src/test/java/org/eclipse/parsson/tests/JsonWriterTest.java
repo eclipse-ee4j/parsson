@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -16,9 +16,6 @@
 
 package org.eclipse.parsson.tests;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringWriter;
@@ -29,6 +26,7 @@ import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
 import jakarta.json.JsonWriter;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -44,7 +42,7 @@ public class JsonWriterTest {
         jsonWriter.close();
         writer.close();
 
-        assertEquals("{}", writer.toString());
+        Assertions.assertEquals("{}", writer.toString());
     }
 
     @Test
@@ -55,7 +53,7 @@ public class JsonWriterTest {
         jsonWriter.close();
         writer.close();
 
-        assertEquals("{}", writer.toString());
+        Assertions.assertEquals("{}", writer.toString());
     }
 
     @Test
@@ -66,7 +64,7 @@ public class JsonWriterTest {
         jsonWriter.close();
         writer.close();
 
-        assertEquals("[]", writer.toString());
+        Assertions.assertEquals("[]", writer.toString());
     }
 
     @Test
@@ -77,7 +75,7 @@ public class JsonWriterTest {
         jsonWriter.close();
         writer.close();
 
-        assertEquals("[]", writer.toString());
+        Assertions.assertEquals("[]", writer.toString());
     }
 
     @Test
@@ -88,7 +86,7 @@ public class JsonWriterTest {
         jsonWriter.close();
         writer.close();
 
-        assertEquals("[10]", writer.toString());
+        Assertions.assertEquals("[10]", writer.toString());
     }
 
     @Test
@@ -99,7 +97,7 @@ public class JsonWriterTest {
         jsonWriter.close();
         writer.close();
 
-        assertEquals("[10.5]", writer.toString());
+        Assertions.assertEquals("[10.5]", writer.toString());
     }
 
     @Test
@@ -110,7 +108,7 @@ public class JsonWriterTest {
         jsonWriter.close();
         writer.close();
 
-        assertEquals("[\"string\"]", writer.toString());
+        Assertions.assertEquals("[\"string\"]", writer.toString());
     }
 
     @Test
@@ -121,7 +119,7 @@ public class JsonWriterTest {
         jsonWriter.close();
         writer.close();
 
-        assertEquals("{}", writer.toString());
+        Assertions.assertEquals("{}", writer.toString());
     }
 
     @Test
@@ -132,7 +130,7 @@ public class JsonWriterTest {
         jsonWriter.close();
         writer.close();
 
-        assertEquals("null", writer.toString());
+        Assertions.assertEquals("null", writer.toString());
     }
 
     @Test
@@ -143,7 +141,7 @@ public class JsonWriterTest {
         jsonWriter.close();
         writer.close();
 
-        assertEquals("true", writer.toString());
+        Assertions.assertEquals("true", writer.toString());
     }
 
     @Test
@@ -154,7 +152,7 @@ public class JsonWriterTest {
         jsonWriter.close();
         writer.close();
 
-        assertEquals("false", writer.toString());
+        Assertions.assertEquals("false", writer.toString());
     }
 
     @Test
@@ -196,7 +194,7 @@ public class JsonWriterTest {
         JsonWriter writer = Json.createWriter(baos);
         writer.write(Json.createObjectBuilder().build());
         // not calling writer.close() intentionally
-        assertEquals("{}", baos.toString("UTF-8"));
+        Assertions.assertEquals("{}", baos.toString("UTF-8"));
     }
 
     @Test
@@ -205,7 +203,7 @@ public class JsonWriterTest {
         JsonWriter writer = Json.createWriter(sw);
         writer.write(Json.createObjectBuilder().build());
         // not calling writer.close() intentionally
-        assertEquals("{}", sw.toString());
+        Assertions.assertEquals("{}", sw.toString());
     }
 
     @Test
@@ -214,7 +212,7 @@ public class JsonWriterTest {
         JsonWriter writer = Json.createWriter(baos);
         writer.write(Json.createArrayBuilder().build());
         // not calling writer.close() intentionally
-        assertEquals("[]", baos.toString("UTF-8"));
+        Assertions.assertEquals("[]", baos.toString("UTF-8"));
     }
 
     @Test
@@ -223,7 +221,7 @@ public class JsonWriterTest {
         JsonWriter writer = Json.createWriter(sw);
         writer.write(Json.createArrayBuilder().build());
         // not calling writer.close() intentionally
-        assertEquals("[]", sw.toString());
+        Assertions.assertEquals("[]", sw.toString());
     }
 
     @Test
@@ -232,8 +230,8 @@ public class JsonWriterTest {
         JsonWriter writer = Json.createWriter(baos);
         writer.write(Json.createObjectBuilder().build());
         writer.close();
-        assertEquals("{}", baos.toString("UTF-8"));
-        assertTrue(baos.isClosed());
+        Assertions.assertEquals("{}", baos.toString("UTF-8"));
+        Assertions.assertTrue(baos.isClosed());
     }
 
     private static final class MyByteStream extends ByteArrayOutputStream {

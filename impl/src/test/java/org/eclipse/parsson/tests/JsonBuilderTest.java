@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -16,9 +16,6 @@
 
 package org.eclipse.parsson.tests;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -31,6 +28,7 @@ import jakarta.json.JsonNumber;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -51,7 +49,7 @@ public class JsonBuilderTest {
         JsonArray empty = Json.createArrayBuilder()
                 .build();
 
-        assertTrue(empty.isEmpty());
+        Assertions.assertTrue(empty.isEmpty());
     }
 
     @Test
@@ -64,9 +62,9 @@ public class JsonBuilderTest {
     void testNumber() {
         JsonObject person = buildPerson();
         JsonNumber number = person.getJsonNumber("age");
-        assertEquals(25, number.intValueExact());
-        assertEquals(25, number.intValue());
-        assertTrue(number.isIntegral());
+        Assertions.assertEquals(25, number.intValueExact());
+        Assertions.assertEquals(25, number.intValue());
+        Assertions.assertTrue(number.isIntegral());
         JsonObjectTest.testPerson(person);
     }
 
@@ -77,9 +75,9 @@ public class JsonBuilderTest {
         final JsonObject copyPerson = objectBuilder.build();
 
         JsonNumber number = copyPerson.getJsonNumber("age");
-        assertEquals(25, number.intValueExact());
-        assertEquals(25, number.intValue());
-        assertTrue(number.isIntegral());
+        Assertions.assertEquals(25, number.intValueExact());
+        Assertions.assertEquals(25, number.intValue());
+        Assertions.assertTrue(number.isIntegral());
         JsonObjectTest.testPerson(copyPerson);
 
     }
@@ -91,9 +89,9 @@ public class JsonBuilderTest {
         final JsonObject copyPerson = objectBuilder.build();
 
         JsonNumber number = copyPerson.getJsonNumber("age");
-        assertEquals(25, number.intValueExact());
-        assertEquals(25, number.intValue());
-        assertTrue(number.isIntegral());
+        Assertions.assertEquals(25, number.intValueExact());
+        Assertions.assertEquals(25, number.intValue());
+        Assertions.assertTrue(number.isIntegral());
         JsonObjectTest.testPerson(copyPerson);
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -16,10 +16,6 @@
 
 package org.eclipse.parsson.tests;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
-
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -32,6 +28,7 @@ import jakarta.json.JsonReader;
 import jakarta.json.JsonValue;
 import jakarta.json.JsonWriter;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -63,7 +60,7 @@ public class JsonArrayTest {
         JsonArray actual = reader.readArray();
         reader.close();
 
-        assertEquals(expected, actual);
+        Assertions.assertEquals(expected, actual);
     }
 
     @Test
@@ -92,7 +89,7 @@ public class JsonArrayTest {
         JsonArray actual = reader.readArray();
         reader.close();
 
-        assertEquals(expected, actual);
+        Assertions.assertEquals(expected, actual);
     }
 
     @Test
@@ -100,7 +97,7 @@ public class JsonArrayTest {
         JsonArray array = Json.createArrayBuilder()
                 .add("John")
                 .build();
-        assertEquals("John", array.getString(0));
+        Assertions.assertEquals("John", array.getString(0));
     }
 
     @Test
@@ -108,7 +105,7 @@ public class JsonArrayTest {
         JsonArray array = Json.createArrayBuilder()
                 .add(20)
                 .build();
-        assertEquals(20, array.getInt(0));
+        Assertions.assertEquals(20, array.getInt(0));
     }
 
     @Test
@@ -116,7 +113,7 @@ public class JsonArrayTest {
         JsonArray array = Json.createArrayBuilder().build();
         try {
             array.add(JsonValue.FALSE);
-            fail("JsonArray#add() should throw UnsupportedOperationException");
+            Assertions.fail("JsonArray#add() should throw UnsupportedOperationException");
         } catch(UnsupportedOperationException e) {
             // Expected
         }
@@ -127,7 +124,7 @@ public class JsonArrayTest {
         JsonArray array = Json.createArrayBuilder().build();
         try {
             array.remove(0);
-            fail("JsonArray#remove() should throw UnsupportedOperationException");
+            Assertions.fail("JsonArray#remove() should throw UnsupportedOperationException");
         } catch(UnsupportedOperationException e) {
             // Expected
         }
@@ -142,15 +139,15 @@ public class JsonArrayTest {
             num.intValue();
         }
 
-        assertEquals(20, array.getInt(0));
-        assertEquals(10, array.getInt(1));
+        Assertions.assertEquals(20, array.getInt(0));
+        Assertions.assertEquals(10, array.getInt(1));
     }
 
     @Test
     void testArrayBuilderNpe() {
         try {
             Json.createArrayBuilder().add((JsonValue)null).build();
-            fail("JsonArrayBuilder#add(null) should throw NullPointerException");
+            Assertions.fail("JsonArrayBuilder#add(null) should throw NullPointerException");
         } catch(NullPointerException e) {
             // Expected
         }
@@ -159,16 +156,16 @@ public class JsonArrayTest {
     @Test
     void testHashCode() {
         JsonArray array1 = Json.createArrayBuilder().add(1).add(2).add(3).build();
-        assertTrue(array1.hashCode() == array1.hashCode()); //1st call compute hashCode, 2nd call returns cached value
+        Assertions.assertTrue(array1.hashCode() == array1.hashCode()); //1st call compute hashCode, 2nd call returns cached value
 
         JsonArray array2 = Json.createArrayBuilder().add(1).add(2).add(3).build();
-        assertTrue(array1.hashCode() == array2.hashCode());
+        Assertions.assertTrue(array1.hashCode() == array2.hashCode());
 
         JsonArray array3 = Json.createArrayBuilder().build(); //org.eclipse.parsson.JsonArrayBuilderImpl.JsonArrayImpl
         JsonArray array4 = JsonValue.EMPTY_JSON_ARRAY; //jakarta.json.EmptyArray
 
-        assertTrue(array3.equals(array4));
-        assertTrue(array3.hashCode() == array4.hashCode()); //equal instances have same hashCode
+        Assertions.assertTrue(array3.equals(array4));
+        Assertions.assertTrue(array3.hashCode() == array4.hashCode()); //equal instances have same hashCode
     }
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -40,15 +40,6 @@ import jakarta.json.stream.JsonParsingException;
 
 import org.eclipse.parsson.JsonTokenizer.JsonToken;
 
-import static org.eclipse.parsson.JsonTokenizer.JsonToken.COLON;
-import static org.eclipse.parsson.JsonTokenizer.JsonToken.COMMA;
-import static org.eclipse.parsson.JsonTokenizer.JsonToken.CURLYCLOSE;
-import static org.eclipse.parsson.JsonTokenizer.JsonToken.CURLYOPEN;
-import static org.eclipse.parsson.JsonTokenizer.JsonToken.EOF;
-import static org.eclipse.parsson.JsonTokenizer.JsonToken.SQUARECLOSE;
-import static org.eclipse.parsson.JsonTokenizer.JsonToken.SQUAREOPEN;
-import static org.eclipse.parsson.JsonTokenizer.JsonToken.STRING;
-
 /**
  * JSON parser implementation. NoneContext, ArrayContext, ObjectContext is used
  * to go to next parser state.
@@ -56,7 +47,7 @@ import static org.eclipse.parsson.JsonTokenizer.JsonToken.STRING;
  * @author Jitendra Kotamraju
  * @author Kin-man Chung
  */
-class JsonParserImpl implements JsonParser {
+public class JsonParserImpl implements JsonParser {
 
     private Context currentContext = new NoneContext();
     private Event currentEvent;
@@ -225,7 +216,7 @@ class JsonParserImpl implements JsonParser {
             }
             builder.add(getValue());
         }
-        throw parsingException(EOF, "[CURLYOPEN, SQUAREOPEN, STRING, NUMBER, TRUE, FALSE, NULL, SQUARECLOSE]");
+        throw parsingException(JsonToken.EOF, "[CURLYOPEN, SQUAREOPEN, STRING, NUMBER, TRUE, FALSE, NULL, SQUARECLOSE]");
     }
 
     private CharSequence getCharSequence() {
@@ -246,7 +237,7 @@ class JsonParserImpl implements JsonParser {
             next();
             builder.add(key, getValue());
         }
-        throw parsingException(EOF, "[STRING, CURLYCLOSE]");
+        throw parsingException(JsonToken.EOF, "[STRING, CURLYCLOSE]");
     }
 
     @Override
@@ -262,7 +253,7 @@ class JsonParserImpl implements JsonParser {
     public boolean hasNext() {
         if (stack.isEmpty() && (currentEvent != null && currentEvent.compareTo(Event.KEY_NAME) > 0)) {
             JsonToken token = tokenizer.nextToken();
-            if (token != EOF) {
+            if (token != JsonToken.EOF) {
                 throw new JsonParsingException(JsonMessages.PARSER_EXPECTED_EOF(token),
                         getLastCharLocation());
             }
@@ -349,7 +340,7 @@ class JsonParserImpl implements JsonParser {
                 stack.push(currentContext);
                 currentContext = new ObjectContext();
                 return Event.START_OBJECT;
-            } else if (token == SQUAREOPEN) {
+            } else if (token == JsonToken.SQUAREOPEN) {
                 stack.push(currentContext);
                 currentContext = new ArrayContext();
                 return Event.START_ARRAY;
@@ -412,7 +403,7 @@ class JsonParserImpl implements JsonParser {
             if (firstValue) {
                 firstValue = false;
             } else {
-                if (token != COMMA) {
+                if (token != JsonToken.COMMA) {
                     throw parsingException(token, "[COMMA]");
                 }
                 token = tokenizer.nextToken();
@@ -437,7 +428,7 @@ class JsonParserImpl implements JsonParser {
         public Event getNextEvent() {
             // Handle 1. }   2. name:value   3. ,name:value
             JsonToken token = tokenizer.nextToken();
-            if (token == EOF) {
+            if (token == JsonToken.EOF) {
                 switch (currentEvent) {
                     case START_OBJECT:
                         throw parsingException(token, "[STRING, CURLYCLOSE]");
@@ -448,7 +439,7 @@ class JsonParserImpl implements JsonParser {
                 }
             } else if (currentEvent == Event.KEY_NAME) {
                 // Handle 1. :value
-                if (token != COLON) {
+                if (token != JsonToken.COLON) {
                     throw parsingException(token, "[COLON]");
                 }
                 token = tokenizer.nextToken();
@@ -459,13 +450,13 @@ class JsonParserImpl implements JsonParser {
                 throw parsingException(token, "[CURLYOPEN, SQUAREOPEN, STRING, NUMBER, TRUE, FALSE, NULL]");
             } else {
                 // Handle 1. }   2. name   3. ,name
-                if (token == CURLYCLOSE) {
+                if (token == JsonToken.CURLYCLOSE) {
                     currentContext = stack.pop();
                     return Event.END_OBJECT;
                 }
 
                 token = firstValueOrJsonToken(token);
-                if (token == STRING) {
+                if (token == JsonToken.STRING) {
                     return Event.KEY_NAME;
                 }
                 throw parsingException(token, "[STRING]");
@@ -483,11 +474,11 @@ class JsonParserImpl implements JsonParser {
         @Override
         public Event getNextEvent() {
             JsonToken token = tokenizer.nextToken();
-            if (token == EOF) {
+            if (token == JsonToken.EOF) {
                 throw parsingException(token, (Objects.requireNonNull(currentEvent) == Event.START_ARRAY) ?
                         "[CURLYOPEN, SQUAREOPEN, STRING, NUMBER, TRUE, FALSE, NULL]" : "[COMMA, CURLYCLOSE]");
 			}
-            if (token == SQUARECLOSE) {
+            if (token == JsonToken.SQUARECLOSE) {
                 currentContext = stack.pop();
                 return Event.END_ARRAY;
             }

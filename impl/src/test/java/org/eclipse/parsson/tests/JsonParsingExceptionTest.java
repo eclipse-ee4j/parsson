@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -16,9 +16,6 @@
 
 package org.eclipse.parsson.tests;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
-
 import java.io.StringReader;
 
 import jakarta.json.Json;
@@ -26,6 +23,7 @@ import jakarta.json.stream.JsonLocation;
 import jakarta.json.stream.JsonParser;
 import jakarta.json.stream.JsonParsingException;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -131,14 +129,14 @@ public class JsonParsingExceptionTest {
             while (parser.hasNext()) {
                 parser.next();
             }
-            fail("Expected to throw JsonParsingException for " + json);
+            Assertions.fail("Expected to throw JsonParsingException for " + json);
         } catch (JsonParsingException je) {
             // Expected
             if (expected != null) {
                 JsonLocation got = je.getLocation();
-                assertEquals(expected.getLineNumber(), got.getLineNumber());
-                assertEquals(expected.getColumnNumber(), got.getColumnNumber());
-                assertEquals(expected.getStreamOffset(), got.getStreamOffset());
+                Assertions.assertEquals(expected.getLineNumber(), got.getLineNumber());
+                Assertions.assertEquals(expected.getColumnNumber(), got.getColumnNumber());
+                Assertions.assertEquals(expected.getStreamOffset(), got.getStreamOffset());
             }
         }
     }

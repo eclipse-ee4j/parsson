@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -16,13 +16,12 @@
 
 package org.eclipse.parsson.tests;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonPatchBuilder;
 
+import org.hamcrest.CoreMatchers;
+import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -42,7 +41,7 @@ public class JsonPatchBuilderTest {
                     .copy("/address/lastName", "/lastName")
                     .build()
                     .apply(buildPerson());
-        assertThat(result, is(expectedBuildPerson()));
+        MatcherAssert.assertThat(result, CoreMatchers.is(expectedBuildPerson()));
         
     }
 

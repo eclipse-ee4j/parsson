@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -16,14 +16,13 @@
 
 package org.eclipse.parsson.tests;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonValue;
 
 import org.eclipse.parsson.TestUtils;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -33,9 +32,9 @@ public class ToJsonTest {
 
     @Test
     void testToJson() {
-        assertEquals(Json.createValue("someString"), TestUtils.toJson("'someString'"));
-        assertEquals(Json.createValue("some'thing"), TestUtils.toJson("'some\\'thing'"));
-        assertEquals(Json.createValue("some\"thing"), TestUtils.toJson("'some\\\"thing'"));
+        Assertions.assertEquals(Json.createValue("someString"), TestUtils.toJson("'someString'"));
+        Assertions.assertEquals(Json.createValue("some'thing"), TestUtils.toJson("'some\\'thing'"));
+        Assertions.assertEquals(Json.createValue("some\"thing"), TestUtils.toJson("'some\\\"thing'"));
         JsonArrayBuilder builder = Json.createArrayBuilder();
         JsonArray array = builder
             .add(Json.createObjectBuilder()
@@ -55,7 +54,7 @@ public class ToJsonTest {
                  "'educations': ['Gunn High', 'UC Berkeley'] }, " +
               " { 'name': 'Jane', " +
                  "'educations': ['Oxford']}]");
-          assertEquals(expected, array);
+          Assertions.assertEquals(expected, array);
     }
 }
 

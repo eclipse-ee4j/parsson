@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2016, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -15,8 +15,6 @@
  */
 
 package org.eclipse.parsson.tests;
-
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -40,42 +38,42 @@ public class JsonValueTest {
 
     @Test
     void arrayGetJsonObjectIdx() {
-        assertThrows(IndexOutOfBoundsException.class, () -> JsonValue.EMPTY_JSON_ARRAY.getJsonObject(0));
+        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> JsonValue.EMPTY_JSON_ARRAY.getJsonObject(0));
     }
 
     @Test
     void arrayGetJsonArrayIdx() {
-        assertThrows(IndexOutOfBoundsException.class, () -> JsonValue.EMPTY_JSON_ARRAY.getJsonArray(0));
+        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> JsonValue.EMPTY_JSON_ARRAY.getJsonArray(0));
     }
 
     @Test
     void arrayGetJsonNumberIdx() {
-        assertThrows(IndexOutOfBoundsException.class, () -> JsonValue.EMPTY_JSON_ARRAY.getJsonNumber(0));
+        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> JsonValue.EMPTY_JSON_ARRAY.getJsonNumber(0));
     }
 
     @Test
     void arrayGetJsonStringIdx() {
-        assertThrows(IndexOutOfBoundsException.class, () -> JsonValue.EMPTY_JSON_ARRAY.getJsonString(0));
+        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> JsonValue.EMPTY_JSON_ARRAY.getJsonString(0));
     }
 
     @Test
     void arrayGetStringIdx() {
-        assertThrows(IndexOutOfBoundsException.class, () -> JsonValue.EMPTY_JSON_ARRAY.getString(0));
+        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> JsonValue.EMPTY_JSON_ARRAY.getString(0));
     }
 
     @Test
     void arrayGetIntIdx() {
-        assertThrows(IndexOutOfBoundsException.class, () -> JsonValue.EMPTY_JSON_ARRAY.getInt(0));
+        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> JsonValue.EMPTY_JSON_ARRAY.getInt(0));
     }
 
     @Test
     void arrayGetBooleanIdx() {
-        assertThrows(IndexOutOfBoundsException.class, () -> JsonValue.EMPTY_JSON_ARRAY.getBoolean(0));
+        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> JsonValue.EMPTY_JSON_ARRAY.getBoolean(0));
     }
 
     @Test
     void arrayIsNull() {
-        assertThrows(IndexOutOfBoundsException.class, () -> JsonValue.EMPTY_JSON_ARRAY.isNull(0));
+        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> JsonValue.EMPTY_JSON_ARRAY.isNull(0));
     }
 
     @Test
@@ -90,27 +88,27 @@ public class JsonValueTest {
 
     @Test
     void arrayIsImmutable() {
-        assertThrows(UnsupportedOperationException.class, () -> JsonValue.EMPTY_JSON_ARRAY.add(JsonValue.EMPTY_JSON_OBJECT));
+        Assertions.assertThrows(UnsupportedOperationException.class, () -> JsonValue.EMPTY_JSON_ARRAY.add(JsonValue.EMPTY_JSON_OBJECT));
     }
 
     @Test
     void objectGetString() {
-        assertThrows(NullPointerException.class, () -> JsonValue.EMPTY_JSON_OBJECT.getString("normalni string"));
+        Assertions.assertThrows(NullPointerException.class, () -> JsonValue.EMPTY_JSON_OBJECT.getString("normalni string"));
     }
 
     @Test
     void objectGetInt() {
-        assertThrows(NullPointerException.class, () -> JsonValue.EMPTY_JSON_OBJECT.getInt("hledej cislo"));
+        Assertions.assertThrows(NullPointerException.class, () -> JsonValue.EMPTY_JSON_OBJECT.getInt("hledej cislo"));
     }
 
     @Test
     void objectGetBoolean() {
-        assertThrows(NullPointerException.class, () -> JsonValue.EMPTY_JSON_OBJECT.getBoolean("booo"));
+        Assertions.assertThrows(NullPointerException.class, () -> JsonValue.EMPTY_JSON_OBJECT.getBoolean("booo"));
     }
 
     @Test
     void objectIsNull() {
-        assertThrows(NullPointerException.class, () -> JsonValue.EMPTY_JSON_OBJECT.isNull("???"));
+        Assertions.assertThrows(NullPointerException.class, () -> JsonValue.EMPTY_JSON_OBJECT.isNull("???"));
     }
 
     @Test
@@ -128,7 +126,7 @@ public class JsonValueTest {
 
     @Test
     void objectImmutable() {
-        assertThrows(UnsupportedOperationException.class, () -> JsonValue.EMPTY_JSON_OBJECT.put("klauni", JsonValue.EMPTY_JSON_ARRAY));
+        Assertions.assertThrows(UnsupportedOperationException.class, () -> JsonValue.EMPTY_JSON_OBJECT.put("klauni", JsonValue.EMPTY_JSON_ARRAY));
     }
 
     @Test

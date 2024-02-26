@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -15,10 +15,6 @@
  */
 
 package org.eclipse.parsson.tests;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -44,6 +40,7 @@ import jakarta.json.stream.JsonGeneratorFactory;
 
 import org.eclipse.parsson.api.BufferPool;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 /**
  * {@link JsonGenerator} tests
@@ -153,7 +150,7 @@ public class JsonGeneratorTest {
         generator.close();
         writer.close();
 
-        assertEquals("[\"string\"]", writer.toString());
+        Assertions.assertEquals("[\"string\"]", writer.toString());
     }
 
     @Test
@@ -164,7 +161,7 @@ public class JsonGeneratorTest {
         generator.close();
         writer.close();
 
-        assertEquals("[\"\\u0000\"]", writer.toString());
+        Assertions.assertEquals("[\"\\u0000\"]", writer.toString());
     }
 
     @Test
@@ -181,7 +178,7 @@ public class JsonGeneratorTest {
         String got = array.getString(0);
         jr.close();
 
-        assertEquals(expected, got);
+        Assertions.assertEquals(expected, got);
     }
 
     @Test
@@ -217,7 +214,7 @@ public class JsonGeneratorTest {
                 .add(Double.MIN_VALUE)
                 .build();
 
-        assertEquals(expected, actual);
+        Assertions.assertEquals(expected, actual);
     }
 
     @Test
@@ -257,10 +254,10 @@ public class JsonGeneratorTest {
         while ((line = reader.readLine()) != null) {
             numberOfLines++;
             if (numberOfLines > 1 && numberOfLines < 4) {
-                assertTrue(line.contains("\"" + lines[numberOfLines - 2][0] + "\": \"" + lines[numberOfLines - 2][1] + "\""));
+                Assertions.assertTrue(line.contains("\"" + lines[numberOfLines - 2][0] + "\": \"" + lines[numberOfLines - 2][1] + "\""));
             }
         }
-        assertEquals(4, numberOfLines);
+        Assertions.assertEquals(4, numberOfLines);
     }
 
     @Test
@@ -289,7 +286,7 @@ public class JsonGeneratorTest {
         generator.writeStartObject();
         try {
             generator.writeStartObject();
-            fail("Expected JsonGenerationException, writeStartObject() cannot be called more than once");
+            Assertions.fail("Expected JsonGenerationException, writeStartObject() cannot be called more than once");
         } catch (JsonGenerationException je) {
             // Expected exception
         }
@@ -302,7 +299,7 @@ public class JsonGeneratorTest {
         generator.writeStartObject();
         try {
             generator.writeStartArray();
-            fail("Expected JsonGenerationException, writeStartArray() is valid in no context");
+            Assertions.fail("Expected JsonGenerationException, writeStartArray() is valid in no context");
         } catch (JsonGenerationException je) {
             // Expected exception
         }
@@ -314,7 +311,7 @@ public class JsonGeneratorTest {
         JsonGenerator generator = Json.createGenerator(writer);
         try {
             generator.close();
-            fail("Expected JsonGenerationException, no JSON is generated");
+            Assertions.fail("Expected JsonGenerationException, no JSON is generated");
         } catch (JsonGenerationException je) {
             // Expected exception
         }
@@ -327,7 +324,7 @@ public class JsonGeneratorTest {
         generator.writeStartArray();
         try {
             generator.close();
-            fail("Expected JsonGenerationException, writeEnd() is not called");
+            Assertions.fail("Expected JsonGenerationException, writeEnd() is not called");
         } catch (JsonGenerationException je) {
             // Expected exception
         }
@@ -340,7 +337,7 @@ public class JsonGeneratorTest {
         generator.writeStartObject();
         try {
             generator.close();
-            fail("Expected JsonGenerationException, writeEnd() is not called");
+            Assertions.fail("Expected JsonGenerationException, writeEnd() is not called");
         } catch (JsonGenerationException je) {
             // Expected exception
         }
@@ -353,7 +350,7 @@ public class JsonGeneratorTest {
         generator.writeStartObject().writeEnd();
         try {
             generator.writeStartObject();
-            fail("Expected JsonGenerationException, cannot generate one more JSON text");
+            Assertions.fail("Expected JsonGenerationException, cannot generate one more JSON text");
         } catch (JsonGenerationException je) {
             // Expected exception
         }
@@ -366,7 +363,7 @@ public class JsonGeneratorTest {
         generator.writeStartArray().writeEnd();
         try {
             generator.writeStartArray();
-            fail("Expected JsonGenerationException, cannot generate one more JSON text");
+            Assertions.fail("Expected JsonGenerationException, cannot generate one more JSON text");
         } catch (JsonGenerationException je) {
             // Expected exception
         }
@@ -380,7 +377,7 @@ public class JsonGeneratorTest {
         generator.writeStartObject();
         try {
             generator.write(JsonValue.TRUE);
-            fail("Expected JsonGenerationException, cannot generate one more JSON text");
+            Assertions.fail("Expected JsonGenerationException, cannot generate one more JSON text");
         } catch (JsonGenerationException je) {
             // Expected exception
         }
@@ -393,7 +390,7 @@ public class JsonGeneratorTest {
         generator.writeStartObject();
         try {
             generator.write("name");
-            fail("Expected JsonGenerationException, cannot generate one more JSON text");
+            Assertions.fail("Expected JsonGenerationException, cannot generate one more JSON text");
         } catch (JsonGenerationException je) {
             // Expected exception
         }
@@ -406,19 +403,19 @@ public class JsonGeneratorTest {
         generator.writeStartArray();
         try {
             generator.write(Double.NaN);
-            fail("JsonGenerator.write(Double.NaN) should produce NumberFormatException");
+            Assertions.fail("JsonGenerator.write(Double.NaN) should produce NumberFormatException");
         } catch (NumberFormatException ne) {
             // expected
         }
         try {
             generator.write(Double.POSITIVE_INFINITY);
-            fail("JsonGenerator.write(Double.POSITIVE_INIFINITY) should produce NumberFormatException");
+            Assertions.fail("JsonGenerator.write(Double.POSITIVE_INIFINITY) should produce NumberFormatException");
         } catch (NumberFormatException ne) {
             // expected
         }
         try {
             generator.write(Double.NEGATIVE_INFINITY);
-            fail("JsonGenerator.write(Double.NEGATIVE_INIFINITY) should produce NumberFormatException");
+            Assertions.fail("JsonGenerator.write(Double.NEGATIVE_INIFINITY) should produce NumberFormatException");
         } catch (NumberFormatException ne) {
             // expected
         }
@@ -433,19 +430,19 @@ public class JsonGeneratorTest {
         generator.writeStartObject();
         try {
             generator.write("foo", Double.NaN);
-            fail("JsonGenerator.write(String, Double.NaN) should produce NumberFormatException");
+            Assertions.fail("JsonGenerator.write(String, Double.NaN) should produce NumberFormatException");
         } catch (NumberFormatException ne) {
             // expected
         }
         try {
             generator.write("foo", Double.POSITIVE_INFINITY);
-            fail("JsonGenerator.write(String, Double.POSITIVE_INIFINITY) should produce NumberFormatException");
+            Assertions.fail("JsonGenerator.write(String, Double.POSITIVE_INIFINITY) should produce NumberFormatException");
         } catch (NumberFormatException ne) {
             // expected
         }
         try {
             generator.write("foo", Double.NEGATIVE_INFINITY);
-            fail("JsonGenerator.write(String, Double.NEGATIVE_INIFINITY) should produce NumberFormatException");
+            Assertions.fail("JsonGenerator.write(String, Double.NEGATIVE_INIFINITY) should produce NumberFormatException");
         } catch (NumberFormatException ne) {
             // expected
         }
@@ -471,7 +468,7 @@ public class JsonGeneratorTest {
 
             JsonArray expected = bf.createArrayBuilder().add(num).build();
 
-            assertEquals(expected, got);
+            Assertions.assertEquals(expected, got);
         }
     }
 
@@ -495,7 +492,7 @@ public class JsonGeneratorTest {
 
             JsonObject expected = bf.createObjectBuilder().add(name, value).build();
 
-            assertEquals(expected, got);
+            Assertions.assertEquals(expected, got);
         }
     }
 
@@ -511,8 +508,8 @@ public class JsonGeneratorTest {
         generator.writeStartArray();
         generator.writeEnd();
         generator.close();
-        assertTrue(bufferPool.isTakeCalled());
-        assertTrue(bufferPool.isRecycleCalled());
+        Assertions.assertTrue(bufferPool.isTakeCalled());
+        Assertions.assertTrue(bufferPool.isRecycleCalled());
     }
 
     @Test
@@ -541,7 +538,7 @@ public class JsonGeneratorTest {
 
                 JsonObject expected = bf.createObjectBuilder().add(name, value).build();
 
-                assertEquals(expected, got);
+                Assertions.assertEquals(expected, got);
             }
 
         }
@@ -573,7 +570,7 @@ public class JsonGeneratorTest {
         String got = array.getString(0);
         jr.close();
 
-        assertEquals(expected, got);
+        Assertions.assertEquals(expected, got);
     }
 
     @Test
@@ -583,7 +580,7 @@ public class JsonGeneratorTest {
         gen.writeStartObject().writeEnd();
         gen.flush();
 
-        assertEquals("{}", baos.toString("UTF-8"));
+        Assertions.assertEquals("{}", baos.toString("UTF-8"));
     }
 
     @Test
@@ -595,7 +592,7 @@ public class JsonGeneratorTest {
             generator.writeEnd();
             // Unnecessary close()
             generator.close();
-            assertEquals("{}", sw.toString());
+            Assertions.assertEquals("{}", sw.toString());
         } 
         StringWriter sw1 = new StringWriter();
         StringWriter sw2 = new StringWriter();
@@ -614,7 +611,7 @@ public class JsonGeneratorTest {
             
             generator1.writeEnd();
         }
-        assertEquals("{\"key\":\"value\",\"key2\":\"value2\"}", sw1.toString());
-        assertEquals("[\"item\",\"item2\"]", sw2.toString());
+        Assertions.assertEquals("{\"key\":\"value\",\"key2\":\"value2\"}", sw1.toString());
+        Assertions.assertEquals("[\"item\",\"item2\"]", sw2.toString());
     }
 }

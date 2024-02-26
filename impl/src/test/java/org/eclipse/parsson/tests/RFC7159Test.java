@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -16,8 +16,6 @@
 
 package org.eclipse.parsson.tests;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import java.io.StringReader;
 import java.io.StringWriter;
 
@@ -28,6 +26,7 @@ import jakarta.json.JsonReader;
 import jakarta.json.JsonWriter;
 import jakarta.json.stream.JsonGenerator;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -47,7 +46,7 @@ public class RFC7159Test {
                                     .add(100)
                                     .add(12345.6789)
                                     .build();
-        assertEquals(expected, array);
+        Assertions.assertEquals(expected, array);
     }
 
     @Test
@@ -65,7 +64,7 @@ public class RFC7159Test {
                                     .add(100)
                                     .add(12345.6789)
                                     .build();
-        assertEquals(expected, array);
+        Assertions.assertEquals(expected, array);
     }
 
     @Test
@@ -73,17 +72,17 @@ public class RFC7159Test {
         StringWriter stringWriter = new StringWriter();
         JsonWriter writer = Json.createWriter(stringWriter);
         writer.write(Json.createValue("someString"));
-        assertEquals("\"someString\"", stringWriter.toString());
+        Assertions.assertEquals("\"someString\"", stringWriter.toString());
 
         stringWriter = new StringWriter();
         writer = Json.createWriter(stringWriter);
         writer.write(Json.createValue(100));
-        assertEquals("100", stringWriter.toString());
+        Assertions.assertEquals("100", stringWriter.toString());
 
         stringWriter = new StringWriter();
         writer = Json.createWriter(stringWriter);
         writer.write(Json.createValue(12345.6789));
-        assertEquals("12345.6789", stringWriter.toString());
+        Assertions.assertEquals("12345.6789", stringWriter.toString());
     }
 
     @Test
@@ -91,16 +90,16 @@ public class RFC7159Test {
         StringWriter stringWriter = new StringWriter();
         JsonGenerator generator = Json.createGenerator(stringWriter);
         generator.write("someString").close();
-        assertEquals("\"someString\"", stringWriter.toString());
+        Assertions.assertEquals("\"someString\"", stringWriter.toString());
 
         stringWriter = new StringWriter();
         generator = Json.createGenerator(stringWriter);
         generator.write(100).close();
-        assertEquals("100", stringWriter.toString());
+        Assertions.assertEquals("100", stringWriter.toString());
 
         stringWriter = new StringWriter();
         generator = Json.createGenerator(stringWriter);
         generator.write(12345.6789).close();
-        assertEquals("12345.6789", stringWriter.toString());
+        Assertions.assertEquals("12345.6789", stringWriter.toString());
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -16,8 +16,6 @@
 
 package org.eclipse.parsson.tests;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
@@ -27,6 +25,7 @@ import jakarta.json.JsonException;
 import jakarta.json.stream.JsonGenerator;
 import jakarta.json.stream.JsonGeneratorFactory;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 
@@ -59,7 +58,7 @@ public class JsonGeneratorFactoryTest {
         if (config1.size() != 1) {
             throw new JsonException("Expecting no of properties=1, got="+config1.size());
         }
-        assertTrue(config1.containsKey(JsonGenerator.PRETTY_PRINTING));
+        Assertions.assertTrue(config1.containsKey(JsonGenerator.PRETTY_PRINTING));
 
         JsonGenerator generator1 = generatorFactory.createGenerator(new StringWriter());
         generator1.writeStartArray().writeEnd();
