@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2023, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -16,10 +16,6 @@
 
 package org.eclipse.parsson.tests;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonMergePatch;
@@ -27,6 +23,7 @@ import jakarta.json.JsonPatch;
 
 import org.eclipse.parsson.TestUtils;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 
@@ -36,9 +33,9 @@ public class JsonMergePatch2Test {
     void testToString() {
         JsonArray jsonArray = Json.createArrayBuilder().add(Json.createValue(1)).build();
         JsonPatch jsonPatch = Json.createPatchBuilder(jsonArray).build();
-        assertEquals("[1]", jsonPatch.toString());
+        Assertions.assertEquals("[1]", jsonPatch.toString());
         JsonMergePatch jsonMergePatch = Json.createMergePatch(jsonArray);
-        assertEquals("[1]", jsonMergePatch.toString());
+        Assertions.assertEquals("[1]", jsonMergePatch.toString());
     }
 
     @Test
@@ -49,20 +46,20 @@ public class JsonMergePatch2Test {
         JsonMergePatch j4 = TestUtils.createJsonMergePatchImpl(Json.createValue("test2"));
         JsonMergePatch j5 = TestUtils.createJsonMergePatchImpl(null);
 
-        assertTrue(j1.equals(j1));
+        Assertions.assertTrue(j1.equals(j1));
 
-        assertTrue(j1.equals(j2));
-        assertTrue(j2.equals(j1));
+        Assertions.assertTrue(j1.equals(j2));
+        Assertions.assertTrue(j2.equals(j1));
 
-        assertTrue(j1.equals(j3));
-        assertTrue(j3.equals(j1));
+        Assertions.assertTrue(j1.equals(j3));
+        Assertions.assertTrue(j3.equals(j1));
 
-        assertTrue(j2.equals(j3));
-        assertTrue(j3.equals(j2));
+        Assertions.assertTrue(j2.equals(j3));
+        Assertions.assertTrue(j3.equals(j2));
 
-        assertFalse(j1.equals(j4));
-        assertFalse(j1.equals(j5));
-        assertFalse(j1.equals(null));
+        Assertions.assertFalse(j1.equals(j4));
+        Assertions.assertFalse(j1.equals(j5));
+        Assertions.assertFalse(j1.equals(null));
     }
 
 }

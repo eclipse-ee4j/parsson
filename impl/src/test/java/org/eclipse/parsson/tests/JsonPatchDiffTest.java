@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -16,12 +16,6 @@
 
 package org.eclipse.parsson.tests;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.fail;
-
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +29,9 @@ import jakarta.json.JsonString;
 import jakarta.json.JsonStructure;
 import jakarta.json.JsonValue;
 
+import org.hamcrest.CoreMatchers;
+import org.hamcrest.MatcherAssert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -90,13 +87,13 @@ public class JsonPatchDiffTest {
     void shouldExecuteJsonPatchDiffOperationsToJsonDocument(JsonStructure original, JsonStructure target, JsonValue expected, Class<? extends Exception> expectedException) {
         try {
             JsonPatch diff = Json.createDiff(original, target);
-            assertThat(diff, is(Json.createPatchBuilder((JsonArray) expected).build()));
-            assertThat(expectedException, nullValue());
+            MatcherAssert.assertThat(diff, CoreMatchers.is(Json.createPatchBuilder((JsonArray) expected).build()));
+            MatcherAssert.assertThat(expectedException, CoreMatchers.nullValue());
         } catch (Exception e) {
             if (expectedException == null) {
-                fail(e.getMessage());
+                Assertions.fail(e.getMessage());
             } else {
-                assertThat(e, instanceOf(expectedException));
+                MatcherAssert.assertThat(e, CoreMatchers.instanceOf(expectedException));
             }
         }
     }

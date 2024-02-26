@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2021, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -16,13 +16,12 @@
 
 package org.eclipse.parsson.tests;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import jakarta.json.JsonObject;
@@ -39,7 +38,7 @@ public class Issue25Test {
             try (InputStream in = new ByteArrayInputStream(content)) {
                 try (JsonParser parser = json.createParser(in)) {
                     JsonParser.Event firstEvent = parser.next();
-                    assertEquals(JsonParser.Event.START_ARRAY, firstEvent);
+                    Assertions.assertEquals(JsonParser.Event.START_ARRAY, firstEvent);
                     while (parser.hasNext()) {
                         JsonParser.Event event = parser.next();
                         if (event == JsonParser.Event.START_OBJECT) {
@@ -61,7 +60,7 @@ public class Issue25Test {
             try (InputStream in = new ByteArrayInputStream(content)) {
                 try (JsonParser parser = json.createParser(in)) {
                     JsonParser.Event firstEvent = parser.next();
-                    assertEquals(JsonParser.Event.START_ARRAY, firstEvent);
+                    Assertions.assertEquals(JsonParser.Event.START_ARRAY, firstEvent);
                     while (parser.hasNext()) {
                         JsonParser.Event event = parser.next();
                         if (event == JsonParser.Event.START_OBJECT) {

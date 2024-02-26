@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2017, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -16,10 +16,6 @@
 
 package org.eclipse.parsson.tests;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
 import java.util.Map;
 
 import jakarta.json.Json;
@@ -28,6 +24,7 @@ import jakarta.json.JsonBuilderFactory;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -39,12 +36,12 @@ public class JsonBuilderFactoryTest {
     @Test
     void testArrayBuilder() {
         JsonBuilderFactory builderFactory = Json.createBuilderFactory(null);
-        assertNotNull(builderFactory.createArrayBuilder());
+        Assertions.assertNotNull(builderFactory.createArrayBuilder());
     }
 
     @Test
     void testArrayBuilderNPE() {
-        assertThrows(NullPointerException.class, () -> {
+        Assertions.assertThrows(NullPointerException.class, () -> {
             JsonBuilderFactory builderFactory = Json.createBuilderFactory(null);
             builderFactory.createArrayBuilder(null);
         });
@@ -54,18 +51,18 @@ public class JsonBuilderFactoryTest {
     void testArrayBuilderFromArray() {
         JsonBuilderFactory builderFactory = Json.createBuilderFactory(null);
         JsonArrayBuilder builder = builderFactory.createArrayBuilder(JsonBuilderTest.buildPhone());
-        assertEquals(JsonBuilderTest.buildPhone(), builder.build());
+        Assertions.assertEquals(JsonBuilderTest.buildPhone(), builder.build());
     }
 
     @Test
     void testObjectBuilder() {
         JsonBuilderFactory builderFactory = Json.createBuilderFactory(null);
-        assertNotNull(builderFactory.createObjectBuilder());
+        Assertions.assertNotNull(builderFactory.createObjectBuilder());
     }
 
     @Test
     void testObjectBuilderNPE() {
-        assertThrows(NullPointerException.class, () -> {
+        Assertions.assertThrows(NullPointerException.class, () -> {
             JsonBuilderFactory builderFactory = Json.createBuilderFactory(null);
             builderFactory.createObjectBuilder((JsonObject) null);
         });
@@ -73,7 +70,7 @@ public class JsonBuilderFactoryTest {
 
     @Test
     void testObjectBuilderNPE_map() {
-        assertThrows(NullPointerException.class, () -> {
+        Assertions.assertThrows(NullPointerException.class, () -> {
             JsonBuilderFactory builderFactory = Json.createBuilderFactory(null);
             builderFactory.createObjectBuilder((Map<String, Object>) null);
         });
@@ -83,6 +80,6 @@ public class JsonBuilderFactoryTest {
     void testObjectBuilderFromObject() {
         JsonBuilderFactory builderFactory = Json.createBuilderFactory(null);
         JsonObjectBuilder builder = builderFactory.createObjectBuilder(JsonBuilderTest.buildPerson());
-        assertEquals(JsonBuilderTest.buildPerson(), builder.build());
+        Assertions.assertEquals(JsonBuilderTest.buildPerson(), builder.build());
     }
 }

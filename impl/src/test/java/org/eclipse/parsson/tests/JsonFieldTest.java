@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2017, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -16,9 +16,6 @@
 
 package org.eclipse.parsson.tests;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
-
 import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -29,6 +26,7 @@ import jakarta.json.JsonObjectBuilder;
 import jakarta.json.stream.JsonGenerationException;
 import jakarta.json.stream.JsonGenerator;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 
@@ -50,7 +48,7 @@ public class JsonFieldTest {
         generator.writeEnd();
 
         generator.close();
-        assertEquals("{\"fName\":\"fValue\"}", sw.toString());
+        Assertions.assertEquals("{\"fName\":\"fValue\"}", sw.toString());
     }
 
     @Test
@@ -65,7 +63,7 @@ public class JsonFieldTest {
         generator.writeEnd();
 
         generator.close();
-        assertEquals("{\"f1Name\":\"f1Value\",\"f2Name\":\"f2Value\"}", sw.toString());
+        Assertions.assertEquals("{\"f1Name\":\"f1Value\",\"f2Name\":\"f2Value\"}", sw.toString());
     }
 
     @Test
@@ -80,7 +78,7 @@ public class JsonFieldTest {
         generator.writeEnd();
 
         generator.close();
-        assertEquals("{\"f1Name\":\"f1Value\",\"f2Name\":\"f2Value\"}", sw.toString());
+        Assertions.assertEquals("{\"f1Name\":\"f1Value\",\"f2Name\":\"f2Value\"}", sw.toString());
     }
 
 
@@ -98,7 +96,7 @@ public class JsonFieldTest {
         generator.writeEnd();
 
         generator.close();
-        assertEquals("{\"f1Name\":{\"innerFieldName\":\"innerFieldValue\"},\"f2Name\":\"f2Value\"}", sw.toString());
+        Assertions.assertEquals("{\"f1Name\":{\"innerFieldName\":\"innerFieldValue\"},\"f2Name\":\"f2Value\"}", sw.toString());
     }
 
     @Test
@@ -115,7 +113,7 @@ public class JsonFieldTest {
         generator.writeEnd();
 
         generator.close();
-        assertEquals("{\"f1Name\":[\"arrayValue\"],\"f2Name\":\"f2Value\"}", sw.toString());
+        Assertions.assertEquals("{\"f1Name\":[\"arrayValue\"],\"f2Name\":\"f2Value\"}", sw.toString());
     }
 
     @Test
@@ -128,7 +126,7 @@ public class JsonFieldTest {
 
         try {
             generator.write("f2Name", "f2Value");
-            fail("Field value, start object/array expected");
+            Assertions.fail("Field value, start object/array expected");
         } catch (JsonGenerationException exception) {
             //ok
         }
@@ -144,7 +142,7 @@ public class JsonFieldTest {
 
         try {
             generator.writeKey("f1Value");
-            fail("Not allowed in array .");
+            Assertions.fail("Not allowed in array .");
         } catch (JsonGenerationException exception) {
             //ok
         }
@@ -152,42 +150,42 @@ public class JsonFieldTest {
 
     @Test
     void testWriteString() {
-        assertEquals("{\"f1Name\":\"f1Value\"}", writeValue((gen)->gen.write("f1Value")));
+        Assertions.assertEquals("{\"f1Name\":\"f1Value\"}", writeValue((gen)->gen.write("f1Value")));
     }
 
     @Test
     void testWriteBigDec() {
-        assertEquals("{\"f1Name\":10}", writeValue((gen)->gen.write(BigDecimal.TEN)));
+        Assertions.assertEquals("{\"f1Name\":10}", writeValue((gen)->gen.write(BigDecimal.TEN)));
     }
 
     @Test
     void testWriteBigInt() {
-        assertEquals("{\"f1Name\":10}", writeValue((gen)->gen.write(BigInteger.TEN)));
+        Assertions.assertEquals("{\"f1Name\":10}", writeValue((gen)->gen.write(BigInteger.TEN)));
     }
 
     @Test
     void testWriteBool() {
-        assertEquals("{\"f1Name\":true}", writeValue((gen)->gen.write(true)));
+        Assertions.assertEquals("{\"f1Name\":true}", writeValue((gen)->gen.write(true)));
     }
 
     @Test
     void testWriteInt() {
-        assertEquals("{\"f1Name\":10}", writeValue((gen)->gen.write(10)));
+        Assertions.assertEquals("{\"f1Name\":10}", writeValue((gen)->gen.write(10)));
     }
 
     @Test
     void testWriteLong() {
-        assertEquals("{\"f1Name\":10}", writeValue((gen)->gen.write(10L)));
+        Assertions.assertEquals("{\"f1Name\":10}", writeValue((gen)->gen.write(10L)));
     }
 
     @Test
     void testWriteDouble() {
-        assertEquals("{\"f1Name\":10.0}", writeValue((gen)->gen.write(10d)));
+        Assertions.assertEquals("{\"f1Name\":10.0}", writeValue((gen)->gen.write(10d)));
     }
 
     @Test
     void testWriteNull() {
-        assertEquals("{\"f1Name\":null}", writeValue(JsonGenerator::writeNull));
+        Assertions.assertEquals("{\"f1Name\":null}", writeValue(JsonGenerator::writeNull));
     }
 
     @Test
@@ -195,7 +193,7 @@ public class JsonFieldTest {
         JsonObjectBuilder builder = Json.createObjectBuilder();
         builder.add("first", "value");
         final JsonObject build = builder.build();
-        assertEquals("{\"f1Name\":\"value\"}", writeValue((gen)->gen.write(build.getValue("/first"))));
+        Assertions.assertEquals("{\"f1Name\":\"value\"}", writeValue((gen)->gen.write(build.getValue("/first"))));
     }
 
     private String writeValue(WriteValueFunction writeValueCallback) {

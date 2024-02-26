@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -15,10 +15,6 @@
  */
 
 package org.eclipse.parsson.tests;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -37,6 +33,7 @@ import jakarta.json.JsonValue;
 import jakarta.json.JsonWriter;
 
 import org.eclipse.parsson.api.JsonConfig;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 
@@ -77,8 +74,8 @@ public class JsonNumberTest {
         JsonReader reader = Json.createReader(new StringReader("[10.4]"));
         JsonArray array2 = reader.readArray();
 
-        assertEquals(array1.get(0), array2.get(0));
-        assertEquals(array1, array2);
+        Assertions.assertEquals(array1.get(0), array2.get(0));
+        Assertions.assertEquals(array1, array2);
     }
 
     @Test
@@ -87,8 +84,8 @@ public class JsonNumberTest {
         JsonReader reader = Json.createReader(new StringReader("[10.4]"));
         JsonArray array2 = reader.readArray();
 
-        assertEquals(array1.get(0), array2.get(0));
-        assertEquals(array1, array2);
+        Assertions.assertEquals(array1.get(0), array2.get(0));
+        Assertions.assertEquals(array1, array2);
     }
 
     @Test
@@ -118,12 +115,12 @@ public class JsonNumberTest {
         reader.close();
         testNumberType(array2, true);
 
-        assertEquals(array1, array2);
+        Assertions.assertEquals(array1, array2);
     }
 
     private void testNumberType(JsonArray array, boolean integral) {
         for (JsonValue value : array) {
-            assertEquals(integral, ((JsonNumber) value).isIntegral());
+            Assertions.assertEquals(integral, ((JsonNumber) value).isIntegral());
         }
     }
 
@@ -152,7 +149,7 @@ public class JsonNumberTest {
         reader.close();
         testNumberType(array2, true);
 
-        assertEquals(array1, array2);
+        Assertions.assertEquals(array1, array2);
     }
 
 
@@ -202,7 +199,7 @@ public class JsonNumberTest {
         reader.close();
         testNumberType(array2, false);
 
-        assertEquals(array1, array2);
+        Assertions.assertEquals(array1, array2);
     }
 
     @Test
@@ -225,7 +222,7 @@ public class JsonNumberTest {
         JsonArray actual = reader.readArray();
         reader.close();
 
-        assertEquals(expected, actual);
+        Assertions.assertEquals(expected, actual);
     }
 
     @Test
@@ -239,7 +236,7 @@ public class JsonNumberTest {
         jw.write(array);
         jw.close();
 
-        assertEquals("[12.1]", sw.toString());
+        Assertions.assertEquals("[12.1]", sw.toString());
     }
 
     @Test
@@ -247,7 +244,7 @@ public class JsonNumberTest {
         try {
             JsonArray array = Json.createArrayBuilder().add(12345.12345).build();
             array.getJsonNumber(0).bigIntegerValueExact();
-            fail("Expected Arithmetic exception");
+            Assertions.fail("Expected Arithmetic exception");
         } catch (ArithmeticException expected) {
             // no-op
         }
@@ -256,30 +253,30 @@ public class JsonNumberTest {
     @Test
     void testHashCode() {
         JsonNumber jsonNumber1 = Json.createValue(1);
-        assertTrue(jsonNumber1.hashCode() == jsonNumber1.bigDecimalValue().hashCode());
+        Assertions.assertTrue(jsonNumber1.hashCode() == jsonNumber1.bigDecimalValue().hashCode());
 
         JsonNumber jsonNumber2 = Json.createValue(1);
 
-        assertTrue(jsonNumber1.equals(jsonNumber2));
-        assertTrue(jsonNumber1.hashCode() == jsonNumber2.hashCode());
+        Assertions.assertTrue(jsonNumber1.equals(jsonNumber2));
+        Assertions.assertTrue(jsonNumber1.hashCode() == jsonNumber2.hashCode());
     }
 
     @Test
     void testNumber() {
-        assertEquals(Json.createValue(1), Json.createValue(Byte.valueOf((byte) 1)));
-        assertEquals(Json.createValue(1).toString(), Json.createValue(Byte.valueOf((byte) 1)).toString());
-        assertEquals(Json.createValue(1), Json.createValue(Short.valueOf((short) 1)));
-        assertEquals(Json.createValue(1).toString(), Json.createValue(Short.valueOf((short) 1)).toString());
-        assertEquals(Json.createValue(1), Json.createValue(Integer.valueOf(1)));
-        assertEquals(Json.createValue(1).toString(), Json.createValue(Integer.valueOf(1)).toString());
-        assertEquals(Json.createValue(1L), Json.createValue(Long.valueOf(1)));
-        assertEquals(Json.createValue(1L).toString(), Json.createValue(Long.valueOf(1)).toString());
-        assertEquals(Json.createValue(1D), Json.createValue(Float.valueOf(1)));
-        assertEquals(Json.createValue(1D).toString(), Json.createValue(Float.valueOf(1)).toString());
-        assertEquals(Json.createValue(1D), Json.createValue(Double.valueOf(1)));
-        assertEquals(Json.createValue(1D).toString(), Json.createValue(Double.valueOf(1)).toString());
-        assertEquals(Json.createValue(1), Json.createValue(new CustomNumber(1)));
-        assertEquals(Json.createValue(1).toString(), Json.createValue(new CustomNumber(1)).toString());
+        Assertions.assertEquals(Json.createValue(1), Json.createValue(Byte.valueOf((byte) 1)));
+        Assertions.assertEquals(Json.createValue(1).toString(), Json.createValue(Byte.valueOf((byte) 1)).toString());
+        Assertions.assertEquals(Json.createValue(1), Json.createValue(Short.valueOf((short) 1)));
+        Assertions.assertEquals(Json.createValue(1).toString(), Json.createValue(Short.valueOf((short) 1)).toString());
+        Assertions.assertEquals(Json.createValue(1), Json.createValue(Integer.valueOf(1)));
+        Assertions.assertEquals(Json.createValue(1).toString(), Json.createValue(Integer.valueOf(1)).toString());
+        Assertions.assertEquals(Json.createValue(1L), Json.createValue(Long.valueOf(1)));
+        Assertions.assertEquals(Json.createValue(1L).toString(), Json.createValue(Long.valueOf(1)).toString());
+        Assertions.assertEquals(Json.createValue(1D), Json.createValue(Float.valueOf(1)));
+        Assertions.assertEquals(Json.createValue(1D).toString(), Json.createValue(Float.valueOf(1)).toString());
+        Assertions.assertEquals(Json.createValue(1D), Json.createValue(Double.valueOf(1)));
+        Assertions.assertEquals(Json.createValue(1D).toString(), Json.createValue(Double.valueOf(1)).toString());
+        Assertions.assertEquals(Json.createValue(1), Json.createValue(new CustomNumber(1)));
+        Assertions.assertEquals(Json.createValue(1).toString(), Json.createValue(new CustomNumber(1)).toString());
     }
 
     // Test default BigInteger scale value limit using value bellow limit.
@@ -298,7 +295,7 @@ public class JsonNumberTest {
                 .setScale(100001, RoundingMode.HALF_UP);
         try {
             Json.createValue(value).bigIntegerValue();
-            fail("No exception was thrown from bigIntegerValue with scale over limit");
+            Assertions.fail("No exception was thrown from bigIntegerValue with scale over limit");
         } catch (UnsupportedOperationException e) {
             // UnsupportedOperationException is expected to be thrown
             assertExceptionMessageContainsNumber(e, 100001);
@@ -314,7 +311,7 @@ public class JsonNumberTest {
                 .setScale(-100001, RoundingMode.HALF_UP);
         try {
             Json.createValue(value).bigIntegerValue();
-            fail("No exception was thrown from bigIntegerValue with scale over limit");
+            Assertions.fail("No exception was thrown from bigIntegerValue with scale over limit");
         } catch (UnsupportedOperationException e) {
             // UnsupportedOperationException is expected to be thrown
             assertExceptionMessageContainsNumber(e, -100001);
@@ -338,7 +335,7 @@ public class JsonNumberTest {
                     .add("bigDecimal", value)
                     .build();
             jsonObject.getJsonNumber("bigDecimal").bigIntegerValue();
-            fail("No exception was thrown from bigIntegerValue with scale over limit");
+            Assertions.fail("No exception was thrown from bigIntegerValue with scale over limit");
         } catch (UnsupportedOperationException e) {
             // UnsupportedOperationException is expected to be thrown
             assertExceptionMessageContainsNumber(e, 50001);
@@ -362,7 +359,7 @@ public class JsonNumberTest {
                     .add("bigDecimal", value)
                     .build();
             jsonObject.getJsonNumber("bigDecimal").bigIntegerValue();
-            fail("No exception was thrown from bigIntegerValue with scale over limit");
+            Assertions.fail("No exception was thrown from bigIntegerValue with scale over limit");
         } catch (UnsupportedOperationException e) {
             // UnsupportedOperationException is expected to be thrown
             assertExceptionMessageContainsNumber(e, -50001);
@@ -377,8 +374,8 @@ public class JsonNumberTest {
         JsonReader reader = Json.createReader(new StringReader(Π_1100));
         JsonNumber check = Json.createValue(new BigDecimal(Π_1100));
         JsonValue value = reader.readValue();
-        assertEquals(value.getValueType(), JsonValue.ValueType.NUMBER);
-        assertEquals(value, check);
+        Assertions.assertEquals(value.getValueType(), JsonValue.ValueType.NUMBER);
+        Assertions.assertEquals(value, check);
     }
 
     // Test BigDecimal max source characters array length using length above default limit of 1100.
@@ -388,10 +385,10 @@ public class JsonNumberTest {
         JsonReader reader = Json.createReader(new StringReader(Π_1101));
         try {
             reader.readValue();
-            fail("No exception was thrown from BigDecimal parsing with source characters array length over limit");
+            Assertions.fail("No exception was thrown from BigDecimal parsing with source characters array length over limit");
         } catch (UnsupportedOperationException e) {
             // UnsupportedOperationException is expected to be thrown
-            assertEquals(
+            Assertions.assertEquals(
                     "Number of BigDecimal source characters 1101 exceeded maximal allowed value of 1100",
                     e.getMessage());
         }
@@ -405,8 +402,8 @@ public class JsonNumberTest {
         JsonReader reader = Json.createReaderFactory(config).createReader(new StringReader(Π_500));
         JsonNumber check = Json.createValue(new BigDecimal(Π_500));
         JsonValue value = reader.readValue();
-        assertEquals(value.getValueType(), JsonValue.ValueType.NUMBER);
-        assertEquals(value, check);
+        Assertions.assertEquals(value.getValueType(), JsonValue.ValueType.NUMBER);
+        Assertions.assertEquals(value, check);
     }
 
     // Test BigDecimal max source characters array length using length equal to custom limit of 200.
@@ -417,10 +414,10 @@ public class JsonNumberTest {
         JsonReader reader = Json.createReaderFactory(config).createReader(new StringReader(Π_501));
         try {
             reader.readValue();
-            fail("No exception was thrown from BigDecimal parsing with source characters array length over limit");
+            Assertions.fail("No exception was thrown from BigDecimal parsing with source characters array length over limit");
         } catch (UnsupportedOperationException e) {
             // UnsupportedOperationException is expected to be thrown
-            assertEquals(
+            Assertions.assertEquals(
                     "Number of BigDecimal source characters 501 exceeded maximal allowed value of 500",
                     e.getMessage());
         }
@@ -429,7 +426,7 @@ public class JsonNumberTest {
     static void assertExceptionMessageContainsNumber(Exception e, int number) {
         // Format the number as being written to message from messages bundle
         String numberString = MessageFormat.format("{0}", number);
-        assertTrue(e.getMessage().contains(numberString),
+        Assertions.assertTrue(e.getMessage().contains(numberString),
                    "Substring \"" + numberString + "\" was not found in \"" + e.getMessage() + "\"");
     }
 

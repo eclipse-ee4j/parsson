@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -16,8 +16,6 @@
 
 package org.eclipse.parsson.tests;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
@@ -26,6 +24,7 @@ import jakarta.json.JsonValue;
 import jakarta.json.stream.JsonCollectors;
 
 import org.eclipse.parsson.TestUtils;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -71,7 +70,7 @@ public class JsonCollectorTest {
                    .map(x-> x.get("name"))
                    .collect(JsonCollectors.toJsonArray());
         JsonValue expected = TestUtils.toJson("['Jane','Joanna']");
-        assertEquals(expected, result);
+        Assertions.assertEquals(expected, result);
     }
 
     @Test
@@ -88,7 +87,7 @@ public class JsonCollectorTest {
                     ;
         JsonValue expected = TestUtils.toJson(
                 "{'Jane': '707-999-5555', 'Joanna': '505-333-4444'}");
-        assertEquals(expected, result);
+        Assertions.assertEquals(expected, result);
     }
 
     @Test
@@ -123,7 +122,7 @@ public class JsonCollectorTest {
         "  ]                                 " +
         "}");
 
-        assertEquals(result,expected);
+        Assertions.assertEquals(result,expected);
     }
 
     static int index; //for keeping track of the array index
@@ -161,6 +160,6 @@ public class JsonCollectorTest {
         "       'mobile': '505-333-4444'}} " +
         " ]");
  
-        assertEquals(expected, result);
+        Assertions.assertEquals(expected, result);
     }
 }

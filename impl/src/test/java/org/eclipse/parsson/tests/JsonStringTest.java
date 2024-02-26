@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -16,9 +16,6 @@
 
 package org.eclipse.parsson.tests;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.io.StringReader;
 
 import jakarta.json.Json;
@@ -26,6 +23,7 @@ import jakarta.json.JsonArray;
 import jakarta.json.JsonReader;
 import jakarta.json.JsonString;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -54,13 +52,13 @@ public class JsonStringTest {
     void testHashCode() {
         String string1 = "a";
         JsonString jsonString1 = Json.createValue(string1);
-        assertTrue(jsonString1.hashCode() == jsonString1.getString().hashCode());
+        Assertions.assertTrue(jsonString1.hashCode() == jsonString1.getString().hashCode());
 
         String string2 = new String("a");
         JsonString jsonString2 = Json.createValue(string2);
 
-        assertTrue(jsonString1.equals(jsonString2));
-        assertTrue(jsonString1.hashCode() == jsonString2.hashCode());
+        Assertions.assertTrue(jsonString1.equals(jsonString2));
+        Assertions.assertTrue(jsonString1.hashCode() == jsonString2.hashCode());
     }
 
     void escapedString(String str) {
@@ -68,7 +66,7 @@ public class JsonStringTest {
         String parseStr = "["+exp.get(0).toString()+"]";
         JsonReader jr = Json.createReader(new StringReader(parseStr));
         JsonArray got = jr.readArray();
-        assertEquals(exp, got);
+        Assertions.assertEquals(exp, got);
         jr.close();
     }
 
