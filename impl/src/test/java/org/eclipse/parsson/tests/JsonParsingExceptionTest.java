@@ -16,62 +16,77 @@
 
 package org.eclipse.parsson.tests;
 
-import junit.framework.TestCase;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
+import java.io.StringReader;
 
 import jakarta.json.Json;
 import jakarta.json.stream.JsonLocation;
 import jakarta.json.stream.JsonParser;
 import jakarta.json.stream.JsonParsingException;
-import java.io.StringReader;
+
+import org.junit.jupiter.api.Test;
 
 /**
  * JsonParsingException Tests
  *
  * @author Jitendra Kotamraju
  */
-public class JsonParsingExceptionTest extends TestCase {
+public class JsonParsingExceptionTest {
 
-    public void testWrongJson() {
+    @Test
+    void testWrongJson() {
         // testMalformedJson("", null); Allowed in 1.1
     }
 
-    public void testWrongJson1() {
+    @Test
+    void testWrongJson1() {
         // testMalformedJson("{}{}", null);  Allowed in 1.1
     }
 
-    public void testWrongJson2() {
+    @Test
+    void testWrongJson2() {
         // testMalformedJson("{", null);  Allowed in 1.1
     }
 
-    public void testWrongJson3() {
+    @Test
+    void testWrongJson3() {
         testMalformedJson("{[]", null);
     }
 
-    public void testWrongJson4() {
+    @Test
+    void testWrongJson4() {
         testMalformedJson("{]", null);
     }
 
-    public void testWrongJson5() {
+    @Test
+    void testWrongJson5() {
         testMalformedJson("{\"a\":[]]", null);
     }
 
-    public void testWrongJson6() {
+    @Test
+    void testWrongJson6() {
         testMalformedJson("[ {}, [] }", null);
     }
 
-    public void testWrongJson61() {
+    @Test
+    void testWrongJson61() {
         testMalformedJson("[ {}, {} }", null);
     }
 
-    public void testWrongJson7() {
+    @Test
+    void testWrongJson7() {
         testMalformedJson("{ \"a\" : {}, \"b\": {} ]", null);
     }
 
-    public void testWrongJson8() {
+    @Test
+    void testWrongJson8() {
         testMalformedJson("{ \"a\" : {}, \"b\": [] ]", null);
     }
 
-    public void testWrongUnicode() {
+    @Test
+    void testWrongUnicode() {
         testMalformedJson("[ \"\\uX00F\" ]", null);
         testMalformedJson("[ \"\\u000Z\" ]", null);
         testMalformedJson("[ \"\\u000\" ]", null);
@@ -82,7 +97,8 @@ public class JsonParsingExceptionTest extends TestCase {
         testMalformedJson("[ \"\\", null);
     }
 
-    public void testControlChar() {
+    @Test
+    void testControlChar() {
         testMalformedJson("[ \"\u0000\" ]", null);
         testMalformedJson("[ \"\u000c\" ]", null);
         testMalformedJson("[ \"\u000f\" ]", null);
@@ -90,7 +106,8 @@ public class JsonParsingExceptionTest extends TestCase {
         testMalformedJson("[ \"\u001f\" ]", null);
     }
 
-    public void testLocation1() {
+    @Test
+    void testLocation1() {
         testMalformedJson("x", new MyLocation(1, 1, 0));
         testMalformedJson("{]", new MyLocation(1, 2, 1));
         testMalformedJson("[}", new MyLocation(1, 2, 1));
@@ -101,7 +118,8 @@ public class JsonParsingExceptionTest extends TestCase {
         testMalformedJson("[1234L]", new MyLocation(1, 6, 5));
     }
 
-    public void testLocation2() {
+    @Test
+    void testLocation2() {
         testMalformedJson("[null\n}", new MyLocation(2, 1, 6));
         testMalformedJson("[null\r\n}", new MyLocation(2, 1, 7));
         testMalformedJson("[null\n, null\n}", new MyLocation(3, 1, 13));

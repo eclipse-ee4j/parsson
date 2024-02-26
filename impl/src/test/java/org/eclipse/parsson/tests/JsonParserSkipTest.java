@@ -16,25 +16,31 @@
 
 package org.eclipse.parsson.tests;
 
-import jakarta.json.Json;
-import jakarta.json.stream.JsonParser;
-import junit.framework.TestCase;
-
 import static org.eclipse.parsson.JsonParserFixture.testWithCreateParserFromArray;
 import static org.eclipse.parsson.JsonParserFixture.testWithCreateParserFromObject;
 import static org.eclipse.parsson.JsonParserFixture.testWithCreateParserFromString;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import jakarta.json.Json;
+import jakarta.json.stream.JsonParser;
+
+import org.junit.jupiter.api.Test;
 
 /**
  *
  * @author lukas
  */
-public class JsonParserSkipTest extends TestCase {
+public class JsonParserSkipTest {
 
-    public void testSkipArrayReader() {
+    @Test
+    void testSkipArrayReader() {
         testWithCreateParserFromString("[[],[[]]]", JsonParserSkipTest::testSkipArray);
     }
 
-    public void testSkipArrayStructure() {
+    @Test
+    void testSkipArrayStructure() {
         testWithCreateParserFromArray(Json.createArrayBuilder()
                 .add(Json.createArrayBuilder())
                 .add(Json.createArrayBuilder()
@@ -48,11 +54,13 @@ public class JsonParserSkipTest extends TestCase {
 		assertFalse(parser.hasNext());
     }
 
-    public void testSkipInsideArrayReader() {
+    @Test
+    void testSkipInsideArrayReader() {
         testWithCreateParserFromString("[\"test\"]", JsonParserSkipTest::testSkipInsideArray);
     }
 
-    public void testSkipInsideArrayStructure() {
+    @Test
+    void testSkipInsideArrayStructure() {
         testWithCreateParserFromArray(Json.createArrayBuilder()
                 .add("test")
                 .build(), JsonParserSkipTest::testSkipInsideArray);
@@ -65,11 +73,13 @@ public class JsonParserSkipTest extends TestCase {
 		assertFalse(parser.hasNext());
     }
 
-    public void testNoSkipArrayReader() {
+    @Test
+    void testNoSkipArrayReader() {
         testWithCreateParserFromString("{\"key\":\"value\"}", JsonParserSkipTest::testNoSkipArray);
     }
 
-    public void testNoSkipArrayStructure() {
+    @Test
+    void testNoSkipArrayStructure() {
         testWithCreateParserFromObject(Json.createObjectBuilder()
                 .add("key","value")
                 .build(), JsonParserSkipTest::testNoSkipArray);
@@ -84,11 +94,13 @@ public class JsonParserSkipTest extends TestCase {
         assertFalse(parser.hasNext());
     }
 
-    public void testSkipArrayInObjectReader() {
+    @Test
+    void testSkipArrayInObjectReader() {
         testWithCreateParserFromString("{\"array\":[[],[[]]],\"object\":\"value2\"}", JsonParserSkipTest::testSkipArrayInObject);
     }
 
-    public void testSkipArrayInObjectStructure() {
+    @Test
+    void testSkipArrayInObjectStructure() {
         testWithCreateParserFromObject(Json.createObjectBuilder().add("array", Json.createArrayBuilder()
                         .add(Json.createArrayBuilder())
                         .add(Json.createArrayBuilder()
@@ -109,11 +121,13 @@ public class JsonParserSkipTest extends TestCase {
         assertFalse(parser.hasNext());
     }
 
-    public void testSkipObjectReader() {
+    @Test
+    void testSkipObjectReader() {
         testWithCreateParserFromString("{\"array\":[],\"objectToSkip\":{\"huge key\":\"huge value\"},\"simple\":2}", JsonParserSkipTest::testSkipObject);
     }
 
-    public void testSkipObjectStructure() {
+    @Test
+    void testSkipObjectStructure() {
         testWithCreateParserFromObject(Json.createObjectBuilder()
                 .add("array", Json.createArrayBuilder().build())
                 .add("objectToSkip", Json.createObjectBuilder().add("huge key", "huge value"))
@@ -135,11 +149,13 @@ public class JsonParserSkipTest extends TestCase {
 		assertFalse(parser.hasNext());
     }
 
-    public void testSkipInsideObjectReader() {
+    @Test
+    void testSkipInsideObjectReader() {
         testWithCreateParserFromString("{\"objectToSkip\":{\"huge key\":\"huge value\"},\"simple\":2}", JsonParserSkipTest::testSkipInsideObject);
     }
 
-    public void testSkipInsideObjectStructure() {
+    @Test
+    void testSkipInsideObjectStructure() {
         testWithCreateParserFromObject(Json.createObjectBuilder()
                 .add("objectToSkip", Json.createObjectBuilder().add("huge key", "huge value"))
                 .add("simple", 2)
@@ -157,11 +173,13 @@ public class JsonParserSkipTest extends TestCase {
 		assertFalse(parser.hasNext());
     }
 
-    public void testNoSkipObjectReader() {
+    @Test
+    void testNoSkipObjectReader() {
         testWithCreateParserFromString("{\"key\":\"value\"}", JsonParserSkipTest::testNoSkipObject);
     }
 
-    public void testNoSkipObjectStructure() {
+    @Test
+    void testNoSkipObjectStructure() {
         testWithCreateParserFromObject(Json.createObjectBuilder()
                 .add("Key", "value")
                 .build(), JsonParserSkipTest::testNoSkipObject);

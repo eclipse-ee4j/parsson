@@ -16,29 +16,34 @@
 
 package org.eclipse.parsson.tests;
 
-import jakarta.json.Json;
-import jakarta.json.stream.JsonParser;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.StringReader;
 
+import jakarta.json.Json;
+import jakarta.json.stream.JsonParser;
+
+import org.junit.jupiter.api.Test;
+
 public class JsonNestingTest {
 
-    @Test(expected = RuntimeException.class)
-    public void testArrayNestingException() {
-        String json = createDeepNestedDoc(500);
-        try (JsonParser parser = Json.createParser(new StringReader(json))) {
-            while (parser.hasNext()) {
-                JsonParser.Event ev = parser.next();
-                if (JsonParser.Event.START_ARRAY == ev) {
-                    parser.getArray();
+    @Test
+    void testArrayNestingException() {
+        assertThrows(RuntimeException.class, () -> {
+            String json = createDeepNestedDoc(500);
+            try (JsonParser parser = Json.createParser(new StringReader(json))) {
+                while (parser.hasNext()) {
+                    JsonParser.Event ev = parser.next();
+                    if (JsonParser.Event.START_ARRAY == ev) {
+                        parser.getArray();
+                    }
                 }
             }
-        }
+        });
     }
 
     @Test
-    public void testArrayNesting() {
+    void testArrayNesting() {
         String json = createDeepNestedDoc(499);
         try (JsonParser parser = Json.createParser(new StringReader(json))) {
             while (parser.hasNext()) {
@@ -50,21 +55,23 @@ public class JsonNestingTest {
         }
     }
 
-    @Test(expected = RuntimeException.class)
-    public void testObjectNestingException() {
-        String json = createDeepNestedDoc(500);
-        try (JsonParser parser = Json.createParser(new StringReader(json))) {
-            while (parser.hasNext()) {
-                JsonParser.Event ev = parser.next();
-                if (JsonParser.Event.START_OBJECT == ev) {
-                    parser.getObject();
+    @Test
+    void testObjectNestingException() {
+        assertThrows(RuntimeException.class, () -> {
+            String json = createDeepNestedDoc(500);
+            try (JsonParser parser = Json.createParser(new StringReader(json))) {
+                while (parser.hasNext()) {
+                    JsonParser.Event ev = parser.next();
+                    if (JsonParser.Event.START_OBJECT == ev) {
+                        parser.getObject();
+                    }
                 }
             }
-        }
+        });
     }
 
     @Test
-    public void testObjectNesting() {
+    void testObjectNesting() {
         String json = createDeepNestedDoc(499);
         try (JsonParser parser = Json.createParser(new StringReader(json))) {
             while (parser.hasNext()) {

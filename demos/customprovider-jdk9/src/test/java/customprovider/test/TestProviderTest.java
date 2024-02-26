@@ -10,11 +10,13 @@
 
 package customprovider.test;
 
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+
 import jakarta.json.Json;
 import jakarta.json.stream.JsonGenerator;
+
 import org.eclipse.parsson.demos.customprovider.TestGenerator;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  *
@@ -23,9 +25,9 @@ import org.junit.Test;
 public class TestProviderTest {
 
     @Test
-    public void hello() {
+    void hello() {
         try (JsonGenerator generator = Json.createGenerator(System.out)) {
-            Assert.assertTrue("TestGenerator is not picked up", generator instanceof TestGenerator);
+            assertInstanceOf(TestGenerator.class, generator, "TestGenerator is not picked up");
             generator.writeStartArray().writeEnd();
         }
         System.out.println();

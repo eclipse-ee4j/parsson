@@ -16,26 +16,31 @@
 
 package org.eclipse.parsson.tests;
 
-import junit.framework.TestCase;
+import java.io.InputStream;
+import java.net.URL;
 
-import jakarta.json.*;
+import jakarta.json.Json;
+import jakarta.json.JsonArray;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonReader;
 import jakarta.json.stream.JsonParser;
 import jakarta.json.stream.JsonParser.Event;
-import java.io.*;
-import java.net.URL;
+
+import org.junit.jupiter.api.Test;
 
 /**
  * JsonParser Tests using twitter search API
  *
  * @author Jitendra Kotamraju
  */
-public class TwitterSearchTest extends TestCase {
+public class TwitterSearchTest {
 
-    public void test() {
+    @Test
+    void test() {
         // dummy test so that junit doesn't complain
     }
 
-    public void xtestStreamTwitter() throws Exception {
+    void xtestStreamTwitter() throws Exception {
         URL url = new URL("http://search.twitter.com/search.json?q=%23java&rpp=100");
         InputStream is = url.openStream();
         JsonParser parser = Json.createParser(is);
@@ -57,7 +62,7 @@ public class TwitterSearchTest extends TestCase {
         parser.close();
 	}
 
-    public void xtestObjectTwitter() throws Exception {
+    void xtestObjectTwitter() throws Exception {
         URL url = new URL("http://search.twitter.com/search.json?q=%23java&rpp=100");
         InputStream is = url.openStream();
         JsonReader rdr = Json.createReader(is);

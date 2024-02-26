@@ -17,7 +17,7 @@
 package org.eclipse.parsson.tests;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.util.Arrays;
 
@@ -27,20 +27,16 @@ import jakarta.json.JsonPointer;
 import jakarta.json.JsonStructure;
 import jakarta.json.JsonValue;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 /**
  * 
  * @author Alex Soto
  *
  */
-@RunWith(Parameterized.class)
 public class JsonPointerAddOperationTest {
 
-    @Parameters(name = "{index}: ({0})={1}")
     public static Iterable<Object[]> data() throws Exception {
         return Arrays.asList(new Object[][] { 
                  {buildSimpleAddPatch(), buildAddress(), buildExpectedAddress() },
@@ -50,20 +46,9 @@ public class JsonPointerAddOperationTest {
            });
     }
 
-    private JsonObject pathOperation;
-    private JsonStructure target;
-    private JsonValue expectedResult;
-
-    public JsonPointerAddOperationTest(JsonObject pathOperation,
-                                       JsonStructure target, JsonValue expectedResult) {
-        super();
-        this.pathOperation = pathOperation;
-        this.target = target;
-        this.expectedResult = expectedResult;
-    }
-
-    @Test
-    public void shouldAddElementsToExistingJsonDocument() {
+    @MethodSource("data")
+    @ParameterizedTest(name = "{index}: ({0})={1}")
+    void shouldAddElementsToExistingJsonDocument(JsonObject pathOperation, JsonStructure target, JsonValue expectedResult) {
         JsonPointer pointer = Json.createPointer(pathOperation.getString("path"));
         JsonObject modified = (JsonObject) pointer.add(target, pathOperation.get("value"));
         assertThat(modified, is(expectedResult));

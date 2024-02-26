@@ -16,15 +16,19 @@
 
 package org.eclipse.parsson.tests;
 
-import org.junit.Test;
-import org.junit.BeforeClass;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import jakarta.json.*;
-import jakarta.json.stream.JsonGenerator;
-import java.io.StringWriter;
 import java.io.StringReader;
+import java.io.StringWriter;
+
+import jakarta.json.Json;
+import jakarta.json.JsonArray;
+import jakarta.json.JsonArrayBuilder;
+import jakarta.json.JsonReader;
+import jakarta.json.JsonWriter;
+import jakarta.json.stream.JsonGenerator;
+
+import org.junit.jupiter.api.Test;
 
 /**
  * @author Kin-man Chung
@@ -32,7 +36,7 @@ import java.io.StringReader;
 public class RFC7159Test {
 
     @Test
-    public void testCreatValues() {
+    void testCreatValues() {
         JsonArrayBuilder builder = Json.createArrayBuilder();
         JsonArray array = builder.add(Json.createValue("someString"))
                                  .add(Json.createValue(100))
@@ -47,7 +51,7 @@ public class RFC7159Test {
     }
 
     @Test
-    public void testReadValues() {
+    void testReadValues() {
         JsonReader reader = Json.createReader(new StringReader("\"someString\""));
         JsonArrayBuilder builder = Json.createArrayBuilder();
         builder.add(reader.readValue());
@@ -65,7 +69,7 @@ public class RFC7159Test {
     }
 
     @Test
-    public void testWriteValues() {
+    void testWriteValues() {
         StringWriter stringWriter = new StringWriter();
         JsonWriter writer = Json.createWriter(stringWriter);
         writer.write(Json.createValue("someString"));
@@ -83,7 +87,7 @@ public class RFC7159Test {
     }
 
     @Test
-    public void testGeneratorValues() {
+    void testGeneratorValues() {
         StringWriter stringWriter = new StringWriter();
         JsonGenerator generator = Json.createGenerator(stringWriter);
         generator.write("someString").close();

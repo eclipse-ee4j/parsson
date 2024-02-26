@@ -16,37 +16,41 @@
 
 package org.eclipse.parsson.tests;
 
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 import jakarta.json.Json;
-import junit.framework.TestCase;
+
 import org.eclipse.parsson.api.JsonConfig;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 
 /**
  * Test maxBigIntegerScale limit set from System property.
  */
-public class JsonBigDecimalScaleLimitTest extends TestCase {
+public class JsonBigDecimalScaleLimitTest {
 
     private static final int MAX_BIGINTEGER_SCALE = 50000;
-
-    public JsonBigDecimalScaleLimitTest(String testName) {
-        super(testName);
-    }
-
-    @Override
-    protected void setUp() {
+    
+    @BeforeEach
+    void setUp() {
         System.setProperty(JsonConfig.MAX_BIGINTEGER_SCALE, Integer.toString(MAX_BIGINTEGER_SCALE));
     }
 
-    @Override
-    protected void tearDown() {
+    @AfterEach
+    void tearDown() {
         System.clearProperty(JsonConfig.MAX_BIGINTEGER_SCALE);
     }
 
     // Test BigInteger scale value limit set from system property using value bellow limit.
     // Call shall return value.
-    public void testSystemPropertyBigIntegerScaleBellowLimit() {
+    @Test
+    void testSystemPropertyBigIntegerScaleBellowLimit() {
         BigDecimal value = new BigDecimal("3.1415926535897932384626433");
         Json.createValue(value).bigIntegerValue();
     }
@@ -55,7 +59,8 @@ public class JsonBigDecimalScaleLimitTest extends TestCase {
     // Call shall throw specific UnsupportedOperationException exception.
     // Default value is 100000 and system property lowered it to 50000 so value with scale 50001
     // test shall fail with exception message matching modified limits.
-    public void testSystemPropertyBigIntegerScaleAboveLimit() {
+    @Test
+    void testSystemPropertyBigIntegerScaleAboveLimit() {
         BigDecimal value = new BigDecimal("3.1415926535897932384626433")
                 .setScale(50001, RoundingMode.HALF_UP);
         try {
@@ -73,7 +78,8 @@ public class JsonBigDecimalScaleLimitTest extends TestCase {
     // Call shall throw specific UnsupportedOperationException exception.
     // Default value is 100000 and system property lowered it to 50000 so value with scale -50001
     // test shall fail with exception message matching modified limits.
-    public void testSystemPropertyBigIntegerNegScaleAboveLimit() {
+    @Test
+    void testSystemPropertyBigIntegerNegScaleAboveLimit() {
         BigDecimal value = new BigDecimal("3.1415926535897932384626433")
                 .setScale(-50001, RoundingMode.HALF_UP);
         try {

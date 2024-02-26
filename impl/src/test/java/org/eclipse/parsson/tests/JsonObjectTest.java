@@ -16,27 +16,36 @@
 
 package org.eclipse.parsson.tests;
 
-import junit.framework.TestCase;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
 
-import jakarta.json.*;
+import jakarta.json.Json;
+import jakarta.json.JsonArray;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonReader;
+import jakarta.json.JsonValue;
+import jakarta.json.JsonWriter;
+
+import org.junit.jupiter.api.Test;
 
 /**
  * @author Jitendra Kotamraju
  */
-public class JsonObjectTest extends TestCase {
-    public JsonObjectTest(String testName) {
-        super(testName);
+public class JsonObjectTest {
+
+    @Test
+    void test() {
     }
 
-    public void test() {
-    }
-
-    public void testEmptyObjectEquals() throws Exception {
+    @Test
+    void testEmptyObjectEquals() throws Exception {
         JsonObject empty1 = Json.createObjectBuilder()
                 .build();
 
@@ -46,14 +55,16 @@ public class JsonObjectTest extends TestCase {
         assertEquals(empty1, empty2);
     }
 
-    public void testPersonObjectEquals() throws Exception {
+    @Test
+    void testPersonObjectEquals() throws Exception {
         JsonObject person1 = JsonBuilderTest.buildPerson();
         JsonObject person2 = JsonReaderTest.readPerson();
 
         assertEquals(person1, person2);
     }
 
-    public void testGetStringOrDefault() throws Exception {
+    @Test
+    void testGetStringOrDefault() throws Exception {
         JsonObject object = Json.createObjectBuilder()
                 .add("string", "value")
                 .add("number", 25)
@@ -64,7 +75,8 @@ public class JsonObjectTest extends TestCase {
         assertEquals("default", object.getString("number", "default"));
     }
 
-    public void testGetIntOrDefault() throws Exception {
+    @Test
+    void testGetIntOrDefault() throws Exception {
         JsonObject object = Json.createObjectBuilder()
                 .add("string", "value")
                 .add("number", 25)
@@ -75,7 +87,8 @@ public class JsonObjectTest extends TestCase {
         assertEquals(10, object.getInt("string", 10));
     }
 
-    public void testGetBooleanOrDefault() throws Exception {
+    @Test
+    void testGetBooleanOrDefault() throws Exception {
         JsonObject object = Json.createObjectBuilder()
                 .add("string", "value")
                 .add("number", 25)
@@ -120,7 +133,8 @@ public class JsonObjectTest extends TestCase {
         assertTrue(empty.isEmpty());
     }
 
-    public void testClassCastException() {
+    @Test
+    void testClassCastException() {
         JsonObject obj = Json.createObjectBuilder()
                 .add("foo", JsonValue.FALSE).build();
         try {
@@ -131,7 +145,8 @@ public class JsonObjectTest extends TestCase {
         }
     }
 
-    public void testPut() {
+    @Test
+    void testPut() {
         JsonObject obj = Json.createObjectBuilder().add("foo", 1).build();
         try {
             obj.put("bar", JsonValue.FALSE);
@@ -141,7 +156,8 @@ public class JsonObjectTest extends TestCase {
         }
     }
 
-    public void testRemove() {
+    @Test
+    void testRemove() {
         JsonObject obj = Json.createObjectBuilder().add("foo", 1).build();
         try {
             obj.remove("foo");
@@ -151,7 +167,8 @@ public class JsonObjectTest extends TestCase {
         }
     }
 
-    public void testObjectBuilderWithVariousValues() {
+    @Test
+    void testObjectBuilderWithVariousValues() {
         JsonObject expected = Json.createObjectBuilder()
                 .add("a", JsonValue.TRUE)
                 .add("b", JsonValue.FALSE)
@@ -178,7 +195,8 @@ public class JsonObjectTest extends TestCase {
         assertEquals(expected, actual);
     }
 
-    public void testObjectBuilderWithMap() {
+    @Test
+    void testObjectBuilderWithMap() {
         Map<String, Object> map = new HashMap<>();
         map.put("a", JsonValue.TRUE);
         map.put("b", JsonValue.FALSE);
@@ -206,7 +224,8 @@ public class JsonObjectTest extends TestCase {
         assertEquals(expected, actual);
     }
 
-    public void testObjectBuilderNpe() {
+    @Test
+    void testObjectBuilderNpe() {
         try {
             JsonObject obj = Json.createObjectBuilder().add(null, 1).build();
             fail("JsonObjectBuilder#add(null, 1) should throw NullPointerException");
@@ -215,7 +234,8 @@ public class JsonObjectTest extends TestCase {
         }
     }
 
-    public void testHashCode() {
+    @Test
+    void testHashCode() {
         JsonObject object1 = Json.createObjectBuilder().add("a", 1).add("b", 2).add("c", 3).build();
         assertTrue(object1.hashCode() == object1.hashCode()); //1st call compute hashCode, 2nd call returns cached value
 
@@ -229,7 +249,8 @@ public class JsonObjectTest extends TestCase {
         assertTrue(object3.hashCode() == object4.hashCode()); //equal instances have same hashCode
     }
 
-    public void testArrays() {
+    @Test
+    void testArrays() {
         String[] stringArr = new String[] {"a", "b", "c"};
         boolean[] boolArr = new boolean[] {true, false, true};
         int[] intArr = new int[] {1, 2, 3};

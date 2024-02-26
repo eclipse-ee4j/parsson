@@ -16,62 +16,73 @@
 
 package org.eclipse.parsson.tests;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import java.util.Map;
+
 import jakarta.json.Json;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonBuilderFactory;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
-import org.junit.Assert;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 
 /**
  *
  * @author lukas
  */
 public class JsonBuilderFactoryTest {
-    
+
     @Test
-    public void testArrayBuilder() {
+    void testArrayBuilder() {
         JsonBuilderFactory builderFactory = Json.createBuilderFactory(null);
-        Assert.assertNotNull(builderFactory.createArrayBuilder());
-    }
-    
-    @Test(expected = NullPointerException.class)
-    public void testArrayBuilderNPE() {
-        JsonBuilderFactory builderFactory = Json.createBuilderFactory(null);
-        builderFactory.createArrayBuilder(null);
+        assertNotNull(builderFactory.createArrayBuilder());
     }
 
     @Test
-    public void testArrayBuilderFromArray() {
+    void testArrayBuilderNPE() {
+        assertThrows(NullPointerException.class, () -> {
+            JsonBuilderFactory builderFactory = Json.createBuilderFactory(null);
+            builderFactory.createArrayBuilder(null);
+        });
+    }
+
+    @Test
+    void testArrayBuilderFromArray() {
         JsonBuilderFactory builderFactory = Json.createBuilderFactory(null);
         JsonArrayBuilder builder = builderFactory.createArrayBuilder(JsonBuilderTest.buildPhone());
-        Assert.assertEquals(JsonBuilderTest.buildPhone(), builder.build());
+        assertEquals(JsonBuilderTest.buildPhone(), builder.build());
     }
 
     @Test
-    public void testObjectBuilder() {
+    void testObjectBuilder() {
         JsonBuilderFactory builderFactory = Json.createBuilderFactory(null);
-        Assert.assertNotNull(builderFactory.createObjectBuilder());
-    }
-    
-    @Test(expected = NullPointerException.class)
-    public void testObjectBuilderNPE() {
-        JsonBuilderFactory builderFactory = Json.createBuilderFactory(null);
-        builderFactory.createObjectBuilder((JsonObject) null);
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void testObjectBuilderNPE_map() {
-        JsonBuilderFactory builderFactory = Json.createBuilderFactory(null);
-        builderFactory.createObjectBuilder((Map<String, Object>) null);
+        assertNotNull(builderFactory.createObjectBuilder());
     }
 
     @Test
-    public void testObjectBuilderFromObject() {
+    void testObjectBuilderNPE() {
+        assertThrows(NullPointerException.class, () -> {
+            JsonBuilderFactory builderFactory = Json.createBuilderFactory(null);
+            builderFactory.createObjectBuilder((JsonObject) null);
+        });
+    }
+
+    @Test
+    void testObjectBuilderNPE_map() {
+        assertThrows(NullPointerException.class, () -> {
+            JsonBuilderFactory builderFactory = Json.createBuilderFactory(null);
+            builderFactory.createObjectBuilder((Map<String, Object>) null);
+        });
+    }
+
+    @Test
+    void testObjectBuilderFromObject() {
         JsonBuilderFactory builderFactory = Json.createBuilderFactory(null);
         JsonObjectBuilder builder = builderFactory.createObjectBuilder(JsonBuilderTest.buildPerson());
-        Assert.assertEquals(JsonBuilderTest.buildPerson(), builder.build());
+        assertEquals(JsonBuilderTest.buildPerson(), builder.build());
     }
 }

@@ -16,14 +16,14 @@
 
 package org.eclipse.parsson.tests;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import jakarta.json.JsonObject;
 import jakarta.json.spi.JsonProvider;
@@ -32,7 +32,7 @@ import jakarta.json.stream.JsonParser;
 public class Issue25Test {
 
     @Test
-    public void doubleClose() throws IOException {
+    void doubleClose() throws IOException {
         byte[] content = "[\"test\"]".getBytes();
         JsonProvider json = JsonProvider.provider();
         for (int i = 0; i < 3; i++) {
@@ -54,7 +54,7 @@ public class Issue25Test {
     }
 
     @Test
-    public void doubleCloseWithMoreContent() throws IOException {
+    void doubleCloseWithMoreContent() throws IOException {
         byte[] content = loadResource("/comments.json");
         JsonProvider json = JsonProvider.provider();
         for (int i = 0; i < 3; i++) {

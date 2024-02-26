@@ -16,27 +16,29 @@
 
 package org.eclipse.parsson.tests;
 
-import junit.framework.TestCase;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import jakarta.json.*;
-import jakarta.json.stream.JsonGenerator;
-import jakarta.json.stream.JsonGeneratorFactory;
 import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
+
+import jakarta.json.Json;
+import jakarta.json.JsonException;
+import jakarta.json.stream.JsonGenerator;
+import jakarta.json.stream.JsonGeneratorFactory;
+
+import org.junit.jupiter.api.Test;
+
 
 /**
  * Tests JsonGeneratorFactory
  *
  * @author Jitendra Kotamraju
  */
-public class JsonGeneratorFactoryTest extends TestCase {
+public class JsonGeneratorFactoryTest {
 
-    public JsonGeneratorFactoryTest(String testName) {
-        super(testName);
-    }
-
-    public void testGeneratorFactory() {
+    @Test
+    void testGeneratorFactory() {
         JsonGeneratorFactory generatorFactory = Json.createGeneratorFactory(null);
 
         JsonGenerator generator1 = generatorFactory.createGenerator(new StringWriter());
@@ -48,7 +50,8 @@ public class JsonGeneratorFactoryTest extends TestCase {
         generator2.close();
     }
 
-    public void testGeneratorFactoryWithConfig() {
+    @Test
+    void testGeneratorFactoryWithConfig() {
         Map<String, Object> config = new HashMap<>();
         config.put(JsonGenerator.PRETTY_PRINTING, true);
         JsonGeneratorFactory generatorFactory = Json.createGeneratorFactory(config);

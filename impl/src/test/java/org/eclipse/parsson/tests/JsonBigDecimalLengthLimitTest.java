@@ -16,6 +16,9 @@
 
 package org.eclipse.parsson.tests;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.StringReader;
 import java.math.BigDecimal;
 
@@ -23,31 +26,31 @@ import jakarta.json.Json;
 import jakarta.json.JsonNumber;
 import jakarta.json.JsonReader;
 import jakarta.json.JsonValue;
-import junit.framework.TestCase;
+
 import org.eclipse.parsson.api.JsonConfig;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test maxBigDecimalLength limit set from System property.
  */
-public class JsonBigDecimalLengthLimitTest extends TestCase  {
+public class JsonBigDecimalLengthLimitTest  {
 
-    public JsonBigDecimalLengthLimitTest(String testName) {
-        super(testName);
-    }
-
-    @Override
-    protected void setUp() {
+    @BeforeEach
+    void setUp() {
         System.setProperty(JsonConfig.MAX_BIGDECIMAL_LEN, "500");
     }
 
-    @Override
-    protected void tearDown() {
+    @AfterEach
+    void tearDown() {
         System.clearProperty(JsonConfig.MAX_BIGDECIMAL_LEN);
     }
 
     // Test BigDecimal max source characters array length using length equal to system property limit of 500.
     // Parsing shall pass and return value equal to source String.
-    public void testLargeBigDecimalBellowLimit() {
+    @Test
+    void testLargeBigDecimalBellowLimit() {
         JsonReader reader = Json.createReader(new StringReader(JsonNumberTest.Π_500));
         JsonNumber check = Json.createValue(new BigDecimal(JsonNumberTest.Π_500));
         JsonValue value = reader.readValue();
@@ -57,7 +60,8 @@ public class JsonBigDecimalLengthLimitTest extends TestCase  {
 
     // Test BigDecimal max source characters array length using length above system property limit of 500.
     // Parsing shall pass and return value equal to source String.
-    public void testLargeBigDecimalAboveLimit() {
+    @Test
+    void testLargeBigDecimalAboveLimit() {
         JsonReader reader = Json.createReader(new StringReader(JsonNumberTest.Π_501));
         try {
             reader.readValue();

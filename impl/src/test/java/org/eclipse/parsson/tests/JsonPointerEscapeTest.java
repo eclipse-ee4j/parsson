@@ -16,11 +16,12 @@
 
 package org.eclipse.parsson.tests;
 
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 
 import jakarta.json.Json;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.jupiter.api.Test;
 
 /**
  * JSON pointer escape/unescape tests.
@@ -30,13 +31,13 @@ import static org.junit.Assert.assertEquals;
 public class JsonPointerEscapeTest {
 
     @Test
-    public void escapeTest() {
+    void escapeTest() {
         assertEquals("a~1b", Json.encodePointer("a/b"));
         assertEquals("a~0b~1c", Json.encodePointer("a~b/c"));
     }
 
     @Test
-    public void unescapeTest() {
+    void unescapeTest() {
         assertEquals("/a/b", Json.decodePointer("/a~1b"));
         assertEquals("/~1", Json.decodePointer("/~01"));
     }

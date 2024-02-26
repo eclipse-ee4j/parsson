@@ -16,43 +16,52 @@
 
 package org.eclipse.parsson.tests;
 
-import junit.framework.TestCase;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import jakarta.json.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import jakarta.json.Json;
+import jakarta.json.JsonArray;
+import jakarta.json.JsonNumber;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonObjectBuilder;
+
+import org.junit.jupiter.api.Test;
+
 /**
  * @author Jitendra Kotamraju
  */
-public class JsonBuilderTest extends TestCase {
-    public JsonBuilderTest(String testName) {
-        super(testName);
-    }
-
-    public void testEmptyObject() throws Exception {
+public class JsonBuilderTest {
+    
+    @Test
+    void testEmptyObject() throws Exception {
         JsonObject empty = Json.createObjectBuilder()
                 .build();
 
         JsonObjectTest.testEmpty(empty);
     }
 
-    public void testEmptyArray() throws Exception {
+    @Test
+    void testEmptyArray() throws Exception {
         JsonArray empty = Json.createArrayBuilder()
                 .build();
 
         assertTrue(empty.isEmpty());
     }
 
-    public void testObject() throws Exception {
+    @Test
+    void testObject() throws Exception {
         JsonObject person = buildPerson();
         JsonObjectTest.testPerson(person);
     }
 
-    public void testNumber() throws Exception {
+    @Test
+    void testNumber() throws Exception {
         JsonObject person = buildPerson();
         JsonNumber number = person.getJsonNumber("age");
         assertEquals(25, number.intValueExact());
@@ -61,7 +70,8 @@ public class JsonBuilderTest extends TestCase {
         JsonObjectTest.testPerson(person);
     }
 
-    public void testJsonObjectCopy() {
+    @Test
+    void testJsonObjectCopy() {
         JsonObject person = buildPerson();
         final JsonObjectBuilder objectBuilder = Json.createObjectBuilder(person);
         final JsonObject copyPerson = objectBuilder.build();
@@ -74,7 +84,8 @@ public class JsonBuilderTest extends TestCase {
 
     }
 
-    public void testJsonObjectMap() {
+    @Test
+    void testJsonObjectMap() {
         Map<String, Object> person = buildPersonAsMap();
         final JsonObjectBuilder objectBuilder = Json.createObjectBuilder(person);
         final JsonObject copyPerson = objectBuilder.build();

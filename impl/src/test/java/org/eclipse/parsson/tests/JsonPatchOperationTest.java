@@ -16,10 +16,13 @@
 
 package org.eclipse.parsson.tests;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import jakarta.json.JsonException;
 import jakarta.json.JsonPatch.Operation;
-import org.junit.Assert;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  *
@@ -30,17 +33,19 @@ public class JsonPatchOperationTest {
     private static final String[] opNames = {"add", "remove", "replace", "move", "copy", "test"};
 
     @Test
-    public void fromOperationName() {
+    void fromOperationName() {
         for (String op: opNames) {
-            Assert.assertEquals(Operation.valueOf(op.toUpperCase()), Operation.fromOperationName(op));
+            Assertions.assertEquals(Operation.valueOf(op.toUpperCase()), Operation.fromOperationName(op));
         }
         for (String op: opNames) {
-            Assert.assertEquals(Operation.valueOf(op.toUpperCase()), Operation.fromOperationName(op.toUpperCase()));
+            Assertions.assertEquals(Operation.valueOf(op.toUpperCase()), Operation.fromOperationName(op.toUpperCase()));
         }
     }
 
-    @Test(expected = JsonException.class)
-    public void fromInvalidOperationName() {
-        Operation.fromOperationName("undef");
+    @Test
+    void fromInvalidOperationName() {
+        assertThrows(JsonException.class, () -> {
+            Operation.fromOperationName("undef");
+        });
     }
 }

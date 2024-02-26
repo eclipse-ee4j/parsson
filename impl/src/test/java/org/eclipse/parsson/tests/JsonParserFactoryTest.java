@@ -16,8 +16,6 @@
 
 package org.eclipse.parsson.tests;
 
-import junit.framework.TestCase;
-
 import jakarta.json.Json;
 import jakarta.json.stream.JsonParser;
 import jakarta.json.stream.JsonParserFactory;
@@ -25,18 +23,17 @@ import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.junit.jupiter.api.Test;
+
 /**
  * Tests JsonParserFactory
  *
  * @author Jitendra Kotamraju
  */
-public class JsonParserFactoryTest extends TestCase {
+public class JsonParserFactoryTest {
 
-    public JsonParserFactoryTest(String testName) {
-        super(testName);
-    }
-
-    public void testParserFactory() {
+    @Test
+    void testParserFactory() {
         JsonParserFactory parserFactory = Json.createParserFactory(null);
         JsonParser parser1 = parserFactory.createParser(new StringReader("[]"));
         parser1.close();
@@ -44,7 +41,8 @@ public class JsonParserFactoryTest extends TestCase {
         parser2.close();
     }
 
-    public void testParserFactoryWithConfig() {
+    @Test
+    void testParserFactoryWithConfig() {
         Map<String, ?> config = new HashMap<>();
         JsonParserFactory parserFactory = Json.createParserFactory(config);
         JsonParser parser1 = parserFactory.createParser(new StringReader("[]"));

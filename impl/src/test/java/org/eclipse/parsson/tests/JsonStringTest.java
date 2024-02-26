@@ -16,21 +16,26 @@
 
 package org.eclipse.parsson.tests;
 
-import junit.framework.TestCase;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import jakarta.json.*;
 import java.io.StringReader;
+
+import jakarta.json.Json;
+import jakarta.json.JsonArray;
+import jakarta.json.JsonReader;
+import jakarta.json.JsonString;
+
+import org.junit.jupiter.api.Test;
 
 /**
  * @author Jitendra Kotamraju
  */
-public class JsonStringTest extends TestCase {
-    public JsonStringTest(String testName) {
-        super(testName);
-    }
+public class JsonStringTest {
 
     // tests JsonString#toString()
-    public void testToString() throws Exception {
+    @Test
+    void testToString() throws Exception {
         escapedString("");
         escapedString("abc");
         escapedString("abc\f");
@@ -45,7 +50,8 @@ public class JsonStringTest extends TestCase {
         escapedString("abc\"\\/abc");
     }
 
-    public void testHashCode() {
+    @Test
+    void testHashCode() {
         String string1 = new String("a");
         JsonString jsonString1 = Json.createValue(string1);
         assertTrue(jsonString1.hashCode() == jsonString1.getString().hashCode());

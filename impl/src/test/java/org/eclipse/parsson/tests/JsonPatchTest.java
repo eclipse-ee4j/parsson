@@ -19,8 +19,8 @@ package org.eclipse.parsson.tests;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -35,20 +35,16 @@ import jakarta.json.JsonString;
 import jakarta.json.JsonStructure;
 import jakarta.json.JsonValue;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 /**
  * 
  * @author Alex Soto
  *
  */
-@RunWith(Parameterized.class)
 public class JsonPatchTest {
 
-    @Parameters(name = "{index}: ({0})={1}")
     public static Iterable<Object[]> data() throws Exception {
         List<Object[]> examples = new ArrayList<>();
         JsonArray data = loadData();
@@ -86,24 +82,11 @@ public class JsonPatchTest {
         return (JsonArray) reader.read();
     }
 
-    private JsonArray patch;
-    private JsonStructure target;
-    private JsonValue expected;
-    private Class<? extends Exception> expectedException;
-
-    public JsonPatchTest(JsonArray patch, JsonStructure target,
-            JsonValue expected, Class<? extends Exception> expectedException) {
-        super();
-        this.patch = patch;
-        this.target = target;
-        this.expected = expected;
-        this.expectedException = expectedException;
-    }
-
-    @Test
-    public void shouldExecuteJsonPatchOperationsToJsonDocument() {
+    @MethodSource("data")
+    @ParameterizedTest(name = "{index}: ({0})={1}")
+    void shouldExecuteJsonPatchOperationsToJsonDocument(JsonArray arrayPatch, JsonStructure target, JsonValue expected, Class<? extends Exception> expectedException) {
         try {
-            JsonPatch patch = Json.createPatchBuilder(this.patch).build();
+            JsonPatch patch = Json.createPatchBuilder(arrayPatch).build();
             JsonStructure output = patch.apply(target);
             assertThat(output, is(expected));
             assertThat(expectedException, nullValue());

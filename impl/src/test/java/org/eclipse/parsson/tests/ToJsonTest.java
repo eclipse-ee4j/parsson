@@ -16,22 +16,23 @@
 
 package org.eclipse.parsson.tests;
 
-import org.eclipse.parsson.TestUtils;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonValue;
 
-import static org.junit.Assert.assertEquals;
+import org.eclipse.parsson.TestUtils;
+import org.junit.jupiter.api.Test;
+
 /**
  * @author Kin-man Chung
  */
 public class ToJsonTest {
 
     @Test
-    public void testToJson() {
+    void testToJson() {
         assertEquals(Json.createValue("someString"), TestUtils.toJson("'someString'"));
         assertEquals(Json.createValue("some'thing"), TestUtils.toJson("'some\\'thing'"));
         assertEquals(Json.createValue("some\"thing"), TestUtils.toJson("'some\\\"thing'"));
