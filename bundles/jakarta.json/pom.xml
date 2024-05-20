@@ -23,13 +23,13 @@
     <parent>
         <groupId>org.eclipse.parsson</groupId>
         <artifactId>parsson-bundles</artifactId>
-        <version>1.1.6-SNAPSHOT</version>
+        <version>1.1.7-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <groupId>org.eclipse.parsson</groupId>
     <artifactId>jakarta.json</artifactId>
-    <version>1.1.6-SNAPSHOT</version>
+    <version>1.1.7-SNAPSHOT</version>
     <name>JSON-P with Parsson Provider</name>
     <description>Default provider for Jakarta JSON Processing</description>
 
