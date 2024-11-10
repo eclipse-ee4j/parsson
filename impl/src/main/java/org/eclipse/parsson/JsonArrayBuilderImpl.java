@@ -26,6 +26,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.RandomAccess;
 
 /**
  * JsonArrayBuilder implementation
@@ -355,7 +356,7 @@ class JsonArrayBuilderImpl implements JsonArrayBuilder {
         }
     }
 
-    private static final class JsonArrayImpl extends AbstractList<JsonValue> implements JsonArray {
+    private static final class JsonArrayImpl extends AbstractList<JsonValue> implements JsonArray, RandomAccess {
         private final List<JsonValue> valueList;    // Unmodifiable
         private final JsonContext jsonContext;
         private int hashCode;
