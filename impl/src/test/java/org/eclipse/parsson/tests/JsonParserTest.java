@@ -180,10 +180,12 @@ public class JsonParserTest {
 		Assertions.assertTrue(parser.hasNext());
 		Assertions.assertTrue(parser.hasNext());
         Assertions.assertEquals(Event.START_ARRAY, parser.next());
+        Assertions.assertEquals(Event.START_ARRAY, parser.currentEvent());
 
 		Assertions.assertTrue(parser.hasNext());
 		Assertions.assertTrue(parser.hasNext());
         Assertions.assertEquals(Event.END_ARRAY, parser.next());
+        Assertions.assertEquals(Event.END_ARRAY, parser.currentEvent());
 
 		Assertions.assertFalse(parser.hasNext());
 		Assertions.assertFalse(parser.hasNext());
@@ -212,7 +214,9 @@ public class JsonParserTest {
 
     static void testEmptyArrayIterator2(JsonParser parser) {
         Assertions.assertEquals(Event.START_ARRAY, parser.next());
+        Assertions.assertEquals(Event.START_ARRAY, parser.currentEvent());
         Assertions.assertEquals(Event.END_ARRAY, parser.next());
+        Assertions.assertEquals(Event.END_ARRAY, parser.currentEvent());
         try {
             parser.next();
             Assertions.fail("Should have thrown a NoSuchElementException");
@@ -237,7 +241,9 @@ public class JsonParserTest {
 
     static void testEmptyArrayIterator3(JsonParser parser) {
         Assertions.assertEquals(Event.START_ARRAY, parser.next());
+        Assertions.assertEquals(Event.START_ARRAY, parser.currentEvent());
         Assertions.assertEquals(Event.END_ARRAY, parser.next());
+        Assertions.assertEquals(Event.END_ARRAY, parser.currentEvent());
 		Assertions.assertFalse(parser.hasNext());
         try {
             parser.next();
@@ -521,13 +527,21 @@ public class JsonParserTest {
 
     static void testNestedArray(JsonParser parser) {
         Assertions.assertEquals(Event.START_ARRAY, parser.next());
+        Assertions.assertEquals(Event.START_ARRAY, parser.currentEvent());
         Assertions.assertEquals(Event.START_ARRAY, parser.next());
+        Assertions.assertEquals(Event.START_ARRAY, parser.currentEvent());
         Assertions.assertEquals(Event.END_ARRAY, parser.next());
+        Assertions.assertEquals(Event.END_ARRAY, parser.currentEvent());
         Assertions.assertEquals(Event.START_ARRAY, parser.next());
+        Assertions.assertEquals(Event.START_ARRAY, parser.currentEvent());
         Assertions.assertEquals(Event.START_ARRAY, parser.next());
+        Assertions.assertEquals(Event.START_ARRAY, parser.currentEvent());
         Assertions.assertEquals(Event.END_ARRAY, parser.next());
+        Assertions.assertEquals(Event.END_ARRAY, parser.currentEvent());
         Assertions.assertEquals(Event.END_ARRAY, parser.next());
+        Assertions.assertEquals(Event.END_ARRAY, parser.currentEvent());
         Assertions.assertEquals(Event.END_ARRAY, parser.next());
+        Assertions.assertEquals(Event.END_ARRAY, parser.currentEvent());
 		Assertions.assertFalse(parser.hasNext());
 		Assertions.assertFalse(parser.hasNext());
     }

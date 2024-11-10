@@ -98,6 +98,11 @@ class JsonStructureParser implements JsonParser {
     }
 
     @Override
+    public Event currentEvent() {
+        return state;
+    }
+
+    @Override
     public Event next() {
         if (!hasNext()) {
             throw new NoSuchElementException();
