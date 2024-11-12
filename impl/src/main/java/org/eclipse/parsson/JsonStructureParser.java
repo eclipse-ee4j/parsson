@@ -98,6 +98,11 @@ class JsonStructureParser implements JsonParser {
     }
 
     @Override
+    public Event currentEvent() {
+        return state;
+    }
+
+    @Override
     public Event next() {
         if (!hasNext()) {
             throw new NoSuchElementException();
@@ -121,6 +126,7 @@ class JsonStructureParser implements JsonParser {
                     state = Event.END_ARRAY;
                 }
             } else {
+
                 // ObjectScope
                 if (state == Event.KEY_NAME) {
                     nextStateAndEndOfTheObjectOrArray();
