@@ -126,6 +126,7 @@ class JsonStructureParser implements JsonParser {
                     state = Event.END_ARRAY;
                 }
             } else {
+
                 // ObjectScope
                 if (state == Event.KEY_NAME) {
                     nextStateAndEndOfTheObjectOrArray();
