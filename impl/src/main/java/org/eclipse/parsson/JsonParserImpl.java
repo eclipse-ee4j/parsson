@@ -384,8 +384,8 @@ public class JsonParserImpl implements JsonParser {
         final int limit;
         private Context head;
 
-        Stack(int size) {
-            this.limit = size;
+        Stack(int limit) {
+            this.limit = limit;
         }
 
         private void push(Context context) {
