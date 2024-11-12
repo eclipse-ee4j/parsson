@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2021, 2023 Contributors to the Eclipse Foundation
+# Copyright (c) 2021, 2024 Contributors to the Eclipse Foundation
 #
 # This program and the accompanying materials are made available under the
 # terms of the Eclipse Public License v. 2.0 which is available at
@@ -47,11 +47,12 @@ jobs:
         mvn -B -V -U -C -Poss-release,staging clean verify org.glassfish.copyright:glassfish-copyright-maven-plugin:check -Dgpg.skip=true -Dcopyright.ignoreyear=true
         echo "::set-output name=jdk::${{ matrix.java_version }}"
     - name: Upload binary image
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       if: success()
       with:
           name: parsson-dist
           path: bundles/dist/target/parsson-dist.zip
+          overwrite: true
 
   test:
     needs: build
@@ -74,7 +75,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: Download binaries
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
           name: parsson-dist
       - name: Prepare distribution
@@ -86,7 +87,8 @@ jobs:
           build-root-directory: tck-impl
           arguments: check -Pparsson.home=image/parsson-dist -Pparsson.impl=${{ matrix.test_suite }}
       - name: Upload test results
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: test-results
           path: tck-impl/build/distributions/tck-test-results.zip
+          overwrite: true
