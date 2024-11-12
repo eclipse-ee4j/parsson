@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -26,6 +26,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.RandomAccess;
 
 /**
  * JsonArrayBuilder implementation
@@ -355,7 +356,7 @@ class JsonArrayBuilderImpl implements JsonArrayBuilder {
         }
     }
 
-    private static final class JsonArrayImpl extends AbstractList<JsonValue> implements JsonArray {
+    private static final class JsonArrayImpl extends AbstractList<JsonValue> implements JsonArray, RandomAccess {
         private final List<JsonValue> valueList;    // Unmodifiable
         private final JsonContext jsonContext;
         private int hashCode;
