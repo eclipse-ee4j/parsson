@@ -88,6 +88,44 @@ class JsonStructureParser implements JsonParser {
     }
 
     @Override
+    public JsonValue getValue() {
+        switch (state) {
+            case START_ARRAY:
+            case START_OBJECT:
+            case VALUE_STRING:
+            case VALUE_NUMBER:
+            case VALUE_TRUE:
+            case VALUE_FALSE:
+            case VALUE_NULL:
+                return current.getJsonValue();
+            case KEY_NAME:
+                return new JsonStringImpl(((ObjectScope)current).key);
+            case END_ARRAY:
+            case END_OBJECT:
+            default:
+                throw new IllegalStateException(JsonMessages.PARSER_GETVALUE_ERR(state));
+        }
+    }
+
+    @Override
+    public JsonArray getArray() {
+        if (state != Event.START_ARRAY) {
+            throw new IllegalStateException(
+                    JsonMessages.PARSER_GETARRAY_ERR(state));
+        }
+        return (JsonArray) scopeStack.peek().getJsonValue();
+    }
+
+    @Override
+    public JsonObject getObject() {
+        if (state != Event.START_OBJECT) {
+            throw new IllegalStateException(
+                    JsonMessages.PARSER_GETOBJECT_ERR(state));
+        }
+        return (JsonObject) scopeStack.peek().getJsonValue();
+    }
+
+    @Override
     public JsonLocation getLocation() {
         return JsonLocationImpl.UNKNOWN;
     }

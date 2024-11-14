@@ -27,6 +27,7 @@ import java.io.Reader;
 import java.io.StringReader;
 
 import jakarta.json.*;
+import jakarta.json.JsonValue.ValueType;
 import jakarta.json.stream.JsonLocation;
 import jakarta.json.stream.JsonParser;
 import jakarta.json.stream.JsonParser.Event;
@@ -505,6 +506,124 @@ public class JsonParserTest {
         Assertions.assertEquals(Event.VALUE_STRING, event);
         Assertions.assertEquals(value, parser.getString());
     }
+
+    @Test
+    void testGetValueStructure() {
+        try (JsonParser parser = Json.createParserFactory(null).createParser(
+                Json.createArrayBuilder()
+                    .add(1)
+                    .add(new BigDecimal("1.1"))
+                    .add(true)
+                    .add(false)
+                    .add("aString")
+                    .addNull()
+                    .add(Json.createArrayBuilder().build())
+                    .add(Json.createObjectBuilder()
+                            .add("key1", 2)
+                            .add("key2", new BigDecimal("2.2"))
+                            .add("key3", true)
+                            .add("key4", false)
+                            .add("key5", "bString")
+                            .addNull("key6")
+                            .add("key7", Json.createObjectBuilder().build())
+                            .build())
+                    .build())) {
+            testGetValueStructure(parser);
+        }
+    }
+
+    private void testGetValueStructure(JsonParser parser) {
+        Assertions.assertEquals(Event.START_ARRAY, parser.next());
+
+        Assertions.assertEquals(Event.VALUE_NUMBER, parser.next());
+        JsonValue value = parser.getValue();
+        Assertions.assertTrue(value instanceof JsonNumber);
+        JsonNumber number = (JsonNumber) value;
+        assertEquals(number.longValueExact(), 1L);
+
+        Assertions.assertEquals(Event.VALUE_NUMBER, parser.next());
+        value = parser.getValue();
+        Assertions.assertTrue(value instanceof JsonNumber);
+        number = (JsonNumber) value;
+        assertEquals(number.bigDecimalValue(), new BigDecimal("1.1"));
+
+        Assertions.assertEquals(Event.VALUE_TRUE, parser.next());
+        value = parser.getValue();
+        Assertions.assertSame(ValueType.TRUE, value.getValueType());
+
+        Assertions.assertEquals(Event.VALUE_FALSE, parser.next());
+        value = parser.getValue();
+        Assertions.assertSame(ValueType.FALSE, value.getValueType());
+
+        Assertions.assertEquals(Event.VALUE_STRING, parser.next());
+        value = parser.getValue();
+        Assertions.assertTrue(value instanceof JsonString);
+        JsonString string = (JsonString) value;
+        assertEquals("aString", string.getString());
+
+        Assertions.assertEquals(Event.VALUE_NULL, parser.next());
+        value = parser.getValue();
+
+        Assertions.assertSame(ValueType.NULL, value.getValueType());
+
+        Assertions.assertEquals(Event.START_ARRAY, parser.next());
+        JsonArray array = parser.getArray();
+        Assertions.assertTrue(array.isEmpty());
+        Assertions.assertEquals(Event.END_ARRAY, parser.next());
+
+        Assertions.assertEquals(Event.START_OBJECT, parser.next());
+
+        Assertions.assertEquals(Event.KEY_NAME, parser.next());
+        value = parser.getValue();
+        Assertions.assertTrue(value instanceof JsonString);
+        string = (JsonString) value;
+        Assertions.assertEquals("key1", string.getString());
+
+        Assertions.assertEquals(Event.VALUE_NUMBER, parser.next());
+        value = parser.getValue();
+        Assertions.assertTrue(value instanceof JsonNumber);
+        number = (JsonNumber) value;
+        Assertions.assertEquals(number.longValueExact(), 2L);
+
+        Assertions.assertEquals(Event.KEY_NAME, parser.next());
+        Assertions.assertEquals(Event.VALUE_NUMBER, parser.next());
+        value = parser.getValue();
+        Assertions.assertTrue(value instanceof JsonNumber);
+        number = (JsonNumber) value;
+        Assertions.assertEquals(number.bigDecimalValue(), new BigDecimal("2.2"));
+
+        Assertions.assertEquals(Event.KEY_NAME, parser.next());
+        Assertions.assertEquals(Event.VALUE_TRUE, parser.next());
+        value = parser.getValue();
+        Assertions.assertSame(ValueType.TRUE, value.getValueType());
+
+        Assertions.assertEquals(Event.KEY_NAME, parser.next());
+        Assertions.assertEquals(Event.VALUE_FALSE, parser.next());
+        value = parser.getValue();
+        Assertions.assertSame(ValueType.FALSE, value.getValueType());
+
+        Assertions.assertEquals(Event.KEY_NAME, parser.next());
+        Assertions.assertEquals(Event.VALUE_STRING, parser.next());
+        value = parser.getValue();
+        Assertions.assertTrue(value instanceof JsonString);
+        string = (JsonString) value;
+        Assertions.assertEquals("bString", string.getString());
+
+        Assertions.assertEquals(Event.KEY_NAME, parser.next());
+        Assertions.assertEquals(Event.VALUE_NULL, parser.next());
+        value = parser.getValue();
+        Assertions.assertSame(ValueType.NULL, value.getValueType());
+
+        Assertions.assertEquals(Event.KEY_NAME, parser.next());
+        Assertions.assertEquals(Event.START_OBJECT, parser.next());
+        JsonObject object = parser.getObject();
+        Assertions.assertTrue(object.isEmpty());
+        Assertions.assertEquals(Event.END_OBJECT, parser.next());
+        Assertions.assertEquals(Event.END_OBJECT, parser.next());
+        Assertions.assertEquals(Event.END_ARRAY, parser.next());
+        Assertions.assertFalse(parser.hasNext());
+    }
+
 
     @Test
     void testNestedArrayReader() {
