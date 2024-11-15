@@ -16,10 +16,6 @@
 
 package org.eclipse.parsson.tests;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
-
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -41,7 +37,6 @@ import java.util.Random;
 import java.util.Scanner;
 import jakarta.json.stream.JsonParsingException;
 
-import org.eclipse.parsson.JsonParserFixture;
 import org.eclipse.parsson.api.BufferPool;
 
 import org.junit.jupiter.api.Assertions;
@@ -189,11 +184,8 @@ public class JsonParserTest {
 
 		Assertions.assertFalse(parser.hasNext());
 		Assertions.assertFalse(parser.hasNext());
-        try {
-            parser.next();
-            Assertions.fail("Should have thrown a NoSuchElementException");
-        } catch (NoSuchElementException ignored) {
-        }
+		Assertions.assertThrows(NoSuchElementException.class, parser::next,
+		        "Should have thrown a NoSuchElementException");
     }
 
 
@@ -217,11 +209,8 @@ public class JsonParserTest {
         Assertions.assertEquals(Event.START_ARRAY, parser.currentEvent());
         Assertions.assertEquals(Event.END_ARRAY, parser.next());
         Assertions.assertEquals(Event.END_ARRAY, parser.currentEvent());
-        try {
-            parser.next();
-            Assertions.fail("Should have thrown a NoSuchElementException");
-        } catch (NoSuchElementException ignored) {
-        }
+        Assertions.assertThrows(NoSuchElementException.class, parser::next,
+            "Should have thrown a NoSuchElementException");
     }
 
     @Test
@@ -245,11 +234,8 @@ public class JsonParserTest {
         Assertions.assertEquals(Event.END_ARRAY, parser.next());
         Assertions.assertEquals(Event.END_ARRAY, parser.currentEvent());
 		Assertions.assertFalse(parser.hasNext());
-        try {
-            parser.next();
-            Assertions.fail("Should have thrown a NoSuchElementException");
-        } catch (NoSuchElementException ignored) {
-        }
+        Assertions.assertThrows(NoSuchElementException.class, parser::next,
+                "Should have thrown a NoSuchElementException");
     }
 
 
@@ -320,11 +306,8 @@ public class JsonParserTest {
 
 		Assertions.assertFalse(parser.hasNext());
 		Assertions.assertFalse(parser.hasNext());
-        try {
-            parser.next();
-            Assertions.fail("Should have thrown a NoSuchElementException");
-        } catch (NoSuchElementException ignored) {
-        }
+        Assertions.assertThrows(NoSuchElementException.class, parser::next,
+                "Should have thrown a NoSuchElementException");
     }
 
 
@@ -346,11 +329,8 @@ public class JsonParserTest {
     static void testEmptyObjectIterator2(JsonParser parser) {
         Assertions.assertEquals(Event.START_OBJECT, parser.next());
         Assertions.assertEquals(Event.END_OBJECT, parser.next());
-        try {
-            parser.next();
-            Assertions.fail("Should have thrown a NoSuchElementException");
-        } catch (NoSuchElementException ignored) {
-        }
+        Assertions.assertThrows(NoSuchElementException.class, parser::next,
+                "Should have thrown a NoSuchElementException");
     }
 
 
@@ -373,12 +353,8 @@ public class JsonParserTest {
         Assertions.assertEquals(Event.START_OBJECT, parser.next());
         Assertions.assertEquals(Event.END_OBJECT, parser.next());
 		Assertions.assertFalse(parser.hasNext());
-        try {
-            parser.next();
-            Assertions.fail("Should have thrown a NoSuchElementException");
-        } catch (NoSuchElementException ne) {
-            // expected
-        }
+        Assertions.assertThrows(NoSuchElementException.class, parser::next,
+                "Should have thrown a NoSuchElementException");
     }
 
 
@@ -566,40 +542,20 @@ public class JsonParserTest {
         Event event = parser.next();
         Assertions.assertEquals(Event.START_OBJECT, event);
 
-        try {
-            parser.getString();
-            Assertions.fail("JsonParser#getString() should have thrown exception in START_OBJECT state");
-        } catch (IllegalStateException expected) {
-            // no-op
-        }
+        Assertions.assertThrows(IllegalStateException.class, parser::getString,
+            "JsonParser#getString() should have thrown exception in START_OBJECT state");
 
-        try {
-            parser.isIntegralNumber();
-            Assertions.fail("JsonParser#getNumberType() should have thrown exception in START_OBJECT state");
-        } catch (IllegalStateException expected) {
-            // no-op
-        }
+        Assertions.assertThrows(IllegalStateException.class, parser::isIntegralNumber,
+            "JsonParser#getNumberType() should have thrown exception in START_OBJECT state");
 
-        try {
-            parser.getInt();
-            Assertions.fail("JsonParser#getInt() should have thrown exception in START_OBJECT state");
-        } catch (IllegalStateException expected) {
-            // no-op
-        }
+        Assertions.assertThrows(IllegalStateException.class, parser::getInt,
+            "JsonParser#getInt() should have thrown exception in START_OBJECT state");
 
-        try {
-            parser.getLong();
-            Assertions.fail("JsonParser#getLong() should have thrown exception in START_OBJECT state");
-        } catch (IllegalStateException expected) {
-            // no-op
-        }
+        Assertions.assertThrows(IllegalStateException.class, parser::getLong,
+            "JsonParser#getLong() should have thrown exception in START_OBJECT state");
 
-        try {
-            parser.getBigDecimal();
-            Assertions.fail("JsonParser#getBigDecimal() should have thrown exception in START_OBJECT state");
-        } catch (IllegalStateException expected) {
-            // no-op
-        }
+        Assertions.assertThrows(IllegalStateException.class, parser::getBigDecimal,
+            "JsonParser#getBigDecimal() should have thrown exception in START_OBJECT state");
     }
 
     static String wikiString() {

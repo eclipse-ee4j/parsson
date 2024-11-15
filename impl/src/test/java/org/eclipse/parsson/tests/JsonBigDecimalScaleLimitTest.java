@@ -62,14 +62,11 @@ public class JsonBigDecimalScaleLimitTest {
     void testSystemPropertyBigIntegerScaleAboveLimit() {
         BigDecimal value = new BigDecimal("3.1415926535897932384626433")
                 .setScale(50001, RoundingMode.HALF_UP);
-        try {
-            Json.createValue(value).bigIntegerValue();
-            Assertions.fail("No exception was thrown from bigIntegerValue with scale over limit");
-        } catch (UnsupportedOperationException e) {
-            // UnsupportedOperationException is expected to be thrown
-            JsonNumberTest.assertExceptionMessageContainsNumber(e, 50001);
-            JsonNumberTest.assertExceptionMessageContainsNumber(e, MAX_BIGINTEGER_SCALE);
-        }
+        UnsupportedOperationException e = Assertions.assertThrows(UnsupportedOperationException.class,
+            () -> Json.createValue(value).bigIntegerValue(), 
+            "No exception was thrown from bigIntegerValue with scale over limit");
+        JsonNumberTest.assertExceptionMessageContainsNumber(e, 50001);
+        JsonNumberTest.assertExceptionMessageContainsNumber(e, MAX_BIGINTEGER_SCALE);
         System.clearProperty("org.eclipse.parsson.maxBigIntegerScale");
     }
 
@@ -81,14 +78,11 @@ public class JsonBigDecimalScaleLimitTest {
     void testSystemPropertyBigIntegerNegScaleAboveLimit() {
         BigDecimal value = new BigDecimal("3.1415926535897932384626433")
                 .setScale(-50001, RoundingMode.HALF_UP);
-        try {
-            Json.createValue(value).bigIntegerValue();
-            Assertions.fail("No exception was thrown from bigIntegerValue with scale over limit");
-        } catch (UnsupportedOperationException e) {
-            // UnsupportedOperationException is expected to be thrown
-            JsonNumberTest.assertExceptionMessageContainsNumber(e, -50001);
-            JsonNumberTest.assertExceptionMessageContainsNumber(e, MAX_BIGINTEGER_SCALE);
-        }
+        UnsupportedOperationException e = Assertions.assertThrows(UnsupportedOperationException.class,
+                () -> Json.createValue(value).bigIntegerValue(),
+            "No exception was thrown from bigIntegerValue with scale over limit");
+        JsonNumberTest.assertExceptionMessageContainsNumber(e, -50001);
+        JsonNumberTest.assertExceptionMessageContainsNumber(e, MAX_BIGINTEGER_SCALE);
         System.clearProperty("org.eclipse.parsson.maxBigIntegerScale");
     }
 

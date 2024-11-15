@@ -241,13 +241,9 @@ public class JsonNumberTest {
 
     @Test
     void testBigIntegerExact() {
-        try {
-            JsonArray array = Json.createArrayBuilder().add(12345.12345).build();
-            array.getJsonNumber(0).bigIntegerValueExact();
-            Assertions.fail("Expected Arithmetic exception");
-        } catch (ArithmeticException expected) {
-            // no-op
-        }
+        JsonArray array = Json.createArrayBuilder().add(12345.12345).build();
+        Assertions.assertThrows(ArithmeticException.class, () -> array.getJsonNumber(0).bigIntegerValueExact(),
+            "Expected Arithmetic exception");
     }
 
     @Test
@@ -293,14 +289,11 @@ public class JsonNumberTest {
     void testDefaultBigIntegerScaleAboveLimit() {
         BigDecimal value = new BigDecimal("3.1415926535897932384626433")
                 .setScale(100001, RoundingMode.HALF_UP);
-        try {
-            Json.createValue(value).bigIntegerValue();
-            Assertions.fail("No exception was thrown from bigIntegerValue with scale over limit");
-        } catch (UnsupportedOperationException e) {
-            // UnsupportedOperationException is expected to be thrown
-            assertExceptionMessageContainsNumber(e, 100001);
-            assertExceptionMessageContainsNumber(e, DEFAULT_MAX_BIGINTEGER_SCALE);
-        }
+        UnsupportedOperationException e = Assertions.assertThrows(UnsupportedOperationException.class,
+                () -> Json.createValue(value).bigIntegerValue(),
+                "No exception was thrown from bigIntegerValue with scale over limit");
+        assertExceptionMessageContainsNumber(e, 100001);
+        assertExceptionMessageContainsNumber(e, DEFAULT_MAX_BIGINTEGER_SCALE);
     }
 
     // Test default BigInteger scale value limit using negative value above limit.
@@ -329,18 +322,15 @@ public class JsonNumberTest {
         BigDecimal value = new BigDecimal("3.1415926535897932384626433")
                 .setScale(50001, RoundingMode.HALF_UP);
         Map<String, ?> config = Map.of(JsonConfig.MAX_BIGINTEGER_SCALE, "50000");
-        try {
-            JsonObject jsonObject = Json.createBuilderFactory(config)
-                    .createObjectBuilder()
-                    .add("bigDecimal", value)
-                    .build();
-            jsonObject.getJsonNumber("bigDecimal").bigIntegerValue();
-            Assertions.fail("No exception was thrown from bigIntegerValue with scale over limit");
-        } catch (UnsupportedOperationException e) {
-            // UnsupportedOperationException is expected to be thrown
-            assertExceptionMessageContainsNumber(e, 50001);
-            assertExceptionMessageContainsNumber(e, 50000);
-        }
+        JsonObject jsonObject = Json.createBuilderFactory(config)
+                .createObjectBuilder()
+                .add("bigDecimal", value)
+                .build();
+        UnsupportedOperationException e = Assertions.assertThrows(UnsupportedOperationException.class,
+                () -> jsonObject.getJsonNumber("bigDecimal").bigIntegerValue(),
+                "No exception was thrown from bigIntegerValue with scale over limit");
+        assertExceptionMessageContainsNumber(e, 50001);
+        assertExceptionMessageContainsNumber(e, 50000);
     }
 
     // Test BigInteger scale value limit set from config Map using value above limit.
@@ -353,18 +343,15 @@ public class JsonNumberTest {
         BigDecimal value = new BigDecimal("3.1415926535897932384626433")
                 .setScale(-50001, RoundingMode.HALF_UP);
         Map<String, ?> config = Map.of(JsonConfig.MAX_BIGINTEGER_SCALE, "50000");
-        try {
-            JsonObject jsonObject = Json.createBuilderFactory(config)
-                    .createObjectBuilder()
-                    .add("bigDecimal", value)
-                    .build();
-            jsonObject.getJsonNumber("bigDecimal").bigIntegerValue();
-            Assertions.fail("No exception was thrown from bigIntegerValue with scale over limit");
-        } catch (UnsupportedOperationException e) {
-            // UnsupportedOperationException is expected to be thrown
-            assertExceptionMessageContainsNumber(e, -50001);
-            assertExceptionMessageContainsNumber(e, 50000);
-        }
+        JsonObject jsonObject = Json.createBuilderFactory(config)
+                .createObjectBuilder()
+                .add("bigDecimal", value)
+                .build();
+        UnsupportedOperationException e = Assertions.assertThrows(UnsupportedOperationException.class,
+                () -> jsonObject.getJsonNumber("bigDecimal").bigIntegerValue(),
+                "No exception was thrown from bigIntegerValue with scale over limit");
+        assertExceptionMessageContainsNumber(e, -50001);
+        assertExceptionMessageContainsNumber(e, 50000);
     }
 
     // Test BigDecimal max source characters array length using length equal to default limit of 1100.
@@ -383,15 +370,12 @@ public class JsonNumberTest {
     @Test
     void testLargeBigDecimalAboveLimit() {
         JsonReader reader = Json.createReader(new StringReader(Π_1101));
-        try {
-            reader.readValue();
-            Assertions.fail("No exception was thrown from BigDecimal parsing with source characters array length over limit");
-        } catch (UnsupportedOperationException e) {
-            // UnsupportedOperationException is expected to be thrown
-            Assertions.assertEquals(
-                    "Number of BigDecimal source characters 1101 exceeded maximal allowed value of 1100",
-                    e.getMessage());
-        }
+        UnsupportedOperationException e = Assertions.assertThrows(UnsupportedOperationException.class,
+                reader::readValue,
+                "No exception was thrown from BigDecimal parsing with source characters array length over limit");
+        Assertions.assertEquals(
+                "Number of BigDecimal source characters 1101 exceeded maximal allowed value of 1100",
+                e.getMessage());
     }
 
     // Test BigDecimal max source characters array length using length equal to custom limit of 500.
@@ -412,15 +396,12 @@ public class JsonNumberTest {
     void testLargeBigDecimalAboveCustomLimit() {
         Map<String, ?> config = Map.of(JsonConfig.MAX_BIGDECIMAL_LEN, "500");
         JsonReader reader = Json.createReaderFactory(config).createReader(new StringReader(Π_501));
-        try {
-            reader.readValue();
-            Assertions.fail("No exception was thrown from BigDecimal parsing with source characters array length over limit");
-        } catch (UnsupportedOperationException e) {
-            // UnsupportedOperationException is expected to be thrown
-            Assertions.assertEquals(
-                    "Number of BigDecimal source characters 501 exceeded maximal allowed value of 500",
-                    e.getMessage());
-        }
+        UnsupportedOperationException e = Assertions.assertThrows(UnsupportedOperationException.class,
+                reader::readValue,
+                "No exception was thrown from BigDecimal parsing with source characters array length over limit");
+        Assertions.assertEquals(
+                "Number of BigDecimal source characters 501 exceeded maximal allowed value of 500",
+                e.getMessage());
     }
 
     static void assertExceptionMessageContainsNumber(Exception e, int number) {
