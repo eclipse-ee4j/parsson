@@ -46,13 +46,8 @@ public class JsonDuplicateKeyTest {
         String json = "{\"a\":\"b\",\"a\":\"c\"}";
         JsonReaderFactory jsonReaderFactory = Json.createReaderFactory(Collections.singletonMap(JsonConfig.KEY_STRATEGY, JsonConfig.KeyStrategy.NONE));
         JsonReader jsonReader = jsonReaderFactory.createReader(new StringReader(json));
-        try {
-            jsonReader.readObject();
-            Assertions.fail();
-        } catch (Exception e) {
-            Assertions.assertTrue(e instanceof JsonParsingException);
-            Assertions.assertEquals("Duplicate key 'a' is not allowed", e.getMessage());
-        }
+        JsonParsingException e = Assertions.assertThrows(JsonParsingException.class, jsonReader::readObject);
+        Assertions.assertEquals("Duplicate key 'a' is not allowed", e.getMessage());
     }
 
     @Test
@@ -68,13 +63,8 @@ public class JsonDuplicateKeyTest {
         String json = "{\"a\":\"b\",\"b\":{\"c\":\"d\",\"c\":\"e\"}}";
         JsonReaderFactory jsonReaderFactory = Json.createReaderFactory(Collections.singletonMap(JsonConfig.KEY_STRATEGY, JsonConfig.KeyStrategy.NONE));
         JsonReader jsonReader = jsonReaderFactory.createReader(new StringReader(json));
-        try {
-            jsonReader.readObject();
-            Assertions.fail();
-        } catch (Exception e) {
-            Assertions.assertTrue(e instanceof JsonParsingException);
-            Assertions.assertEquals("Duplicate key 'c' is not allowed", e.getMessage());
-        }
+        JsonParsingException e = Assertions.assertThrows(JsonParsingException.class, jsonReader::readObject);
+        Assertions.assertEquals("Duplicate key 'c' is not allowed", e.getMessage());
     }
 
     @Test
@@ -88,12 +78,8 @@ public class JsonDuplicateKeyTest {
     void testJsonObjectBuilderDuplcateKey2() {
         JsonBuilderFactory jsonBuilderFactory = Json.createBuilderFactory(Collections.singletonMap(JsonConfig.KEY_STRATEGY, JsonConfig.KeyStrategy.NONE));
         JsonObjectBuilder objectBuilder = jsonBuilderFactory.createObjectBuilder();
-        try {
-            objectBuilder.add("a", "b").add("a", "c").build();
-            Assertions.fail();
-        } catch (Exception e) {
-            Assertions.assertTrue(e instanceof IllegalStateException);
-            Assertions.assertEquals("Duplicate key 'a' is not allowed", e.getMessage());
-        }
+        IllegalStateException e = Assertions.assertThrows(IllegalStateException.class, () -> 
+            objectBuilder.add("a", "b").add("a", "c").build());
+        Assertions.assertEquals("Duplicate key 'a' is not allowed", e.getMessage());
     }
 }

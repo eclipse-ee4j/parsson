@@ -124,12 +124,9 @@ public class JsonFieldTest {
         generator.writeStartObject();
         generator.writeKey("f1Name");
 
-        try {
-            generator.write("f2Name", "f2Value");
-            Assertions.fail("Field value, start object/array expected");
-        } catch (JsonGenerationException exception) {
-            //ok
-        }
+        Assertions.assertThrows(JsonGenerationException.class,
+                () -> generator.write("f2Name", "f2Value"),
+                "Field value, start object/array expected");
     }
 
 
@@ -140,12 +137,9 @@ public class JsonFieldTest {
 
         generator.writeStartArray();
 
-        try {
-            generator.writeKey("f1Value");
-            Assertions.fail("Not allowed in array .");
-        } catch (JsonGenerationException exception) {
-            //ok
-        }
+        Assertions.assertThrows(JsonGenerationException.class,
+                () -> generator.writeKey("f1Value"),
+                "Not allowed in array .");
     }
 
     @Test

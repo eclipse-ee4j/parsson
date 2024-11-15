@@ -111,23 +111,17 @@ public class JsonArrayTest {
     @Test
     void testAdd() {
         JsonArray array = Json.createArrayBuilder().build();
-        try {
+        Assertions.assertThrows(UnsupportedOperationException.class, () -> {
             array.add(JsonValue.FALSE);
-            Assertions.fail("JsonArray#add() should throw UnsupportedOperationException");
-        } catch(UnsupportedOperationException e) {
-            // Expected
-        }
+        }, "JsonArray#add() should throw UnsupportedOperationException");
     }
 
     @Test
     void testRemove() {
         JsonArray array = Json.createArrayBuilder().build();
-        try {
+        Assertions.assertThrows(UnsupportedOperationException.class, () -> {
             array.remove(0);
-            Assertions.fail("JsonArray#remove() should throw UnsupportedOperationException");
-        } catch(UnsupportedOperationException e) {
-            // Expected
-        }
+        }, "JsonArray#remove() should throw UnsupportedOperationException");
     }
 
     @Test
@@ -145,12 +139,9 @@ public class JsonArrayTest {
 
     @Test
     void testArrayBuilderNpe() {
-        try {
+        Assertions.assertThrows(NullPointerException.class, () -> {
             Json.createArrayBuilder().add((JsonValue)null).build();
-            Assertions.fail("JsonArrayBuilder#add(null) should throw NullPointerException");
-        } catch(NullPointerException e) {
-            // Expected
-        }
+        }, "JsonArrayBuilder#add(null) should throw NullPointerException");
     }
 
     @Test

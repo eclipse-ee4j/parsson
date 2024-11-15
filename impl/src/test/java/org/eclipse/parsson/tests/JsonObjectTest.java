@@ -133,34 +133,25 @@ public class JsonObjectTest {
     void testClassCastException() {
         JsonObject obj = Json.createObjectBuilder()
                 .add("foo", JsonValue.FALSE).build();
-        try {
-            obj.getJsonNumber("foo");
-            Assertions.fail("Expected ClassCastException for casting JsonValue.FALSE to JsonNumber");
-        } catch (ClassCastException ce) {
-            // Expected
-        }
+        Assertions.assertThrows(ClassCastException.class,
+                () -> obj.getJsonNumber("foo"),
+            "Expected ClassCastException for casting JsonValue.FALSE to JsonNumber");
     }
 
     @Test
     void testPut() {
         JsonObject obj = Json.createObjectBuilder().add("foo", 1).build();
-        try {
-            obj.put("bar", JsonValue.FALSE);
-            Assertions.fail("JsonObject#put() should throw UnsupportedOperationException");
-        } catch(UnsupportedOperationException e) {
-            // Expected
-        }
+        Assertions.assertThrows(UnsupportedOperationException.class,
+                () -> obj.put("bar", JsonValue.FALSE),
+            "JsonObject#put() should throw UnsupportedOperationException");
     }
 
     @Test
     void testRemove() {
         JsonObject obj = Json.createObjectBuilder().add("foo", 1).build();
-        try {
-            obj.remove("foo");
-            Assertions.fail("JsonObject#remove() should throw UnsupportedOperationException");
-        } catch(UnsupportedOperationException e) {
-            // Expected
-        }
+        Assertions.assertThrows(UnsupportedOperationException.class,
+                () -> obj.remove("foo"),
+                "JsonObject#remove() should throw UnsupportedOperationException");
     }
 
     @Test
@@ -222,12 +213,9 @@ public class JsonObjectTest {
 
     @Test
     void testObjectBuilderNpe() {
-        try {
-            Json.createObjectBuilder().add(null, 1).build();
-            Assertions.fail("JsonObjectBuilder#add(null, 1) should throw NullPointerException");
-        } catch(NullPointerException e) {
-            // Expected
-        }
+        Assertions.assertThrows(NullPointerException.class,
+                () -> Json.createObjectBuilder().add(null, 1).build(),
+                "JsonObjectBuilder#add(null, 1) should throw NullPointerException");
     }
 
     @Test

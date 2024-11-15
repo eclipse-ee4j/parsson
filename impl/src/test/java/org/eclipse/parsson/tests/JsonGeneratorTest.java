@@ -284,12 +284,8 @@ public class JsonGeneratorTest {
         StringWriter writer = new StringWriter();
         JsonGenerator generator = Json.createGenerator(writer);
         generator.writeStartObject();
-        try {
-            generator.writeStartObject();
-            Assertions.fail("Expected JsonGenerationException, writeStartObject() cannot be called more than once");
-        } catch (JsonGenerationException je) {
-            // Expected exception
-        }
+        Assertions.assertThrows(JsonGenerationException.class, generator::writeStartObject,
+            "Expected JsonGenerationException, writeStartObject() cannot be called more than once");
     }
 
     @Test
@@ -297,24 +293,16 @@ public class JsonGeneratorTest {
         StringWriter writer = new StringWriter();
         JsonGenerator generator = Json.createGenerator(writer);
         generator.writeStartObject();
-        try {
-            generator.writeStartArray();
-            Assertions.fail("Expected JsonGenerationException, writeStartArray() is valid in no context");
-        } catch (JsonGenerationException je) {
-            // Expected exception
-        }
+        Assertions.assertThrows(JsonGenerationException.class, generator::writeStartArray,
+            "Expected JsonGenerationException, writeStartArray() is valid in no context");
     }
 
     @Test
     void testGenerationException3() {
         StringWriter writer = new StringWriter();
         JsonGenerator generator = Json.createGenerator(writer);
-        try {
-            generator.close();
-            Assertions.fail("Expected JsonGenerationException, no JSON is generated");
-        } catch (JsonGenerationException je) {
-            // Expected exception
-        }
+        Assertions.assertThrows(JsonGenerationException.class, generator::close,
+            "Expected JsonGenerationException, no JSON is generated");
     }
 
     @Test
@@ -322,12 +310,8 @@ public class JsonGeneratorTest {
         StringWriter writer = new StringWriter();
         JsonGenerator generator = Json.createGenerator(writer);
         generator.writeStartArray();
-        try {
-            generator.close();
-            Assertions.fail("Expected JsonGenerationException, writeEnd() is not called");
-        } catch (JsonGenerationException je) {
-            // Expected exception
-        }
+        Assertions.assertThrows(JsonGenerationException.class, generator::close,
+            "Expected JsonGenerationException, writeEnd() is not called");
     }
 
     @Test
@@ -335,12 +319,8 @@ public class JsonGeneratorTest {
         StringWriter writer = new StringWriter();
         JsonGenerator generator = Json.createGenerator(writer);
         generator.writeStartObject();
-        try {
-            generator.close();
-            Assertions.fail("Expected JsonGenerationException, writeEnd() is not called");
-        } catch (JsonGenerationException je) {
-            // Expected exception
-        }
+        Assertions.assertThrows(JsonGenerationException.class, generator::close,
+            "Expected JsonGenerationException, writeEnd() is not called");
     }
 
     @Test
@@ -348,12 +328,8 @@ public class JsonGeneratorTest {
         StringWriter writer = new StringWriter();
         JsonGenerator generator = Json.createGenerator(writer);
         generator.writeStartObject().writeEnd();
-        try {
-            generator.writeStartObject();
-            Assertions.fail("Expected JsonGenerationException, cannot generate one more JSON text");
-        } catch (JsonGenerationException je) {
-            // Expected exception
-        }
+        Assertions.assertThrows(JsonGenerationException.class, generator::writeStartObject,
+            "Expected JsonGenerationException, cannot generate one more JSON text");
     }
 
     @Test
@@ -361,12 +337,8 @@ public class JsonGeneratorTest {
         StringWriter writer = new StringWriter();
         JsonGenerator generator = Json.createGenerator(writer);
         generator.writeStartArray().writeEnd();
-        try {
-            generator.writeStartArray();
-            Assertions.fail("Expected JsonGenerationException, cannot generate one more JSON text");
-        } catch (JsonGenerationException je) {
-            // Expected exception
-        }
+        Assertions.assertThrows(JsonGenerationException.class, generator::writeStartArray,
+            "Expected JsonGenerationException, cannot generate one more JSON text");
     }
 
 
@@ -375,12 +347,8 @@ public class JsonGeneratorTest {
         StringWriter sWriter = new StringWriter();
         JsonGenerator generator = Json.createGenerator(sWriter);
         generator.writeStartObject();
-        try {
-            generator.write(JsonValue.TRUE);
-            Assertions.fail("Expected JsonGenerationException, cannot generate one more JSON text");
-        } catch (JsonGenerationException je) {
-            // Expected exception
-        }
+        Assertions.assertThrows(JsonGenerationException.class, () -> generator.write(JsonValue.TRUE),
+            "Expected JsonGenerationException, cannot generate one more JSON text");
     }
 
     @Test
@@ -388,12 +356,8 @@ public class JsonGeneratorTest {
         StringWriter sWriter = new StringWriter();
         JsonGenerator generator = Json.createGenerator(sWriter);
         generator.writeStartObject();
-        try {
-            generator.write("name");
-            Assertions.fail("Expected JsonGenerationException, cannot generate one more JSON text");
-        } catch (JsonGenerationException je) {
-            // Expected exception
-        }
+        Assertions.assertThrows(JsonGenerationException.class, () -> generator.write("name"),
+            "Expected JsonGenerationException, cannot generate one more JSON text");
     }
 
     @Test
@@ -401,24 +365,15 @@ public class JsonGeneratorTest {
         StringWriter writer = new StringWriter();
         JsonGenerator generator = Json.createGenerator(writer);
         generator.writeStartArray();
-        try {
-            generator.write(Double.NaN);
-            Assertions.fail("JsonGenerator.write(Double.NaN) should produce NumberFormatException");
-        } catch (NumberFormatException ne) {
-            // expected
-        }
-        try {
-            generator.write(Double.POSITIVE_INFINITY);
-            Assertions.fail("JsonGenerator.write(Double.POSITIVE_INIFINITY) should produce NumberFormatException");
-        } catch (NumberFormatException ne) {
-            // expected
-        }
-        try {
-            generator.write(Double.NEGATIVE_INFINITY);
-            Assertions.fail("JsonGenerator.write(Double.NEGATIVE_INIFINITY) should produce NumberFormatException");
-        } catch (NumberFormatException ne) {
-            // expected
-        }
+        Assertions.assertThrows(NumberFormatException.class, () -> generator.write(Double.NaN),
+            "JsonGenerator.write(Double.NaN) should produce NumberFormatException");
+
+        Assertions.assertThrows(NumberFormatException.class, () -> generator.write(Double.POSITIVE_INFINITY),
+            "JsonGenerator.write(Double.POSITIVE_INIFINITY) should produce NumberFormatException");
+
+        Assertions.assertThrows(NumberFormatException.class, () -> generator.write(Double.NEGATIVE_INFINITY),
+            "JsonGenerator.write(Double.NEGATIVE_INIFINITY) should produce NumberFormatException");
+
         generator.writeEnd();
         generator.close();
     }
@@ -428,24 +383,16 @@ public class JsonGeneratorTest {
         StringWriter writer = new StringWriter();
         JsonGenerator generator = Json.createGenerator(writer);
         generator.writeStartObject();
-        try {
-            generator.write("foo", Double.NaN);
-            Assertions.fail("JsonGenerator.write(String, Double.NaN) should produce NumberFormatException");
-        } catch (NumberFormatException ne) {
-            // expected
-        }
-        try {
-            generator.write("foo", Double.POSITIVE_INFINITY);
-            Assertions.fail("JsonGenerator.write(String, Double.POSITIVE_INIFINITY) should produce NumberFormatException");
-        } catch (NumberFormatException ne) {
-            // expected
-        }
-        try {
-            generator.write("foo", Double.NEGATIVE_INFINITY);
-            Assertions.fail("JsonGenerator.write(String, Double.NEGATIVE_INIFINITY) should produce NumberFormatException");
-        } catch (NumberFormatException ne) {
-            // expected
-        }
+
+        Assertions.assertThrows(NumberFormatException.class, () -> generator.write("foo", Double.NaN),
+            "JsonGenerator.write(String, Double.NaN) should produce NumberFormatException");
+
+        Assertions.assertThrows(NumberFormatException.class, () -> generator.write("foo", Double.POSITIVE_INFINITY),
+            "JsonGenerator.write(String, Double.POSITIVE_INIFINITY) should produce NumberFormatException");
+
+        Assertions.assertThrows(NumberFormatException.class, () -> generator.write("foo", Double.NEGATIVE_INFINITY),
+            "JsonGenerator.write(String, Double.NEGATIVE_INIFINITY) should produce NumberFormatException");
+
         generator.writeEnd();
         generator.close();
     }
