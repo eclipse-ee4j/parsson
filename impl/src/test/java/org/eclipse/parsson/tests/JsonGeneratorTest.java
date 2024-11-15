@@ -499,9 +499,7 @@ public class JsonGeneratorTest {
     @Test
     void testBufferPoolFeature() {
         final JsonParserTest.MyBufferPool bufferPool = new JsonParserTest.MyBufferPool(1024);
-        Map<String, Object> config = new HashMap<String, Object>() {{
-            put(BufferPool.class.getName(), bufferPool);
-        }};
+        Map<String, Object> config = Map.of(BufferPool.class.getName(), bufferPool);
 
         JsonGeneratorFactory factory = Json.createGeneratorFactory(config);
         JsonGenerator generator = factory.createGenerator(new StringWriter());
@@ -518,9 +516,7 @@ public class JsonGeneratorTest {
         JsonBuilderFactory bf = Json.createBuilderFactory(null);
         for(int size=10; size < 1000; size++) {
             final JsonParserTest.MyBufferPool bufferPool = new JsonParserTest.MyBufferPool(size);
-            Map<String, Object> config = new HashMap<String, Object>() {{
-                put(BufferPool.class.getName(), bufferPool);
-            }};
+            Map<String, Object> config = Map.of(BufferPool.class.getName(), bufferPool);
             JsonGeneratorFactory gf = Json.createGeneratorFactory(config);
 
             StringBuilder sb = new StringBuilder();
