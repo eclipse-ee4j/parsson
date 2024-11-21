@@ -61,15 +61,11 @@ public class JsonBigDecimalLengthLimitTest  {
     @Test
     void testLargeBigDecimalAboveLimit() {
         JsonReader reader = Json.createReader(new StringReader(JsonNumberTest.Π_501));
-        try {
-            reader.readValue();
-            Assertions.fail("No exception was thrown from BigDecimal parsing with source characters array length over limit");
-        } catch (UnsupportedOperationException e) {
-            // UnsupportedOperationException is expected to be thrown
-            Assertions.assertEquals(
-                    "Number of BigDecimal source characters 501 exceeded maximal allowed value of 500",
-                    e.getMessage());
-        }
+        UnsupportedOperationException e = Assertions.assertThrows(UnsupportedOperationException.class, reader::readValue,
+            "No exception was thrown from BigDecimal parsing with source characters array length over limit");
+        Assertions.assertEquals(
+                "Number of BigDecimal source characters 501 exceeded maximal allowed value of 500",
+                e.getMessage());
     }
 
 }

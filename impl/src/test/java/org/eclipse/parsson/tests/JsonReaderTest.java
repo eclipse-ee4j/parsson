@@ -105,9 +105,7 @@ public class JsonReaderTest {
         JsonReaderFactory factory = Json.createReaderFactory(config);
         factory.createReader(new StringReader("{}"));
         Map<String, ?> config1 = factory.getConfigInUse();
-        if (!config1.isEmpty()) {
-            Assertions.fail("Shouldn't have any config in use");
-        }
+        Assertions.assertTrue(config1.isEmpty(), "Shouldn't have any config in use");
     }
 
     @Test
@@ -192,10 +190,8 @@ public class JsonReaderTest {
         JsonReaderFactory factory = Json.createReaderFactory(config);
         String json = "{\"val1\":\"A\",\"val1\":\"B\"}";
         JsonReader reader = factory.createReader(new StringReader(json));
-        try {
-            reader.readObject();
-            Assertions.fail("It is expected a JsonException");
-        } catch (JsonException ignored) {}
+        Assertions.assertThrows(JsonException.class, reader::readObject,
+                "It is expected a JsonException");
     }
 
     @Test
@@ -205,10 +201,8 @@ public class JsonReaderTest {
         JsonReaderFactory factory = Json.createReaderFactory(config);
         String json = "{\"val1\":\"A\",\"val1\":\"B\"}";
         JsonReader reader = factory.createReader(new StringReader(json));
-        try {
-            reader.readObject();
-            Assertions.fail("It is expected a JsonException");
-        } catch (JsonException ignored) {}
+        Assertions.assertThrows(JsonException.class, reader::readObject,
+                "It is expected a JsonException");
     }
 
     @Test
