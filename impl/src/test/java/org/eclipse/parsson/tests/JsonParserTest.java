@@ -515,13 +515,13 @@ public class JsonParserTest {
         JsonValue value = parser.getValue();
         Assertions.assertTrue(value instanceof JsonNumber);
         JsonNumber number = (JsonNumber) value;
-        assertEquals(number.longValueExact(), 1L);
+        Assertions.assertEquals(number.longValueExact(), 1L);
 
         Assertions.assertEquals(Event.VALUE_NUMBER, parser.next());
         value = parser.getValue();
         Assertions.assertTrue(value instanceof JsonNumber);
         number = (JsonNumber) value;
-        assertEquals(number.bigDecimalValue(), new BigDecimal("1.1"));
+        Assertions.assertEquals(number.bigDecimalValue(), new BigDecimal("1.1"));
 
         Assertions.assertEquals(Event.VALUE_TRUE, parser.next());
         value = parser.getValue();
@@ -535,7 +535,7 @@ public class JsonParserTest {
         value = parser.getValue();
         Assertions.assertTrue(value instanceof JsonString);
         JsonString string = (JsonString) value;
-        assertEquals("aString", string.getString());
+        Assertions.assertEquals("aString", string.getString());
 
         Assertions.assertEquals(Event.VALUE_NULL, parser.next());
         value = parser.getValue();
@@ -545,7 +545,6 @@ public class JsonParserTest {
         Assertions.assertEquals(Event.START_ARRAY, parser.next());
         JsonArray array = parser.getArray();
         Assertions.assertTrue(array.isEmpty());
-        Assertions.assertEquals(Event.END_ARRAY, parser.next());
 
         Assertions.assertEquals(Event.START_OBJECT, parser.next());
 
@@ -595,11 +594,105 @@ public class JsonParserTest {
         JsonObject object = parser.getObject();
         Assertions.assertTrue(object.isEmpty());
         Assertions.assertEquals(Event.END_OBJECT, parser.next());
-        Assertions.assertEquals(Event.END_OBJECT, parser.next());
         Assertions.assertEquals(Event.END_ARRAY, parser.next());
         Assertions.assertFalse(parser.hasNext());
     }
 
+    @Test
+    void testGetArrayRoot() {
+        try (JsonParser parser = Json.createParserFactory(null).createParser(
+                        Json.createArrayBuilder()
+                        .add(1)
+                        .add(2)
+                        .add(3)
+                        .build())) {
+            testGetArrayRoot(parser);
+        }
+    }
+
+    private void testGetArrayRoot(JsonParser parser) {
+        Assertions.assertEquals(Event.START_ARRAY, parser.next());
+        JsonArray actual = parser.getArray();
+        JsonArray expected = Json.createArrayBuilder()
+                        .add(1)
+                        .add(2)
+                        .add(3)
+                        .build();
+        Assertions.assertEquals(expected, actual);
+        Assertions.assertEquals(Event.END_ARRAY, parser.currentEvent());
+        Assertions.assertFalse(parser.hasNext());
+    }
+
+    @Test
+    void testGetArrayRootByValue() {
+        try (JsonParser parser = Json.createParserFactory(null).createParser(
+                        Json.createArrayBuilder()
+                        .add(1)
+                        .add(2)
+                        .add(3)
+                        .build())) {
+            testGetArrayRootByValue(parser);
+        }
+    }
+
+    private void testGetArrayRootByValue(JsonParser parser) {
+        Assertions.assertEquals(Event.START_ARRAY, parser.next());
+        JsonValue value = parser.getValue();
+        Assertions.assertEquals(ValueType.ARRAY, value.getValueType());
+        JsonArray actual = (JsonArray) value;
+        JsonArray expected = Json.createArrayBuilder()
+                        .add(1)
+                        .add(2)
+                        .add(3)
+                        .build();
+        Assertions.assertEquals(expected, actual);
+        Assertions.assertEquals(Event.END_ARRAY, parser.currentEvent());
+        Assertions.assertFalse(parser.hasNext());
+    }
+
+    @Test
+    void testGetObjectRoot() {
+        try (JsonParser parser = Json.createParserFactory(null).createParser(
+                        Json.createObjectBuilder()
+                        .add("key1", "value1")
+                        .build())) {
+            testGetObjectRoot(parser);
+        }
+    }
+
+    private void testGetObjectRoot(JsonParser parser) {
+        Assertions.assertEquals(Event.START_OBJECT, parser.next());
+        JsonObject actual = parser.getObject();
+        JsonObject expected = Json.createObjectBuilder()
+                        .add("key1", "value1")
+                        .build();
+        Assertions.assertEquals(expected, actual);
+        Assertions.assertEquals(Event.END_OBJECT, parser.currentEvent());
+        Assertions.assertFalse(parser.hasNext());
+    }
+    
+    @Test
+    void testGetObjectRootByValue() {
+        try (JsonParser parser = Json.createParserFactory(null).createParser(
+                        Json.createObjectBuilder()
+                        .add("key1", "value1")
+                        .build())) {
+            testGetObjectRootByValue(parser);
+        }
+    }
+    
+    private void testGetObjectRootByValue(JsonParser parser) {
+        Assertions.assertEquals(Event.START_OBJECT, parser.next());
+        JsonValue value = parser.getValue();
+        Assertions.assertEquals(ValueType.OBJECT, value.getValueType());
+        JsonObject actual = (JsonObject) value;
+        JsonObject expected = Json.createObjectBuilder()
+                        .add("key1", "value1")
+                        .build();
+        Assertions.assertEquals(expected, actual);
+        Assertions.assertEquals(Event.END_OBJECT, parser.currentEvent());
+        Assertions.assertFalse(parser.hasNext());
+    }
 
     @Test
     void testNestedArrayReader() {

@@ -19,6 +19,7 @@ package org.eclipse.parsson;
 import jakarta.json.*;
 import jakarta.json.stream.JsonLocation;
 import jakarta.json.stream.JsonParser;
+
 import java.math.BigDecimal;
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -91,7 +92,9 @@ class JsonStructureParser implements JsonParser {
     public JsonValue getValue() {
         switch (state) {
             case START_ARRAY:
+                return getArray();
             case START_OBJECT:
+                return getObject();
             case VALUE_STRING:
             case VALUE_NUMBER:
             case VALUE_TRUE:
@@ -113,7 +116,10 @@ class JsonStructureParser implements JsonParser {
             throw new IllegalStateException(
                     JsonMessages.PARSER_GETARRAY_ERR(state));
         }
-        return (JsonArray) scopeStack.peek().getJsonValue();
+        JsonArray array = (JsonArray) current.getJsonStructure();
+        // #transition() will pop the stack 
+        this.state = Event.END_ARRAY;
+        return array;
     }
 
     @Override
@@ -122,7 +128,10 @@ class JsonStructureParser implements JsonParser {
             throw new IllegalStateException(
                     JsonMessages.PARSER_GETOBJECT_ERR(state));
         }
-        return (JsonObject) scopeStack.peek().getJsonValue();
+        JsonObject object = (JsonObject) current.getJsonStructure();
+        // #transition() will pop the stack 
+        this.state = Event.END_OBJECT;
+        return object;
     }
 
     @Override
@@ -271,7 +280,18 @@ class JsonStructureParser implements JsonParser {
     }
 
     private static abstract class Scope implements Iterator {
+
+        private final JsonStructure jsonStructure;
+
+        Scope(JsonStructure jsonStructure) {
+            this.jsonStructure = jsonStructure;
+        }
+
         abstract JsonValue getJsonValue();
+
+        JsonStructure getJsonStructure() {
+            return jsonStructure;
+        }
 
         static Scope createScope(JsonValue value) {
             if (value instanceof JsonArray) {
@@ -288,6 +308,7 @@ class JsonStructureParser implements JsonParser {
         private JsonValue value;
 
         ArrayScope(JsonArray array) {
+            super(array);
             this.it = array.iterator();
         }
 
@@ -320,6 +341,7 @@ class JsonStructureParser implements JsonParser {
         private String key;
 
         ObjectScope(JsonObject object) {
+            super(object);
             this.it = object.entrySet().iterator();
         }
 
