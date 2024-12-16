@@ -101,7 +101,7 @@ public class JsonBuilderTest {
         person.put("lastName", "Smith");
         person.put("age", 25);
 
-        Map<String, Object> address = Optional.of(new HashMap<String, Object>()).get();
+        Map<String, Object> address = new HashMap<>();
         address.put("streetAddress", "21 2nd Street");
         address.put("city", "New York");
         address.put("state", "NY");

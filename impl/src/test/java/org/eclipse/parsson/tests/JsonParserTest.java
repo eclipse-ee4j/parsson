@@ -768,9 +768,7 @@ public class JsonParserTest {
     @Test
     void testBufferPoolFeature() {
         final MyBufferPool bufferPool = new MyBufferPool(1024);
-        Map<String, Object> config = new HashMap<String, Object>() {{
-            put(BufferPool.class.getName(), bufferPool);
-        }};
+        Map<String, Object> config = Map.of(BufferPool.class.getName(), bufferPool);
 
         JsonParserFactory factory = Json.createParserFactory(config);
         try (JsonParser parser = factory.createParser(new StringReader("[]"))) {
@@ -786,9 +784,7 @@ public class JsonParserTest {
         Random r = new Random(System.currentTimeMillis());
         for(int size=100; size < 1000; size++) {
             final MyBufferPool bufferPool = new MyBufferPool(size);
-            Map<String, Object> config = new HashMap<String, Object>() {{
-                put(BufferPool.class.getName(), bufferPool);
-            }};
+            Map<String, Object> config = Map.of(BufferPool.class.getName(), bufferPool);
             JsonParserFactory factory = Json.createParserFactory(config);
 
             StringBuilder sb = new StringBuilder();
@@ -865,9 +861,7 @@ public class JsonParserTest {
     void testStringUsingBuffers() throws Throwable {
         for(int size=20; size < 500; size++) {
             final MyBufferPool bufferPool = new MyBufferPool(size);
-            Map<String, Object> config = new HashMap<String, Object>() {{
-                put(BufferPool.class.getName(), bufferPool);
-            }};
+            Map<String, Object> config = Map.of(BufferPool.class.getName(), bufferPool);
             JsonParserFactory factory = Json.createParserFactory(config);
 
             StringBuilder sb = new StringBuilder();

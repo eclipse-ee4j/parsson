@@ -248,9 +248,7 @@ public class JsonReaderTest {
     void testEmptyStringUsingBuffers() throws Throwable {
         for(int size=20; size < 500; size++) {
             final JsonParserTest.MyBufferPool bufferPool = new JsonParserTest.MyBufferPool(size);
-            Map<String, Object> config = new HashMap<String, Object>() {{
-                put(BufferPool.class.getName(), bufferPool);
-            }};
+            Map<String, Object> config = Map.of(BufferPool.class.getName(), bufferPool);
             JsonReaderFactory factory = Json.createReaderFactory(config);
 
             StringBuilder sb = new StringBuilder();
