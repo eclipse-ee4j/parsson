@@ -515,13 +515,13 @@ public class JsonParserTest {
         JsonValue value = parser.getValue();
         Assertions.assertTrue(value instanceof JsonNumber);
         JsonNumber number = (JsonNumber) value;
-        assertEquals(number.longValueExact(), 1L);
+        Assertions.assertEquals(number.longValueExact(), 1L);
 
         Assertions.assertEquals(Event.VALUE_NUMBER, parser.next());
         value = parser.getValue();
         Assertions.assertTrue(value instanceof JsonNumber);
         number = (JsonNumber) value;
-        assertEquals(number.bigDecimalValue(), new BigDecimal("1.1"));
+        Assertions.assertEquals(number.bigDecimalValue(), new BigDecimal("1.1"));
 
         Assertions.assertEquals(Event.VALUE_TRUE, parser.next());
         value = parser.getValue();
@@ -535,7 +535,7 @@ public class JsonParserTest {
         value = parser.getValue();
         Assertions.assertTrue(value instanceof JsonString);
         JsonString string = (JsonString) value;
-        assertEquals("aString", string.getString());
+        Assertions.assertEquals("aString", string.getString());
 
         Assertions.assertEquals(Event.VALUE_NULL, parser.next());
         value = parser.getValue();
