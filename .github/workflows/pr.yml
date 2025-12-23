@@ -83,7 +83,7 @@ jobs:
       - name: Test
         uses: gradle/gradle-build-action@v2
         with:
-          gradle-version: current
+          gradle-version: 7.6.5
           build-root-directory: tck-impl
           arguments: check -Pparsson.home=image/parsson-dist -Pparsson.impl=${{ matrix.test_suite }}
       - name: Upload test results
