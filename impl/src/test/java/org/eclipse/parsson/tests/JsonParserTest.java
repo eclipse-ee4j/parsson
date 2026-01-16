@@ -961,4 +961,49 @@ public class JsonParserTest {
         }
         Assertions.fail();
     }
+
+    @Test
+    void testSkipStructure() {
+        try (JsonParser parser = Json.createParserFactory(null).createParser(
+                Json.createArrayBuilder()
+                        .add(1)
+                        .add(Json.createArrayBuilder()
+                                .add(2)
+                                .build())
+                        .add(3)
+                        .add(Json.createObjectBuilder()
+                                .add("key", 4)
+                                .build())
+                        .add(5)
+                        .add(6)
+                        .build())) {
+            testSkipStructure(parser);
+        }
+    }
+
+    static void testSkipStructure(JsonParser parser) {
+        Assertions.assertEquals(Event.START_ARRAY, parser.next());
+        Assertions.assertEquals(Event.VALUE_NUMBER, parser.next());
+        Assertions.assertEquals(1, parser.getInt());
+
+        Assertions.assertEquals(Event.START_ARRAY, parser.next());
+        parser.skipArray();
+        Assertions.assertEquals(Event.END_ARRAY, parser.currentEvent());
+
+        Assertions.assertEquals(Event.VALUE_NUMBER, parser.next());
+        Assertions.assertEquals(3, parser.getInt());
+
+        Assertions.assertEquals(Event.START_OBJECT, parser.next());
+        parser.skipObject();
+        Assertions.assertEquals(Event.END_OBJECT, parser.currentEvent());
+
+        Assertions.assertEquals(Event.VALUE_NUMBER, parser.next());
+        Assertions.assertEquals(5, parser.getInt());
+
+        Assertions.assertEquals(Event.VALUE_NUMBER, parser.next());
+        Assertions.assertEquals(6, parser.getInt());
+
+        Assertions.assertEquals(Event.END_ARRAY, parser.next());
+        Assertions.assertFalse(parser.hasNext());
+    }
 }
