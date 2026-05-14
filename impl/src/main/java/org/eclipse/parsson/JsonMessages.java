@@ -125,6 +125,10 @@ final class JsonMessages {
         return localize("parser.duplicate.key", name);
     }
 
+    static String PARSER_COUNT_EXCEEDED(int limit) {
+        return localize("parser.count.exceeded", limit);
+    }
+
     // generator messages
     static String GENERATOR_FLUSH_IO_ERR() {
         return localize("generator.flush.io.err");

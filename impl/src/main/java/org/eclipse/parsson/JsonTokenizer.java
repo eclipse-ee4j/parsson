@@ -480,9 +480,7 @@ final class JsonTokenizer implements Closeable {
 
     private void incrementParseCount() {
         if (++documentParseCount > jsonContext.maxParsingLimit()) {
-            throw new JsonException(String.format(
-                "Document parsing count exceeded maximum allowed value of %d",
-                jsonContext.maxParsingLimit()));
+            throw new JsonException(JsonMessages.PARSER_COUNT_EXCEEDED(jsonContext.maxParsingLimit()));
         }
     }
 
