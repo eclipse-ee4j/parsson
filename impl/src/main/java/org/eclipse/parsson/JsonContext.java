@@ -44,7 +44,7 @@ final class JsonContext {
     private static final int DEFAULT_MAX_DEPTH = 1000;
 
     /** Default maximum number of characters to parse from one document. */
-    private static final long DEFAULT_MAX_PARSING_LIMIT = 15_000_000;
+    private static final int DEFAULT_MAX_PARSING_LIMIT = 15_000_000;
 
     /**
      * Custom char[] pool instance property. Can be set in properties {@code Map} only.
@@ -63,7 +63,7 @@ final class JsonContext {
     private final int depthLimit;
 
     // Maximum number of characters to parse from one document
-    private final long maxParsingLimit;
+    private final int maxParsingLimit;
 
     // Whether JSON pretty printing is enabled
     private final boolean prettyPrinting;
@@ -83,7 +83,7 @@ final class JsonContext {
         this.bigIntegerScaleLimit = getIntConfig(JsonConfig.MAX_BIGINTEGER_SCALE, config, DEFAULT_MAX_BIGINTEGER_SCALE);
         this.bigDecimalLengthLimit = getIntConfig(JsonConfig.MAX_BIGDECIMAL_LEN, config, DEFAULT_MAX_BIGDECIMAL_LEN);
         this.depthLimit = getIntConfig(JsonConfig.MAX_DEPTH, config, DEFAULT_MAX_DEPTH);
-        this.maxParsingLimit = getLongConfig(JsonConfig.MAX_PARSING_LIMIT, config, DEFAULT_MAX_PARSING_LIMIT);
+        this.maxParsingLimit = getIntConfig(JsonConfig.MAX_PARSING_LIMIT, config, DEFAULT_MAX_PARSING_LIMIT);
         this.prettyPrinting = getBooleanConfig(JsonGenerator.PRETTY_PRINTING, config);
         this.rejectDuplicateKeys = getBooleanConfig(JsonConfig.REJECT_DUPLICATE_KEYS, config);
         this.bufferPool = getBufferPool(config, defaultPool);
@@ -101,7 +101,7 @@ final class JsonContext {
         this.bigIntegerScaleLimit = getIntConfig(JsonConfig.MAX_BIGINTEGER_SCALE, config, DEFAULT_MAX_BIGINTEGER_SCALE);
         this.bigDecimalLengthLimit = getIntConfig(JsonConfig.MAX_BIGDECIMAL_LEN, config, DEFAULT_MAX_BIGDECIMAL_LEN);
         this.depthLimit = getIntConfig(JsonConfig.MAX_DEPTH, config, DEFAULT_MAX_DEPTH);
-        this.maxParsingLimit = getLongConfig(JsonConfig.MAX_PARSING_LIMIT, config, DEFAULT_MAX_PARSING_LIMIT);
+        this.maxParsingLimit = getIntConfig(JsonConfig.MAX_PARSING_LIMIT, config, DEFAULT_MAX_PARSING_LIMIT);
         this.prettyPrinting = getBooleanConfig(JsonGenerator.PRETTY_PRINTING, config);
         this.rejectDuplicateKeys = getBooleanConfig(JsonConfig.REJECT_DUPLICATE_KEYS, config);
         this.bufferPool = getBufferPool(config, defaultPool);
@@ -129,7 +129,7 @@ final class JsonContext {
         return depthLimit;
     }
 
-    long maxParsingLimit() {
+    int maxParsingLimit() {
         return maxParsingLimit;
     }
 
@@ -161,16 +161,6 @@ final class JsonContext {
         return intConfig != null ? intConfig : defaultValue;
     }
 
-    private static long getLongConfig(String propertyName, Map<String, ?> config, long defaultValue) throws JsonException {
-        // Try config Map first
-        Long longConfig = config != null ? getLongProperty(propertyName, config) : null;
-        if (longConfig != null) {
-            return longConfig;
-        }
-        // Try system properties as fallback.
-        longConfig = getLongSystemProperty(propertyName);
-        return longConfig != null ? longConfig : defaultValue;
-    }
 
     private static boolean getBooleanConfig(String propertyName, Map<String, ?> config) throws JsonException {
         // Try config Map first
@@ -198,21 +188,6 @@ final class JsonContext {
                               propertyName, property.getClass().getName()));
     }
 
-    private static Long getLongProperty(String propertyName, Map<String, ?> config) throws JsonException {
-        Object property = config.get(propertyName);
-        if (property == null) {
-            return null;
-        }
-        if (property instanceof Number) {
-            return ((Number) property).longValue();
-        }
-        if (property instanceof String) {
-            return propertyStringToLong(propertyName, (String) property);
-        }
-        throw new JsonException(
-                String.format("Could not convert %s property of type %s to Long",
-                              propertyName, property.getClass().getName()));
-    }
 
     // Returns true when property exists or null otherwise. Property value is ignored.
     private static Boolean getBooleanProperty(String propertyName, Map<String, ?> config) throws JsonException {
@@ -228,13 +203,6 @@ final class JsonContext {
         return propertyStringToInt(propertyName, systemProperty);
     }
 
-    private static Long getLongSystemProperty(String propertyName) throws JsonException {
-        String systemProperty = getSystemProperty(propertyName);
-        if (systemProperty == null) {
-            return null;
-        }
-        return propertyStringToLong(propertyName, systemProperty);
-    }
 
     // Returns true when property exists or false otherwise. Property value is ignored.
     private static boolean getBooleanSystemProperty(String propertyName) throws JsonException {
@@ -260,14 +228,6 @@ final class JsonContext {
         }
     }
 
-    private static long propertyStringToLong(String propertyName, String propertyValue) throws JsonException {
-        try {
-            return Long.parseLong(propertyValue);
-        } catch (NumberFormatException ex) {
-            throw new JsonException(
-                    String.format("Value of %s property is not a number", propertyName), ex);
-        }
-    }
 
     // Constructor helper: Copy provider specific properties Map. Only specified properties are added.
     // Instance prettyPrinting and rejectDuplicateKeys variables must be initialized before

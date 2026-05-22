@@ -90,7 +90,7 @@ final class JsonTokenizer implements Closeable {
     // which is higher than the literal JSON source length due to lookahead
     // operations needed to determine parsing completion (e.g., detecting EOF after the
     // last token). See JsonConfig.MAX_PARSING_LIMIT for details.
-    private long documentParseCount = 0;
+    private int documentParseCount = 0;
 
     private boolean minus;
     private boolean fracOrExp;

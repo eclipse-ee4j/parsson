@@ -125,7 +125,7 @@ final class JsonMessages {
         return localize("parser.duplicate.key", name);
     }
 
-    static String PARSER_COUNT_EXCEEDED(long limit) {
+    static String PARSER_COUNT_EXCEEDED(int limit) {
         return localize("parser.count.exceeded", limit);
     }
 

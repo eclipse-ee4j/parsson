@@ -6,4 +6,3 @@ MANIFEST.MF
 /etc/config/copyright-exclude
 /etc/config/copyright.txt
 /bundles/dist/src/main/resources/README.txt
-/impl/src/test/java/org/eclipse/parsson/tests/JsonDocumentParseLimitTest.java

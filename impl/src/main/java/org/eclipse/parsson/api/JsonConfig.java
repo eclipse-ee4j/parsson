@@ -16,6 +16,9 @@
 
 package org.eclipse.parsson.api;
 
+/**
+ * Configuration property names supported by Eclipse Parsson.
+ */
 public interface JsonConfig {
 
     /**
