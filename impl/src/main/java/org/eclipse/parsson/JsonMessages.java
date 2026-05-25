@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -123,6 +123,10 @@ final class JsonMessages {
 
     static String DUPLICATE_KEY(String name) {
         return localize("parser.duplicate.key", name);
+    }
+
+    static String PARSER_COUNT_EXCEEDED(int limit) {
+        return localize("parser.count.exceeded", limit);
     }
 
     // generator messages

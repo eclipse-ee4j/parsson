@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2020, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -16,6 +16,9 @@
 
 package org.eclipse.parsson.api;
 
+/**
+ * Configuration property names supported by Eclipse Parsson.
+ */
 public interface JsonConfig {
 
     /**
@@ -39,6 +42,22 @@ public interface JsonConfig {
      * Default value is set to {@code 1000}.
      */
     String MAX_DEPTH = "org.eclipse.parsson.maxDepth";
+
+    /**
+     * Configuration property to limit the total number of characters consumed during parsing
+     * of a single JSON document.
+     * <p>
+     * This property limits all characters consumed by the tokenizer during parsing,
+     * including whitespace, structural characters, object member names, string values,
+     * number lexemes, and literal keywords.
+     * <p>
+     * <b>Important:</b> This limit represents the number of characters the parser must
+     * consume to complete parsing, which is higher than the literal JSON
+     * source length.
+     * <p>
+     * Default value is set to {@code 15000000} (15 million characters).
+     */
+    String MAX_PARSING_LIMIT = "org.eclipse.parsson.maxParsingLimit";
 
     /**
      * Configuration property to reject duplicate keys.

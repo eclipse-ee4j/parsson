@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -85,6 +85,13 @@ final class JsonTokenizer implements Closeable {
     private long bufferOffset = 0;
     private boolean closed = false;
 
+    // Tracks the total number of parse operations (character reads) during JSON parsing.
+    // Note: This count represents parse operations by the parser's control flow,
+    // which is higher than the literal JSON source length due to lookahead
+    // operations needed to determine parsing completion (e.g., detecting EOF after the
+    // last token). See JsonConfig.MAX_PARSING_LIMIT for details.
+    private int documentParseCount = 0;
+
     private boolean minus;
     private boolean fracOrExp;
     private BigDecimal bd;
@@ -136,6 +143,7 @@ final class JsonTokenizer implements Closeable {
             if (inPlace) {
                 int ch;
                 while(readBegin < readEnd && ((ch=buf[readBegin]) >= 0x20) && ch != '\\') {
+                    incrementParseCount();
                     if (ch == '"') {
                         storeEnd = readBegin++; // ++ to consume quote char
                         return;                 // Got the entire string
@@ -214,6 +222,7 @@ final class JsonTokenizer implements Closeable {
     // of resizing, filling up the buf, adjusting the pointers
     private int readNumberChar() {
         if (readBegin < readEnd) {
+            incrementParseCount();
             return buf[readBegin++];
         } else {
             storeEnd = readBegin;
@@ -462,9 +471,16 @@ final class JsonTokenizer implements Closeable {
                 readBegin = storeEnd;
                 readEnd = readBegin+len;
             }
+            incrementParseCount();
             return buf[readBegin++];
         } catch (IOException ioe) {
             throw new JsonException(JsonMessages.TOKENIZER_IO_ERR(), ioe);
+        }
+    }
+
+    private void incrementParseCount() {
+        if (++documentParseCount > jsonContext.maxParsingLimit()) {
+            throw new JsonException(JsonMessages.PARSER_COUNT_EXCEEDED(jsonContext.maxParsingLimit()));
         }
     }
 
