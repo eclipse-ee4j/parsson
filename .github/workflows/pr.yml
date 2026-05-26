@@ -81,7 +81,7 @@ jobs:
       - name: Prepare distribution
         run: unzip -q -d image parsson-dist.zip
       - name: Test
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v3
         with:
           gradle-version: 7.6.5
           build-root-directory: tck-impl
