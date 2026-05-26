@@ -47,7 +47,7 @@ jobs:
         mvn -B -V -U -C -Poss-release,staging clean verify org.glassfish.copyright:glassfish-copyright-maven-plugin:check -Dgpg.skip=true -Dcopyright.ignoreyear=true
         echo "::set-output name=jdk::${{ matrix.java_version }}"
     - name: Upload binary image
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       if: success()
       with:
           name: parsson-dist
@@ -87,7 +87,7 @@ jobs:
           build-root-directory: tck-impl
           arguments: check -Pparsson.home=image/parsson-dist -Pparsson.impl=${{ matrix.test_suite }}
       - name: Upload test results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: test-results
           path: tck-impl/build/distributions/tck-test-results.zip
