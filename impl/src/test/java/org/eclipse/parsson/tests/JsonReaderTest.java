@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -112,29 +112,17 @@ public class JsonReaderTest {
     void testIllegalStateExcepton() {
         JsonReader reader = Json.createReader(new StringReader("{}"));
         reader.readObject();
-        try {
-            reader.readObject();
-        } catch (IllegalStateException expected) {
-            // no-op
-        }
+        Assertions.assertThrows(IllegalStateException.class, reader::readObject);
         reader.close();
 
         reader = Json.createReader(new StringReader("[]"));
         reader.readArray();
-        try {
-            reader.readArray();
-        } catch (IllegalStateException expected) {
-            // no-op
-        }
+        Assertions.assertThrows(IllegalStateException.class, reader::readArray);
         reader.close();
 
         reader = Json.createReader(new StringReader("{}"));
         reader.read();
-        try {
-            reader.read();
-        } catch (IllegalStateException expected) {
-            // no-op
-        }
+        Assertions.assertThrows(IllegalStateException.class, reader::read);
         reader.close();
     }
 

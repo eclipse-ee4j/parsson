@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -160,32 +160,20 @@ public class JsonWriterTest {
         JsonObject obj = Json.createObjectBuilder().build();
         JsonArray array = Json.createArrayBuilder().build();
 
-        JsonWriter writer = Json.createWriter(new StringWriter());
-        writer.writeObject(obj);
-        try {
-            writer.writeObject(obj);
-        } catch (IllegalStateException expected) {
-            // no-op
-        }
-        writer.close();
+        JsonWriter objectWriter = Json.createWriter(new StringWriter());
+        objectWriter.writeObject(obj);
+        Assertions.assertThrows(IllegalStateException.class, () -> objectWriter.writeObject(obj));
+        objectWriter.close();
 
-        writer = Json.createWriter(new StringWriter());
-        writer.writeArray(array);
-        try {
-            writer.writeArray(array);
-        } catch (IllegalStateException expected) {
-            // no-op
-        }
-        writer.close();
+        JsonWriter arrayWriter = Json.createWriter(new StringWriter());
+        arrayWriter.writeArray(array);
+        Assertions.assertThrows(IllegalStateException.class, () -> arrayWriter.writeArray(array));
+        arrayWriter.close();
 
-        writer = Json.createWriter(new StringWriter());
-        writer.write(array);
-        try {
-            writer.writeArray(array);
-        } catch (IllegalStateException expected) {
-            // no-op
-        }
-        writer.close();
+        JsonWriter structureWriter = Json.createWriter(new StringWriter());
+        structureWriter.write(array);
+        Assertions.assertThrows(IllegalStateException.class, () -> structureWriter.writeArray(array));
+        structureWriter.close();
     }
 
     @Test
