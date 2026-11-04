@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2017, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -16,8 +16,12 @@
 
 package org.eclipse.parsson.tests;
 
+import java.io.StringReader;
+import java.time.Duration;
+
 import jakarta.json.Json;
 import jakarta.json.stream.JsonParser;
+import jakarta.json.stream.JsonParsingException;
 
 import org.eclipse.parsson.JsonParserFixture;
 import org.junit.jupiter.api.Assertions;
@@ -185,5 +189,19 @@ public class JsonParserSkipTest {
         Assertions.assertEquals(JsonParser.Event.KEY_NAME, parser.next());
         parser.skipObject();
 		Assertions.assertFalse(parser.hasNext());
+    }
+
+    @Test
+    void testSkipTruncatedValue() {
+        // Issue #23: skipObject() and skipArray() looped forever at the end of a truncated text.
+        for (String json : new String[] {"{", "{\"a\":1", "{\"a\":[", "{\"a\":{}", "{\"a\":1,", "[", "[1,", "[{", "[[]"}) {
+            Assertions.assertTimeoutPreemptively(Duration.ofSeconds(10), () -> {
+                try (JsonParser parser = Json.createParser(new StringReader(json))) {
+                    JsonParser.Event event = parser.next();
+                    Assertions.assertThrows(JsonParsingException.class,
+                            event == JsonParser.Event.START_OBJECT ? parser::skipObject : parser::skipArray, json);
+                }
+            }, json);
+        }
     }
 }

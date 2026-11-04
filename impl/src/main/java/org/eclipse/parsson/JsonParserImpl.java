@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -473,6 +473,10 @@ public class JsonParserImpl implements JsonParser {
             int depth = 1;
             do {
                 token = tokenizer.nextToken();
+                if (token == JsonToken.EOF) {
+                    // A truncated value: without this check, nextToken() returns EOF forever.
+                    throw parsingException(token, "[" + closeToken + "]");
+                }
                 if (token == closeToken) {
                     depth--;
                 }
