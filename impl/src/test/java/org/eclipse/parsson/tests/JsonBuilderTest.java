@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -93,6 +93,28 @@ public class JsonBuilderTest {
         Assertions.assertEquals(25, number.intValue());
         Assertions.assertTrue(number.isIntegral());
         JsonObjectTest.testPerson(copyPerson);
+    }
+
+    @Test
+    void testRemoveFromEmptyObjectBuilder() {
+        JsonObject empty = Json.createObjectBuilder()
+                .remove("missing")
+                .build();
+
+        JsonObjectTest.testEmpty(empty);
+    }
+
+    @Test
+    void testRemoveFromObjectBuilderAfterBuild() {
+        JsonObjectBuilder builder = Json.createObjectBuilder()
+                .add("firstName", "John");
+
+        JsonObject first = builder.build();
+        builder.remove("firstName");
+        JsonObject empty = builder.build();
+
+        Assertions.assertEquals("John", first.getString("firstName"));
+        JsonObjectTest.testEmpty(empty);
     }
 
     static Map<String, Object> buildPersonAsMap() {
