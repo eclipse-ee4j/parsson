@@ -196,7 +196,7 @@ final class JsonContext {
 
 
     private static Integer getIntSystemProperty(String propertyName) throws JsonException {
-        String systemProperty = getSystemProperty(propertyName);
+        String systemProperty = System.getProperty(propertyName);
         if (systemProperty == null) {
             return null;
         }
@@ -206,17 +206,7 @@ final class JsonContext {
 
     // Returns true when property exists or false otherwise. Property value is ignored.
     private static boolean getBooleanSystemProperty(String propertyName) throws JsonException {
-        return getSystemProperty(propertyName) != null;
-    }
-
-    @SuppressWarnings("removal")
-    private static String getSystemProperty(String propertyName) throws JsonException {
-        if (System.getSecurityManager() != null) {
-            return AccessController.doPrivileged(
-                    (PrivilegedAction<String>) () -> System.getProperty(propertyName));
-        } else {
-            return System.getProperty(propertyName);
-        }
+        return System.getProperty(propertyName) != null;
     }
 
     private static int propertyStringToInt(String propertyName, String propertyValue) throws JsonException {
