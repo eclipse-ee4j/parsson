@@ -540,53 +540,37 @@ class JsonGeneratorImpl implements JsonGenerator {
     //   begin       end                   begin         end
     void writeEscapedString(CharSequence string) {
         writeChar('"');
-        int len = string.length();
-        for(int i = 0; i < len; i++) {
-            int begin = i, end = i;
-            char c = string.charAt(i);
-            // find all the characters that need not be escaped
-            // unescaped = %x20-21 | %x23-5B | %x5D-10FFFF
-            while(c >= 0x20 && c <= 0x10ffff && c != 0x22 && c != 0x5c) {
-                i++; end = i;
-                if (i < len) {
-                    c = string.charAt(i);
-                } else {
-                    break;
-                }
-            }
-            // Write characters without escaping
-            if (begin < end) {
-                writeString(string, begin, end);
-                if (i == len) {
-                    break;
-                }
-            }
-
-            switch (c) {
-                case '"':
-                case '\\':
-                    writeChar('\\'); writeChar(c);
-                    break;
-                case '\b':
-                    writeChar('\\'); writeChar('b');
-                    break;
-                case '\f':
-                    writeChar('\\'); writeChar('f');
-                    break;
-                case '\n':
-                    writeChar('\\'); writeChar('n');
-                    break;
-                case '\r':
-                    writeChar('\\'); writeChar('r');
-                    break;
-                case '\t':
-                    writeChar('\\'); writeChar('t');
-                    break;
-                default:
-                    String hex = "000" + Integer.toHexString(c);
-                    writeString("\\u" + hex.substring(hex.length() - 4));
-            }
-        }
+        string.chars()
+                .forEach(c -> {
+                    if (c >= 0x20 && c <= 0x10ffff && c != 0x22 && c != 0x5c) {
+                        writeChar(c);
+                    } else {
+                        switch (c) {
+                            case '"':
+                            case '\\':
+                                writeChar('\\'); writeChar(c);
+                                break;
+                            case '\b':
+                                writeChar('\\'); writeChar('b');
+                                break;
+                            case '\f':
+                                writeChar('\\'); writeChar('f');
+                                break;
+                            case '\n':
+                                writeChar('\\'); writeChar('n');
+                                break;
+                            case '\r':
+                                writeChar('\\'); writeChar('r');
+                                break;
+                            case '\t':
+                                writeChar('\\'); writeChar('t');
+                                break;
+                            default:
+                                String hex = "000" + Integer.toHexString(c);
+                                writeString("\\u" + hex.substring(hex.length() - 4));
+                        }
+                    }
+                });
         writeChar('"');
     }
 
@@ -609,6 +593,10 @@ class JsonGeneratorImpl implements JsonGenerator {
 
     void writeString(CharSequence str) {
         writeString(str, 0, str.length());
+    }
+
+    void writeChar(final int c) {
+        writeChar((char) c);
     }
 
     void writeChar(char c) {
